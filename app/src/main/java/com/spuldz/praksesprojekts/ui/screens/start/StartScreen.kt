@@ -1,4 +1,4 @@
-package com.spuldz.praksesprojekts.ui.screens
+package com.spuldz.praksesprojekts.ui.screens.start
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,14 +18,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
+import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.TitleStyle
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
-fun StartScreen() {
+fun StartScreen(
+    onNavigateToHomeScreen: () -> Unit
+) {
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -54,10 +58,17 @@ fun StartScreen() {
                 containerColor = PrimaryColor,
                 contentColor = Color.White
             ),
-            onClick = {}
+            onClick = { onNavigateToHomeScreen() }
         ) {
             Text("Start")
         }
     }
+}
 
+@Preview
+@Composable
+fun StartScreenPreview() {
+    PraksesProjektsTheme {
+        StartScreen(onNavigateToHomeScreen = {})
+    }
 }
