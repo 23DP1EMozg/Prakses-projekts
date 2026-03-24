@@ -1,6 +1,4 @@
 package com.spuldz.praksesprojekts.ui.screens.home
-
-import android.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -133,9 +131,6 @@ fun HomeScreen(){
                         .zIndex(3f)
                         .fillMaxSize()
                         .background(Color.Black.copy(alpha = 0.7f)),
-
-
-
                     ){
                     Text(
                         modifier = Modifier
