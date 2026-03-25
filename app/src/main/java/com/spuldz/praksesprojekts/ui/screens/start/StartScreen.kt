@@ -47,7 +47,7 @@ fun StartScreen(
         )
         Text(
             text = "Welcome to sudoku!",
-            style = TitleStyle
+            style = TitleStyle,
 
         )
         Button(
@@ -60,7 +60,7 @@ fun StartScreen(
             ),
             onClick = { onNavigateToHomeScreen() }
         ) {
-            Text("Start")
+            Text("Lets Go!")
         }
     }
 }

@@ -23,3 +23,9 @@ val TextMd = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 28.sp
 )
+
+val TextSm = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 12.sp
+)
