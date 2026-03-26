@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -23,6 +25,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.common.mockSudokuBoard
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
@@ -33,14 +38,36 @@ import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
-fun GameScreen() {
+fun GameScreen(viewModel: GameViewModel = hiltViewModel()) {
+    val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.generateGameBoard()
+    }
+
+    GameScreenContent(grid)
+}
+
+@Composable
+private fun GameScreenLoading(){
 
 }
 
 @Composable
 fun GameScreenContent(
-    grid: Array<IntArray>
+    grid: List<List<GridCellModel>>?
 ) {
+    if(grid == null){
+        GameScreenLoading()
+    }else{
+        GameScreenGrid(grid)
+    }
+}
+
+@Composable
+private fun GameScreenGrid(
+    grid: List<List<GridCellModel>>
+){
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -104,7 +131,7 @@ fun GameScreenContent(
 
                                 val strokeWidth = if (
                                     (colIndex + 1) % 3 == 0 || colIndex == 0
-                                    ) 2.dp.toPx() else 0.5.dp.toPx()
+                                ) 2.dp.toPx() else 0.5.dp.toPx()
 
                                 val xPos = if (colIndex != 0) size.width else 0f
                                 drawLine(
@@ -127,7 +154,7 @@ fun GameScreenContent(
                         Text(
                             modifier = Modifier
                                 .align(Alignment.Center),
-                            text = cell.toString(),
+                            text = if (cell.value == 0) "" else cell.value.toString(),
                             color = Color.White,
                             style = TextMd
                         )
@@ -225,11 +252,13 @@ fun GameScreenContent(
     }
 }
 
+
+
 @Preview
 @Composable
 private fun GameScreenPreview() {
     PraksesProjektsTheme {
-        GameScreenContent(mockSudokuBoard)
+        GameScreenContent(null)
     }
 }
 

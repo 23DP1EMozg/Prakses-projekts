@@ -33,6 +33,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -43,6 +47,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 }
 
@@ -74,4 +82,10 @@ dependencies {
     // Dependency injection
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.android.compiler)
+
+    // View model
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Timber
+    implementation(libs.timber)
 }

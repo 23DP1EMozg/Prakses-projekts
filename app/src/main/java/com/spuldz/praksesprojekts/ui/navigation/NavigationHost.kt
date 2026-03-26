@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.spuldz.praksesprojekts.ui.common.mockSudokuBoard
+import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreenContent
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
 import com.spuldz.praksesprojekts.ui.screens.start.StartScreen
@@ -27,6 +28,6 @@ fun NavigationHost(){
             navController.navigate(route = Home)
         } ) }
         composable<Home> { HomeScreen() }
-        composable<Game> { GameScreenContent(mockSudokuBoard) }
+        composable<Game> { GameScreen() }
     }
 }
