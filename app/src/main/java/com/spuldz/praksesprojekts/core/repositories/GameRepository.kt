@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.random.Random
 
 @Singleton
 class GameRepository @Inject constructor() {
@@ -35,7 +36,9 @@ class GameRepository @Inject constructor() {
         return board
     }
 
-    fun fillGameBoard(board: MutableList<MutableList<GridCellModel>>) : Boolean{
+    fun generateSolutionAndFillBoard(
+        board: MutableList<MutableList<GridCellModel>>
+    ): Boolean {
         for (row in 0..8) {
             for (col in 0..8) {
                 if (board[row][col].value == 0) {
@@ -47,7 +50,7 @@ class GameRepository @Inject constructor() {
                                     value = num
                                 )
 
-                            if(fillGameBoard(board)) {
+                            if(generateSolutionAndFillBoard(board)) {
                                 return true
                             }
 
@@ -60,6 +63,47 @@ class GameRepository @Inject constructor() {
         }
         _gameBoard.update { board.toList() }
         return true
+    }
+
+    fun removeCellsFromBoard(board: MutableList<MutableList<GridCellModel>>, amount: Int) : MutableList<MutableList<GridCellModel>>{
+        var times = 0
+
+        while (times <= amount) {
+            val randomRow = Random.nextInt(0,9)
+            val randomCol = Random.nextInt(0,9)
+
+            if(board[randomRow][randomCol].value == 0){
+                continue
+            }
+
+            val prevValueCopy = board[randomRow][randomCol].value
+
+            board[randomRow][randomCol] = board[randomRow][randomCol].copy(
+                value = 0
+            )
+
+            var count = 0
+            for (num in 1..9) {
+                if(isValid(board, randomRow, randomCol, num)) {
+                    count++
+                }
+            }
+
+            if (count > 1){
+                board[randomRow][randomCol] = board[randomRow][randomCol].copy(
+                    value = prevValueCopy
+                )
+            }else{
+                times++
+            }
+        }
+        return board
+    }
+
+    fun fillGameBoard(board: MutableList<MutableList<GridCellModel>>){
+        generateSolutionAndFillBoard(board)
+        val boardWithRemovedCells = removeCellsFromBoard(board, 30)
+        _gameBoard.update { boardWithRemovedCells.toList() }
     }
 
     private fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
