@@ -18,9 +18,13 @@ fun NavigationHost() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Start) {
-        composable<Start> { StartScreen( onNavigateToHomeScreen = {
-            navController.navigate(route = Home)
-        } ) }
+        composable<Start> {
+            StartScreen(
+                onNavigateToHomeScreen = {
+                    navController.navigate(route = Home)
+                }
+            )
+        }
         composable<Home> { HomeScreen() }
     }
 }

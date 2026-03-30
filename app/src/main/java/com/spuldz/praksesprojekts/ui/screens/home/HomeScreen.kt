@@ -20,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
+import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.HomeTitle
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
@@ -38,9 +40,8 @@ fun HomeScreen(){
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            modifier = Modifier
-                .padding(top = sizing.dp30),
-            text = "Sudoku",
+            modifier = Modifier.padding(top = sizing.dp30),
+            text = stringResource(R.string.sudoku),
             style = HomeTitle,
             color = Color.White
         )
@@ -50,62 +51,8 @@ fun HomeScreen(){
                 .padding(top = sizing.dp30),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
-            Box(
-                modifier = Modifier
-                    .width(sizing.dp150)
-                    .height(sizing.dp150)
-                    .background(Color.White)
-            ) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.settings_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Box(
-                    modifier = Modifier
-                        .zIndex(3f)
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7f)),
-                ){
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        text = "Settings",
-                        color = Color.White,
-                        style = TextMd
-                    )
-                }
-            }
-            Box(
-                modifier = Modifier
-                    .width(sizing.dp150)
-                    .height(sizing.dp150)
-                    .background(Color.White)
-            ) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.best_scores_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Box(
-                    modifier = Modifier
-                        .zIndex(3f)
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7f)),
-                    ){
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        text = "Scores",
-                        color = Color.White,
-                        style = TextMd
-                    )
-                }
-            }
+            NavigationOption(stringResource(R.string.settings), R.drawable.settings_icon)
+            NavigationOption(stringResource(R.string.scores), R.drawable.best_scores_icon)
         }
         Row(
             modifier = Modifier
@@ -113,63 +60,9 @@ fun HomeScreen(){
                 .padding(top = sizing.dp16),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
-            Box(
-                modifier = Modifier
-                    .width(sizing.dp150)
-                    .height(sizing.dp150)
-                    .background(Color.White)
-            ) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.profile_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Box(
-                    modifier = Modifier
-                        .zIndex(3f)
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7f)),
-                    ){
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        text = "Profile",
-                        color = Color.White,
-                        style = TextMd
-                    )
-                }
-            }
 
-            Box(
-                modifier = Modifier
-                    .width(sizing.dp150)
-                    .height(sizing.dp150)
-                    .background(Color.White)
-            ) {
-                Image(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.stats_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Box(
-                    modifier = Modifier
-                        .zIndex(3f)
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7f)),
-                    ){
-                    Text(
-                        modifier = Modifier
-                            .align(Alignment.Center),
-                        text = "Stats",
-                        color = Color.White,
-                        style = TextMd
-                    )
-                }
-            }
+            NavigationOption(stringResource(R.string.profile), R.drawable.profile_icon)
+            NavigationOption(stringResource(R.string.stats), R.drawable.stats_icon)
         }
         Spacer(
             modifier = Modifier
@@ -186,7 +79,39 @@ fun HomeScreen(){
             ),
             onClick = {}
         ) {
-            Text("New Game")
+            Text(stringResource( R.string.new_game))
+        }
+    }
+}
+
+@Composable
+fun NavigationOption(text: String, image: Int) {
+    Box(
+        modifier = Modifier
+            .width(sizing.dp150)
+            .height(sizing.dp150)
+            .background(Color.White)
+    ) {
+        Image(
+            modifier = Modifier
+                .fillMaxSize(),
+            painter = painterResource(image),
+            contentScale = ContentScale.Fit,
+            contentDescription = null,
+        )
+        Box(
+            modifier = Modifier
+                .zIndex(3f)
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.7f)),
+        ){
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Center),
+                text = text,
+                color = Color.White,
+                style = TextMd
+            )
         }
     }
 }
