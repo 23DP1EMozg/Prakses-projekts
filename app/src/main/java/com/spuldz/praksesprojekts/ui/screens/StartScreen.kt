@@ -15,13 +15,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.TitleStyle
+import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
@@ -44,7 +44,6 @@ fun StartScreen() {
         Text(
             text = "Welcome to sudoku!",
             style = TitleStyle
-
         )
         Button(
             modifier = Modifier
@@ -52,7 +51,7 @@ fun StartScreen() {
                 .padding(top = sizing.dp20),
             colors = ButtonDefaults.buttonColors(
                 containerColor = PrimaryColor,
-                contentColor = Color.White
+                contentColor = White
             ),
             onClick = {}
         ) {
