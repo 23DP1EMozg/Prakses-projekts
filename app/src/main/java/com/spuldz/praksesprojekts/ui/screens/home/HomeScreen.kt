@@ -13,8 +13,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,10 +38,15 @@ import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToGameScreen: () -> Unit
+    onNavigateToGameScreen: (difficulty: String) -> Unit
 ){
+    val sheetState = rememberModalBottomSheetState()
+    //val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,13 +91,46 @@ fun HomeScreen(
                 containerColor = PrimaryColor,
                 contentColor = Color.White
             ),
-            onClick = { onNavigateToGameScreen() }
+            onClick = { showBottomSheet = true }
         ) {
             Text(stringResource( R.string.new_game))
         }
     }
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState,
+            modifier = Modifier
+                .padding(top = sizing.dp18)
+                .padding(bottom = sizing.dp18)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("Choose Difficulty")
+                DifficultyButton("Easy", { onNavigateToGameScreen("Easy") })
+                DifficultyButton("Medium", { onNavigateToGameScreen("Medium") })
+                DifficultyButton("Hard", { onNavigateToGameScreen("Hard") })
+            }
+        }
+    }
 }
 
+@Composable
+fun DifficultyButton(text: String, OnNavigateToGameScreen: (String) -> Unit) {
+    Button(
+        onClick = { OnNavigateToGameScreen(text) },
+        modifier = Modifier
+            .fillMaxWidth(0.5f))
+    {
+        Text(text)
+    }
+}
 @Composable
 fun NavigationOption(text: String, image: Int) {
     Box(

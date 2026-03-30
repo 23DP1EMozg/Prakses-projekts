@@ -37,10 +37,10 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 import timber.log.Timber
 
 @Composable
-fun GameScreen(viewModel: GameViewModel = hiltViewModel()) {
+fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        Timber.d("create game grid")
+        Timber.d(difficulty)
         viewModel.generateGameBoard()
     }
 

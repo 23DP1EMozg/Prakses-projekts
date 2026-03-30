@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
 import com.spuldz.praksesprojekts.ui.screens.start.StartScreen
@@ -15,7 +16,7 @@ object Start
 object Home
 
 @Serializable
-object Game
+data class Game(val difficulty: String)
 
 @Composable
 fun NavigationHost() {
@@ -31,11 +32,14 @@ fun NavigationHost() {
         }
         composable<Home> {
             HomeScreen(
-                onNavigateToGameScreen = {
-                    navController.navigate(route = Game)
+                onNavigateToGameScreen = { difficulty ->
+                    navController.navigate(route = Game(difficulty))
                 }
             )
         }
-        composable<Game> { GameScreen() }
+        composable<Game> { backStackEntry ->
+            val game = backStackEntry.toRoute<Game>()
+            GameScreen(difficulty = game.difficulty)
+        }
     }
 }
