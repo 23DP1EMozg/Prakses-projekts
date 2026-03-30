@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 object Start
 
 @Composable
-fun NavigationHost(){
+fun NavigationHost() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Start) {

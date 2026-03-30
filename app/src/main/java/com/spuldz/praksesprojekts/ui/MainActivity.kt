@@ -26,7 +26,6 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding)
                             .fillMaxSize()
                             .background(Color.LightGray)
-
                     ) {
                         NavigationHost()
                     }
