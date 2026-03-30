@@ -1,16 +1,17 @@
-package com.spuldz.praksesprojekts
+package com.spuldz.praksesprojekts.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.graphics.Color
+import com.spuldz.praksesprojekts.ui.navigation.NavigationHost
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,28 +21,16 @@ class MainActivity : ComponentActivity() {
         setContent {
             PraksesProjektsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .fillMaxSize()
+                            .background(Color.LightGray)
+                    ) {
+                        NavigationHost()
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PraksesProjektsTheme {
-        Greeting("Android")
     }
 }
