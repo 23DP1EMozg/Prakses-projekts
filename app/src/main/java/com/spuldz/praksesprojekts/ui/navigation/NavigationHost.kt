@@ -29,7 +29,13 @@ fun NavigationHost() {
                 }
             )
         }
-        composable<Home> { HomeScreen() }
+        composable<Home> {
+            HomeScreen(
+                onNavigateToGameScreen = {
+                    navController.navigate(route = Game)
+                }
+            )
+        }
         composable<Game> { GameScreen() }
     }
 }

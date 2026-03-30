@@ -1,8 +1,10 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
 import androidx.lifecycle.ViewModel
+import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.core.repositories.GameRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -14,4 +16,14 @@ class GameViewModel @Inject constructor(
     fun generateGameBoard() = gameRepository.fillGameBoard(
         gameRepository.generateBoilerplate()
     )
+
+    fun selectCell(cell: GridCellModel) {
+        Timber.d(cell.toString())
+        gameRepository.selectCell(cell)
+    }
+
+    fun addNumberToSelectedCell(number: Int) {
+        gameRepository.addNumberToSelectedCell(number)
+    }
+
 }

@@ -4,6 +4,7 @@ import com.spuldz.praksesprojekts.core.models.GridCellModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
@@ -12,6 +13,8 @@ import kotlin.random.Random
 class GameRepository @Inject constructor() {
 
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
+    private var selectedCell: GridCellModel? = null
+
     val gameBoard = _gameBoard.asStateFlow()
 
     fun generateBoilerplate(): MutableList<MutableList<GridCellModel>> {
@@ -23,10 +26,10 @@ class GameRepository @Inject constructor() {
                 list.add(
                     GridCellModel(
                         0,
-                        true,
+                        false,
                         row,
                         col,
-                        intArrayOf((row / 3) * 3, (col / 3) * 3)
+                        Pair((row / 3) * 3, (col / 3) * 3)
                     )
                 )
             }
@@ -79,7 +82,8 @@ class GameRepository @Inject constructor() {
             val prevValueCopy = board[randomRow][randomCol].value
 
             board[randomRow][randomCol] = board[randomRow][randomCol].copy(
-                value = 0
+                value = 0,
+                isEditable = true
             )
 
             var count = 0
@@ -112,7 +116,6 @@ class GameRepository @Inject constructor() {
                 !numberInSquare(board[row][col], board, num)
     }
 
-
     private fun numberInRow(row: MutableList<GridCellModel>, number: Int): Boolean {
         for (cell in row) {
             if (cell.value == number) {
@@ -140,9 +143,8 @@ class GameRepository @Inject constructor() {
         grid: MutableList<MutableList<GridCellModel>>,
         number: Int
     ): Boolean {
-        val startRow: Int = cell.squareStart[0]
-        val startCol: Int = cell.squareStart[1]
-
+        val startRow: Int = cell.squareStart.first
+        val startCol: Int = cell.squareStart.second
 
         for (row in startRow..startRow + 2) {
             for (col in startCol..startCol + 2) {
@@ -152,5 +154,36 @@ class GameRepository @Inject constructor() {
             }
         }
         return false
+    }
+
+    fun selectCell(cell: GridCellModel) {
+        if (!cell.isEditable) {
+            return
+        }
+
+        var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
+        newBoard = newBoard?.map { it.map { it.copy(isSelected = false) }.toMutableList() }?.toMutableList()
+        selectedCell = cell
+
+        newBoard?.get(cell.rowNumber)[cell.colNumber] = cell.copy(isSelected = true)
+        _gameBoard.update { newBoard }
+    }
+
+    fun addNumberToSelectedCell(number: Int) {
+        val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
+        val selectedCellTemp = selectedCell ?: return
+        if (newBoard == null) return
+        if (!selectedCellTemp.isEditable) return
+
+        if (isValid(newBoard, selectedCellTemp.rowNumber, selectedCellTemp.colNumber, number)) {
+            newBoard.get(selectedCellTemp.rowNumber)[selectedCellTemp.colNumber] = selectedCellTemp.copy(
+                value = number,
+                isEditable = false
+            )
+        }else {
+            Timber.d("WRONG!")
+        }
+
+        _gameBoard.update { newBoard }
     }
 }

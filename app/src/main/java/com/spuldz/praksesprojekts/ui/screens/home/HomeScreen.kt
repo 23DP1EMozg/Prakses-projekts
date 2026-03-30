@@ -32,7 +32,9 @@ import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
-fun HomeScreen(){
+fun HomeScreen(
+    onNavigateToGameScreen: () -> Unit
+){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +79,7 @@ fun HomeScreen(){
                 containerColor = PrimaryColor,
                 contentColor = Color.White
             ),
-            onClick = {}
+            onClick = { onNavigateToGameScreen() }
         ) {
             Text(stringResource( R.string.new_game))
         }
@@ -120,6 +122,6 @@ fun NavigationOption(text: String, image: Int) {
 @Composable
 fun HomeScreenPreview() {
     PraksesProjektsTheme {
-        HomeScreen()
+        HomeScreen({})
     }
 }

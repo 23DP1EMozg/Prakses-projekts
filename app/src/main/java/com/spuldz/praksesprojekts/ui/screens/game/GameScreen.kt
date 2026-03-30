@@ -3,6 +3,7 @@ package com.spuldz.praksesprojekts.ui.screens.game
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,29 +24,32 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.core.models.GridCellModel
-import com.spuldz.praksesprojekts.ui.common.mockSudokuBoard
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
-import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.sizing
+import timber.log.Timber
 
 @Composable
 fun GameScreen(viewModel: GameViewModel = hiltViewModel()) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
-
     LaunchedEffect(Unit) {
+        Timber.d("create game grid")
         viewModel.generateGameBoard()
     }
 
-    GameScreenContent(grid)
+
+    GameScreenContent(
+        grid = grid,
+        onCellClick = viewModel::selectCell,
+        onNumberClick = viewModel::addNumberToSelectedCell
+    )
 }
 
 @Composable
@@ -55,18 +59,66 @@ private fun GameScreenLoading(){
 
 @Composable
 fun GameScreenContent(
-    grid: List<List<GridCellModel>>?
+    grid: List<List<GridCellModel>>?,
+    onCellClick: (GridCellModel) -> Unit,
+    onNumberClick: (Int) -> Unit
 ) {
     if(grid == null){
         GameScreenLoading()
     }else{
-        GameScreenGrid(grid)
+        GameScreenGrid(grid, onCellClick, onNumberClick)
+    }
+}
+
+@Composable
+private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+    Box(
+        modifier = Modifier
+            .width(sizing.dp40)
+            .height(sizing.dp40)
+            .background(
+                if (cell.isSelected) SecondaryColor else PrimaryColor
+            )
+            .clickable { onCellClick(cell) }
+            .drawBehind {
+
+                val strokeWidth = if (
+                    (cell.colNumber + 1) % 3 == 0 || cell.colNumber == 0
+                ) 2.dp.toPx() else 0.5.dp.toPx()
+
+                val xPos = if (cell.colNumber != 0) size.width else 0f
+                drawLine(
+                    color = Color.Black,
+                    start = Offset(xPos, 0f),
+                    end = Offset(xPos, size.width),
+                    strokeWidth = strokeWidth
+                )
+
+                if(cell.colNumber == 0) {
+                    drawLine(
+                        color = Color.Black,
+                        start = Offset(size.width, 0f),
+                        end = Offset(size.width, size.width),
+                        strokeWidth = 0.5.dp.toPx()
+                    )
+                }
+            }
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.Center),
+            text = if (cell.value == 0) "" else cell.value.toString(),
+            color = Color.White,
+            style = TextMd
+        )
     }
 }
 
 @Composable
 private fun GameScreenGrid(
-    grid: List<List<GridCellModel>>
+    grid: List<List<GridCellModel>>,
+    onCellClick: (GridCellModel) -> Unit,
+    onNumberClick: (Int) -> Unit
 ){
     Column(
         modifier = Modifier
@@ -121,44 +173,8 @@ private fun GameScreenGrid(
 
                     }
             ) {
-                for((colIndex, cell) in row.withIndex()) {
-                    Box(
-                        modifier = Modifier
-                            .width(sizing.dp40)
-                            .height(sizing.dp40)
-                            .background(PrimaryColor)
-                            .drawBehind {
-
-                                val strokeWidth = if (
-                                    (colIndex + 1) % 3 == 0 || colIndex == 0
-                                ) 2.dp.toPx() else 0.5.dp.toPx()
-
-                                val xPos = if (colIndex != 0) size.width else 0f
-                                drawLine(
-                                    color = Color.Black,
-                                    start = Offset(xPos, 0f),
-                                    end = Offset(xPos, size.width),
-                                    strokeWidth = strokeWidth
-                                )
-
-                                if(colIndex == 0) {
-                                    drawLine(
-                                        color = Color.Black,
-                                        start = Offset(size.width, 0f),
-                                        end = Offset(size.width, size.width),
-                                        strokeWidth = 0.5.dp.toPx()
-                                    )
-                                }
-                            }
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .align(Alignment.Center),
-                            text = if (cell.value == 0) "" else cell.value.toString(),
-                            color = Color.White,
-                            style = TextMd
-                        )
-                    }
+                for( cell in row) {
+                    GridCell(cell, onCellClick)
                 }
             }
         }
@@ -176,6 +192,7 @@ private fun GameScreenGrid(
                         .width(sizing.dp38)
                         .background(SecondaryColor)
                         .border(sizing.dp2, PrimaryColor)
+                        .clickable { onNumberClick(num) }
                 ) {
                     Text(
                         modifier = Modifier
@@ -253,13 +270,5 @@ private fun GameScreenGrid(
 }
 
 
-
-@Preview
-@Composable
-private fun GameScreenPreview() {
-    PraksesProjektsTheme {
-        GameScreenContent(null)
-    }
-}
 
 
