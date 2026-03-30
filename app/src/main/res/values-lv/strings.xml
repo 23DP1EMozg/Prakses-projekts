@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PraksesProjekts</string>
+    <string name="welcome">Welcome</string>
+    <string name="sudoku">Sudoku</string>
+    <string name="settings">Iestatījumi</string>
+    <string name="scores">Rezultāti</string>
+    <string name="profile">Profils</string>
+    <string name="stats">Statistika</string>
+    <string name="new_game">Jauna spēle</string>
+    <string name="welcome_to_sudoku">Sveicināts Sudoku</string>
+</resources>
