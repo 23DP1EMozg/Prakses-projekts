@@ -31,7 +31,7 @@ import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
-import com.spuldz.praksesprojekts.ui.theme.TextMd
+import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.sizing
 import timber.log.Timber
@@ -41,7 +41,7 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         Timber.d(difficulty)
-        viewModel.generateGameBoard()
+        viewModel.generateGameBoard(difficulty)
     }
 
 
@@ -109,7 +109,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
                 .align(Alignment.Center),
             text = if (cell.value == 0) "" else cell.value.toString(),
             color = Color.White,
-            style = TextMd
+            style = TextLg
         )
     }
 }
@@ -138,7 +138,7 @@ private fun GameScreenGrid(
                 style = TextSm
             )
             Text(
-                text = "Difficulity: normal",
+                text = "Difficulty: normal",
                 style = TextSm
             )
             Text(
@@ -199,7 +199,7 @@ private fun GameScreenGrid(
                             .align(Alignment.Center),
                         text = num.toString(),
                         color = Color.White,
-                        style = TextMd
+                        style = TextLg
                     )
                 }
             }

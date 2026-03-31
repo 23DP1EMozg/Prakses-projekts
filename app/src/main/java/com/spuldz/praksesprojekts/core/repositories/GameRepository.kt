@@ -104,9 +104,14 @@ class GameRepository @Inject constructor() {
         return board
     }
 
-    fun fillGameBoard(board: MutableList<MutableList<GridCellModel>>){
+    fun fillGameBoard(difficulty: String){
+        val board = generateBoilerplate()
         generateSolutionAndFillBoard(board)
-        val boardWithRemovedCells = removeCellsFromBoard(board, 30)
+        val amount = if (difficulty == "Easy") 30
+                    else if (difficulty == "Normal") 50
+                    else 70
+
+        val boardWithRemovedCells = removeCellsFromBoard(board, amount)
         _gameBoard.update { boardWithRemovedCells.toList() }
     }
 

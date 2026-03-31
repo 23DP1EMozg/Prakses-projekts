@@ -9,4 +9,5 @@
     <string name="stats">Stats</string>
     <string name="new_game">New Game</string>
     <string name="welcome_to_sudoku">Welcome to Sudoku</string>
+    <string name="choose_difficulty">Choose Difficulty</string>
 </resources>

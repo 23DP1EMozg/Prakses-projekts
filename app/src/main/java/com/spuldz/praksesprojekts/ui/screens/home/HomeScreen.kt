@@ -35,7 +35,9 @@ import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.HomeTitle
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
+import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
+import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,9 +112,17 @@ fun HomeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(sizing.dp10)
             ) {
-                Text("Choose Difficulty")
+                Text(
+                    text = stringResource(R.string.choose_difficulty),
+                    style = TextMd
+                )
+                Spacer(
+                    modifier = Modifier
+                        .height(sizing.dp18)
+                )
                 DifficultyButton("Easy", { onNavigateToGameScreen("Easy") })
                 DifficultyButton("Medium", { onNavigateToGameScreen("Medium") })
                 DifficultyButton("Hard", { onNavigateToGameScreen("Hard") })
@@ -122,11 +132,15 @@ fun HomeScreen(
 }
 
 @Composable
-fun DifficultyButton(text: String, OnNavigateToGameScreen: (String) -> Unit) {
+fun DifficultyButton(text: String, onNavigateToGameScreen: (String) -> Unit) {
     Button(
-        onClick = { OnNavigateToGameScreen(text) },
+        onClick = { onNavigateToGameScreen(text) },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = PrimaryColor,
+            contentColor = White
+        ),
         modifier = Modifier
-            .fillMaxWidth(0.5f))
+            .fillMaxWidth(0.7f))
     {
         Text(text)
     }
@@ -157,7 +171,7 @@ fun NavigationOption(text: String, image: Int) {
                     .align(Alignment.Center),
                 text = text,
                 color = Color.White,
-                style = TextMd
+                style = TextLg
             )
         }
     }
