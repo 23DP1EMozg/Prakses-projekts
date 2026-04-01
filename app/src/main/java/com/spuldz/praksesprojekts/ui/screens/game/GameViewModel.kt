@@ -1,6 +1,7 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
 import androidx.lifecycle.ViewModel
+import com.spuldz.praksesprojekts.core.common.launch
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.core.repositories.GameRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
