@@ -10,4 +10,6 @@
     <string name="new_game">Jauna spēle</string>
     <string name="welcome_to_sudoku">Sveicināts Sudoku</string>
     <string name="choose_difficulty">Izvēlies Sarežģītību</string>
+    <string name="mistakes">Kļūdas</string>
+    <string name="difficulty">Grūtība</string>
 </resources>

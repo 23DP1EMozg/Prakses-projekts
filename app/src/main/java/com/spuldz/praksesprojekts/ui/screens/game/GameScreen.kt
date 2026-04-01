@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,9 +26,11 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
@@ -39,22 +43,33 @@ import timber.log.Timber
 @Composable
 fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
+
     LaunchedEffect(Unit) {
         Timber.d(difficulty)
         viewModel.generateGameBoard(difficulty)
     }
 
-
     GameScreenContent(
         grid = grid,
         onCellClick = viewModel::selectCell,
-        onNumberClick = viewModel::addNumberToSelectedCell
+        onNumberClick = viewModel::addNumberToSelectedCell,
     )
 }
 
 @Composable
-private fun GameScreenLoading(){
-
+private fun GameScreenLoading() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0x88000000)),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(sizing.dp64),
+            color = Color.White,
+            strokeWidth = 6.dp
+        )
+    }
 }
 
 @Composable
@@ -130,15 +145,15 @@ private fun GameScreenGrid(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.88f),
+                .fillMaxWidth(0.8f),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Mistakes: 0/3",
+                text = stringResource(R.string.mistakes) + ": 0/3",
                 style = TextSm
             )
             Text(
-                text = "Difficulty: normal",
+                text = stringResource(R.string.difficulty) + ": normal",
                 style = TextSm
             )
             Text(
@@ -205,8 +220,7 @@ private fun GameScreenGrid(
             }
         }
         Row(
-            modifier = Modifier
-                .fillMaxWidth(0.9f),
+            modifier = Modifier.fillMaxWidth(0.9f),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp14, Alignment.End)
         ) {
             Column(
@@ -218,7 +232,7 @@ private fun GameScreenGrid(
                         .width(sizing.dp50)
                         .height(sizing.dp50)
                     ,
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.pencil_icon),
+                    painter = painterResource(R.drawable.pencil_icon),
                     contentScale = ContentScale.Fit,
                     contentDescription = null,
                 )
@@ -237,7 +251,7 @@ private fun GameScreenGrid(
                         .width(sizing.dp50)
                         .height(sizing.dp50)
                     ,
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.eraser_icon),
+                    painter = painterResource(R.drawable.eraser_icon),
                     contentScale = ContentScale.Fit,
                     contentDescription = null,
                 )
@@ -256,7 +270,7 @@ private fun GameScreenGrid(
                         .width(sizing.dp50)
                         .height(sizing.dp50)
                     ,
-                    painter = painterResource(com.spuldz.praksesprojekts.R.drawable.hint_icon),
+                    painter = painterResource(R.drawable.hint_icon),
                     contentScale = ContentScale.Fit,
                     contentDescription = null,
                 )

@@ -13,7 +13,9 @@ class GameViewModel @Inject constructor(
 ) : ViewModel() {
     val gameBoard = gameRepository.gameBoard
 
-    fun generateGameBoard(difficulty: String) = gameRepository.fillGameBoard(difficulty)
+    fun generateGameBoard(difficulty: String) = launch {
+        gameRepository.fillGameBoard(difficulty)
+    }
 
     fun selectCell(cell: GridCellModel) {
         Timber.d(cell.toString())
