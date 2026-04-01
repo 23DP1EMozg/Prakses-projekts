@@ -29,10 +29,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
+import com.spuldz.praksesprojekts.ui.theme.Blue
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
+import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 import timber.log.Timber
 
@@ -76,7 +78,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
             .width(sizing.dp40)
             .height(sizing.dp40)
             .background(
-                if (cell.isSelected) SecondaryColor else PrimaryColor
+                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
             )
             .clickable { onCellClick(cell) }
             .drawBehind {
@@ -107,7 +109,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
             modifier = Modifier
                 .align(Alignment.Center),
             text = if (cell.value == 0) "" else cell.value.toString(),
-            color = Color.White,
+            color = if (cell.isPlayerPlaced) Blue else White,
             style = TextLg
         )
     }

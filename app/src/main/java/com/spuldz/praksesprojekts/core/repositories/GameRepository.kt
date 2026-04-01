@@ -4,7 +4,6 @@ import com.spuldz.praksesprojekts.core.models.GridCellModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,11 +21,10 @@ class GameRepository @Inject constructor() {
             for (col in 0..8) {
                 list.add(
                     GridCellModel(
-                        0,
-                        false,
-                        row,
-                        col,
-                        Pair((row / 3) * 3, (col / 3) * 3)
+                        value =0,
+                        rowNumber = row,
+                        colNumber = col,
+                        squareStart = Pair((row / 3) * 3, (col / 3) * 3)
                     )
                 )
             }
@@ -150,19 +148,28 @@ class GameRepository @Inject constructor() {
     }
 
     fun selectCell(cell: GridCellModel) {
-        if (!cell.isEditable) {
-            return
-        }
-
         var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
-        newBoard = newBoard?.map { it.map { col -> col.copy(isSelected = false) }.toMutableList() }?.toMutableList()
+        newBoard = newBoard?.map { it.map { col -> col.copy(
+            isSelected = false,
+            isLightUp = false
+        ) }.toMutableList() }?.toMutableList()
         selectedCell = cell
 
-        newBoard?.get(cell.rowNumber)[cell.colNumber] = cell.copy(isSelected = true)
+        newBoard?.get(cell.rowNumber)[cell.colNumber] = cell.copy(
+            isSelected = true,
+        )
+
+        newBoard?.forEach { row ->
+            row.forEach { c ->
+                if (c.value == cell.value && cell.value != 0) newBoard[c.rowNumber][c.colNumber] =
+                    newBoard[c.rowNumber][c.colNumber].copy(isLightUp = true)
+            }
+        }
+
         _gameBoard.update { newBoard }
     }
 
-    fun addNumberToSelectedCell(number: Int) {
+      fun addNumberToSelectedCell(number: Int) {
         val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
         val selectedCellTemp = selectedCell ?: return
         if (newBoard == null) return
@@ -171,10 +178,20 @@ class GameRepository @Inject constructor() {
         if (isValid(newBoard, selectedCellTemp.rowNumber, selectedCellTemp.colNumber, number)) {
             newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] = selectedCellTemp.copy(
                 value = number,
-                isEditable = false
+                isEditable = false,
+                isPlayerPlaced = true
             )
         }else {
-            Timber.d("WRONG!")
+//            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] =
+//                newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber].copy(
+//                    isError = true
+//                )
+//            _gameBoard.update { newBoard }
+//            delay(3000)
+//            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] =
+//                newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber].copy(
+//                    isError = false
+//                )
         }
 
         _gameBoard.update { newBoard }
