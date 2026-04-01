@@ -14,13 +14,13 @@ import kotlinx.serialization.Serializable
 object Start
 @Serializable
 object Home
-
 @Serializable
 data class Game(val difficulty: String)
 
 @Composable
 fun NavigationHost() {
     val navController = rememberNavController()
+
 
     NavHost(navController = navController, startDestination = Start) {
         composable<Start> {

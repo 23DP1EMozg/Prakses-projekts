@@ -21,7 +21,8 @@ class GameRepository @Inject constructor() {
             for (col in 0..8) {
                 list.add(
                     GridCellModel(
-                        value =0,
+                        value = 0,
+                        isEditable = false,
                         rowNumber = row,
                         colNumber = col,
                         squareStart = Pair((row / 3) * 3, (col / 3) * 3)
@@ -46,7 +47,8 @@ class GameRepository @Inject constructor() {
                                 .copy(
                                     value = num
                                 )
-                            if(generateSolutionAndFillBoard(board))  return true
+
+                            if(generateSolutionAndFillBoard(board)) return true
                             board[row][col] = board[row][col].copy( value = 0 )
                         }
                     }
@@ -86,7 +88,7 @@ class GameRepository @Inject constructor() {
         return board
     }
 
-    fun fillGameBoard(difficulty: String){
+    suspend fun fillGameBoard(difficulty: String){
         val board = generateBoilerplate()
         generateSolutionAndFillBoard(board)
 
