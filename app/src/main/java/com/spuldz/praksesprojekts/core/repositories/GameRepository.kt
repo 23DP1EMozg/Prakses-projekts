@@ -7,14 +7,11 @@ import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.random.Random
 
 @Singleton
 class GameRepository @Inject constructor() {
-
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private var selectedCell: GridCellModel? = null
-
     val gameBoard = _gameBoard.asStateFlow()
 
     fun generateBoilerplate(): MutableList<MutableList<GridCellModel>> {
@@ -35,7 +32,6 @@ class GameRepository @Inject constructor() {
             }
             board.add(list)
         }
-
         return board
     }
 
@@ -45,18 +41,14 @@ class GameRepository @Inject constructor() {
         for (row in 0..8) {
             for (col in 0..8) {
                 if (board[row][col].value == 0) {
-                    val nums = (1..9).shuffled()
-                    for (num in nums) {
+                    val numbers = (1..9).shuffled()
+                    for (num in numbers) {
                         if(isValid(board, row, col, num)) {
                             board[row][col] = board[row][col]
                                 .copy(
                                     value = num
                                 )
-
-                            if(generateSolutionAndFillBoard(board)) {
-                                return true
-                            }
-
+                            if(generateSolutionAndFillBoard(board))  return true
                             board[row][col] = board[row][col].copy( value = 0 )
                         }
                     }
@@ -69,36 +61,28 @@ class GameRepository @Inject constructor() {
     }
 
     fun removeCellsFromBoard(board: MutableList<MutableList<GridCellModel>>, amount: Int) : MutableList<MutableList<GridCellModel>>{
-        var times = 0
+        var removed = 0
+        val allOccupiedCells = board.flatten().shuffled().filter { it.value != 0 }.toMutableList()
 
-        while (times <= amount) {
-            val randomRow = Random.nextInt(0,9)
-            val randomCol = Random.nextInt(0,9)
+        for (cell in allOccupiedCells) {
+            if (removed >= amount) break
 
-            if(board[randomRow][randomCol].value == 0){
-                continue
-            }
-
-            val prevValueCopy = board[randomRow][randomCol].value
-
-            board[randomRow][randomCol] = board[randomRow][randomCol].copy(
+            board[cell.rowNumber][cell.colNumber] = board[cell.rowNumber][cell.colNumber].copy(
                 value = 0,
                 isEditable = true
             )
-
-            var count = 0
-            for (num in 1..9) {
-                if(isValid(board, randomRow, randomCol, num)) {
-                    count++
-                }
+            var boardCopy = board.map { row ->
+                row.map { col -> col.copy() }
             }
+            boardCopy = boardCopy.map { it.toMutableList() }.toMutableList()
+            val solutions = getSolutionCount(boardCopy)
 
-            if (count > 1){
-                board[randomRow][randomCol] = board[randomRow][randomCol].copy(
-                    value = prevValueCopy
+            if (solutions > 1){
+                board[cell.rowNumber][cell.colNumber] = board[cell.rowNumber][cell.colNumber].copy(
+                    value = cell.value
                 )
             }else{
-                times++
+                removed++
             }
         }
         return board
@@ -107,12 +91,16 @@ class GameRepository @Inject constructor() {
     fun fillGameBoard(difficulty: String){
         val board = generateBoilerplate()
         generateSolutionAndFillBoard(board)
-        val amount = if (difficulty == "Easy") 30
-                    else if (difficulty == "Normal") 50
-                    else 70
+
+        val amount = when(difficulty){
+            "Easy" -> 40
+            "Medium" -> 50
+            "Hard" -> 60
+            else -> 50
+        }
 
         val boardWithRemovedCells = removeCellsFromBoard(board, amount)
-        _gameBoard.update { boardWithRemovedCells.toList() }
+        _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
     }
 
     private fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
@@ -167,7 +155,7 @@ class GameRepository @Inject constructor() {
         }
 
         var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
-        newBoard = newBoard?.map { it.map { it.copy(isSelected = false) }.toMutableList() }?.toMutableList()
+        newBoard = newBoard?.map { it.map { col -> col.copy(isSelected = false) }.toMutableList() }?.toMutableList()
         selectedCell = cell
 
         newBoard?.get(cell.rowNumber)[cell.colNumber] = cell.copy(isSelected = true)
@@ -181,7 +169,7 @@ class GameRepository @Inject constructor() {
         if (!selectedCellTemp.isEditable) return
 
         if (isValid(newBoard, selectedCellTemp.rowNumber, selectedCellTemp.colNumber, number)) {
-            newBoard.get(selectedCellTemp.rowNumber)[selectedCellTemp.colNumber] = selectedCellTemp.copy(
+            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] = selectedCellTemp.copy(
                 value = number,
                 isEditable = false
             )
@@ -191,4 +179,35 @@ class GameRepository @Inject constructor() {
 
         _gameBoard.update { newBoard }
     }
+
+
+    fun getSolutionCount(board: MutableList<MutableList<GridCellModel>>) : Int {
+        var solutions = 0
+
+        fun solve() : Boolean{
+            for (row in 0..8) {
+                for (col in 0..8) {
+                    if(board[row][col].value == 0) {
+                        for (num in 1..9) {
+                            if(isValid(board, row, col, num)) {
+                                board[row][col] = board[row][col].copy(
+                                    value = num
+                                )
+
+                                if (solve()) return true
+
+                                board[row][col] = board[row][col].copy(value = 0)
+                            }
+                        }
+                        return false
+                    }
+                }
+            }
+            solutions++
+            return solutions >= 2
+        }
+        solve()
+        return solutions
+    }
+
 }

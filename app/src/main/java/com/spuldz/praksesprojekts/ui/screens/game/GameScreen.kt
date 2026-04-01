@@ -44,7 +44,6 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         viewModel.generateGameBoard(difficulty)
     }
 
-
     GameScreenContent(
         grid = grid,
         onCellClick = viewModel::selectCell,
