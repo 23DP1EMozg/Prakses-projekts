@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
+import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.Blue
@@ -40,11 +41,13 @@ import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 @Composable
 fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
+    val game by viewModel.game.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         Timber.d(difficulty)
@@ -53,6 +56,7 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
 
     GameScreenContent(
         grid = grid,
+        game = game,
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
     )
@@ -77,13 +81,19 @@ private fun GameScreenLoading() {
 @Composable
 fun GameScreenContent(
     grid: List<List<GridCellModel>>?,
+    game: GameModel?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ) {
     if(grid == null){
         GameScreenLoading()
     }else{
-        GameScreenGrid(grid, onCellClick, onNumberClick)
+        GameScreenGrid(
+            grid = grid,
+            game = game,
+            onCellClick = onCellClick,
+            onNumberClick = onNumberClick
+        )
     }
 }
 
@@ -139,6 +149,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
 @Composable
 private fun GameScreenGrid(
     grid: List<List<GridCellModel>>,
+    game: GameModel?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ){
@@ -156,15 +167,15 @@ private fun GameScreenGrid(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(R.string.mistakes) + ": 0/3",
+                text = stringResource(R.string.mistakes) + ": ${game?.mistakes}/3",
                 style = TextSm
             )
             Text(
-                text = stringResource(R.string.difficulty) + ": normal",
+                text = stringResource(R.string.difficulty) + ": ${game?.difficulty}",
                 style = TextSm
             )
             Text(
-                text = "00:00",
+                text = "${game?.time}",
                 style = TextSm
             )
 
