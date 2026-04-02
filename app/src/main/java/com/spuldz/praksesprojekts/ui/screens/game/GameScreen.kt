@@ -89,12 +89,17 @@ fun GameScreenContent(
 
 @Composable
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+    if (cell.isError) {
+        Timber.d("ERROR CELL: $cell")
+    }
     Box(
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
             .background(
-                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
+                if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
+                else if (cell.isError) Color.Red
+                else PrimaryColor
             )
             .clickable { onCellClick(cell) }
             .drawBehind {
@@ -284,7 +289,3 @@ private fun GameScreenGrid(
         }
     }
 }
-
-
-
-

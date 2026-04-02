@@ -1,16 +1,18 @@
 package com.spuldz.praksesprojekts.core.repositories
 
 import com.spuldz.praksesprojekts.core.models.GridCellModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class GameRepository @Inject constructor() {
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
-    private var selectedCell: GridCellModel? = null
+    private var solution: MutableList<MutableList<GridCellModel>>? = null
     val gameBoard = _gameBoard.asStateFlow()
 
     fun generateBoilerplate(): MutableList<MutableList<GridCellModel>> {
@@ -34,71 +36,77 @@ class GameRepository @Inject constructor() {
         return board
     }
 
-    fun generateSolutionAndFillBoard(
-        board: MutableList<MutableList<GridCellModel>>
-    ): Boolean {
-        for (row in 0..8) {
-            for (col in 0..8) {
-                if (board[row][col].value == 0) {
-                    val numbers = (1..9).shuffled()
-                    for (num in numbers) {
-                        if(isValid(board, row, col, num)) {
-                            board[row][col] = board[row][col]
-                                .copy(
-                                    value = num
-                                )
+    fun getFilledBoard() : MutableList<MutableList<GridCellModel>>{
+        val board = generateBoilerplate()
+        fun generateSolutionAndFillBoard(
+            board: MutableList<MutableList<GridCellModel>>
+        ): Boolean {
+            for (row in 0..8) {
+                for (col in 0..8) {
+                    if (board[row][col].value == 0) {
+                        val numbers = (1..9).shuffled()
+                        for (num in numbers) {
+                            if(isValid(board, row, col, num)) {
+                                board[row][col] = board[row][col]
+                                    .copy(
+                                        value = num
+                                    )
 
-                            if(generateSolutionAndFillBoard(board)) return true
-                            board[row][col] = board[row][col].copy( value = 0 )
+                                if(generateSolutionAndFillBoard(board)) return true
+                                board[row][col] = board[row][col].copy( value = 0 )
+                            }
                         }
+                        return false
                     }
-                    return false
                 }
             }
+            return true
         }
-        _gameBoard.update { board.toList() }
-        return true
+        generateSolutionAndFillBoard(board)
+        return board
     }
 
     fun removeCellsFromBoard(board: MutableList<MutableList<GridCellModel>>, amount: Int) : MutableList<MutableList<GridCellModel>>{
         var removed = 0
         val allOccupiedCells = board.flatten().shuffled().filter { it.value != 0 }.toMutableList()
+        val boardCopy = copyBoard(board)
 
         for (cell in allOccupiedCells) {
             if (removed >= amount) break
 
-            board[cell.rowNumber][cell.colNumber] = board[cell.rowNumber][cell.colNumber].copy(
+            boardCopy[cell.rowNumber][cell.colNumber] = boardCopy[cell.rowNumber][cell.colNumber].copy(
                 value = 0,
                 isEditable = true
             )
-            var boardCopy = board.map { row ->
+            var boardCopy1 = boardCopy.map { row ->
                 row.map { col -> col.copy() }
             }
-            boardCopy = boardCopy.map { it.toMutableList() }.toMutableList()
-            val solutions = getSolutionCount(boardCopy)
+            boardCopy1 = boardCopy1.map { it.toMutableList() }.toMutableList()
+            val solutions = getSolutionCount(boardCopy1)
 
             if (solutions > 1){
-                board[cell.rowNumber][cell.colNumber] = board[cell.rowNumber][cell.colNumber].copy(
+                boardCopy[cell.rowNumber][cell.colNumber] = boardCopy[cell.rowNumber][cell.colNumber].copy(
                     value = cell.value
                 )
             }else{
                 removed++
             }
         }
-        return board
+        return boardCopy
     }
 
     suspend fun fillGameBoard(difficulty: String){
-        val board = generateBoilerplate()
-        generateSolutionAndFillBoard(board)
-
+        val board = getFilledBoard()
+        solution = board
         val amount = when(difficulty){
             "Easy" -> 40
             "Medium" -> 50
             "Hard" -> 60
             else -> 50
         }
-
+        for (row in board) {
+            Timber.d(row.map { it.value }.toString())
+        }
         val boardWithRemovedCells = removeCellsFromBoard(board, amount)
         _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
     }
@@ -155,7 +163,6 @@ class GameRepository @Inject constructor() {
             isSelected = false,
             isLightUp = false
         ) }.toMutableList() }?.toMutableList()
-        selectedCell = cell
 
         newBoard?.get(cell.rowNumber)[cell.colNumber] = cell.copy(
             isSelected = true,
@@ -167,38 +174,66 @@ class GameRepository @Inject constructor() {
                     newBoard[c.rowNumber][c.colNumber].copy(isLightUp = true)
             }
         }
-
+        Timber.d(newBoard?.get(cell.rowNumber)[cell.colNumber].toString())
         _gameBoard.update { newBoard }
     }
 
-      fun addNumberToSelectedCell(number: Int) {
-        val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
-        val selectedCellTemp = selectedCell ?: return
-        if (newBoard == null) return
-        if (!selectedCellTemp.isEditable) return
-
-        if (isValid(newBoard, selectedCellTemp.rowNumber, selectedCellTemp.colNumber, number)) {
-            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] = selectedCellTemp.copy(
-                value = number,
-                isEditable = false,
-                isPlayerPlaced = true
-            )
-        }else {
-//            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] =
-//                newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber].copy(
-//                    isError = true
-//                )
-//            _gameBoard.update { newBoard }
-//            delay(3000)
-//            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] =
-//                newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber].copy(
-//                    isError = false
-//                )
+    private fun copyBoard(board: MutableList<MutableList<GridCellModel>>) : MutableList<MutableList<GridCellModel>> {
+        val copy = board.map { row ->
+            row.map { cell -> cell.copy() }
         }
 
-        _gameBoard.update { newBoard }
+        return copy.map { it.toMutableList() }.toMutableList()
     }
 
+        suspend fun addNumberToSelectedCell(number: Int) {
+        val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
+            val selectedCell = newBoard
+                ?.flatten()
+                ?.firstOrNull {it.isSelected}
+
+            if (newBoard != null) {
+                for (row in newBoard) {
+                    Timber.d(row.map { it.isSelected }.toString())
+                }
+            }
+
+            if (selectedCell == null) return
+
+            if (!selectedCell.isEditable) return
+
+            val row = selectedCell.rowNumber
+            val col = selectedCell.colNumber
+
+            if (solution != null) {
+                for (row in solution) {
+                    Timber.d(row.map { it.value }.toString())
+                }
+            }
+
+            if (solution?.get(row)[col]?.value == number) {
+                newBoard[row][col] = selectedCell.copy(
+                    value = number,
+                    isPlayerPlaced = true,
+                    isEditable = false,
+                )
+            }else{
+                newBoard[row][col] = selectedCell.copy(
+                    value = number,
+                    isError = true,
+                    isEditable = false
+                )
+                _gameBoard.update { copyBoard(newBoard) }
+                delay(2000)
+                newBoard[row][col] = selectedCell.copy(
+                    value = 0,
+                    isError = false,
+                    isEditable = true,
+                    isPlayerPlaced = false
+                )
+            }
+           _gameBoard.update { copyBoard(newBoard) }
+      }
 
     fun getSolutionCount(board: MutableList<MutableList<GridCellModel>>) : Int {
         var solutions = 0
@@ -228,5 +263,4 @@ class GameRepository @Inject constructor() {
         solve()
         return solutions
     }
-
 }

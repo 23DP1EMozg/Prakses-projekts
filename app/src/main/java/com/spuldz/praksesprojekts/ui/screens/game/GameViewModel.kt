@@ -23,8 +23,7 @@ class GameViewModel @Inject constructor(
         gameRepository.selectCell(cell)
     }
 
-    fun addNumberToSelectedCell(number: Int) {
+    fun addNumberToSelectedCell(number: Int) = launch {
         gameRepository.addNumberToSelectedCell(number)
     }
-
 }
