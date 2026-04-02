@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
+import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
@@ -41,13 +42,13 @@ import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
-import kotlinx.coroutines.delay
 import timber.log.Timber
 
 @Composable
 fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
     val game by viewModel.game.collectAsStateWithLifecycle()
+    val inputs by viewModel.inputs.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         Timber.d(difficulty)
@@ -57,6 +58,7 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     GameScreenContent(
         grid = grid,
         game = game,
+        inputs = inputs,
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
     )
@@ -82,6 +84,7 @@ private fun GameScreenLoading() {
 fun GameScreenContent(
     grid: List<List<GridCellModel>>?,
     game: GameModel?,
+    inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ) {
@@ -91,6 +94,7 @@ fun GameScreenContent(
         GameScreenGrid(
             grid = grid,
             game = game,
+            inputs = inputs,
             onCellClick = onCellClick,
             onNumberClick = onNumberClick
         )
@@ -150,6 +154,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
 private fun GameScreenGrid(
     grid: List<List<GridCellModel>>,
     game: GameModel?,
+    inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ){
@@ -218,22 +223,24 @@ private fun GameScreenGrid(
                 .padding(top = sizing.dp10),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp4, Alignment.CenterHorizontally)
         ) {
-            for (num in 1..9) {
-                Box(
-                    modifier = Modifier
-                        .height(sizing.dp70)
-                        .width(sizing.dp38)
-                        .background(SecondaryColor)
-                        .border(sizing.dp2, PrimaryColor)
-                        .clickable { onNumberClick(num) }
-                ) {
-                    Text(
+            if (inputs != null) {
+                for (input in inputs) {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center),
-                        text = num.toString(),
-                        color = Color.White,
-                        style = TextLg
-                    )
+                            .height(sizing.dp70)
+                            .width(sizing.dp38)
+                            .background(SecondaryColor.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
+                            .border(sizing.dp2, PrimaryColor.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
+                            .clickable { if (!input.isComplete) {onNumberClick(input.value)} }
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            text = input.value.toString(),
+                            color = Color.White.copy(alpha = if (input.isComplete) {0.3f} else {1f}),
+                            style = TextLg
+                        )
+                    }
                 }
             }
         }

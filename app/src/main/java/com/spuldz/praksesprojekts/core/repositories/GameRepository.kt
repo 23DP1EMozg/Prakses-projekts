@@ -4,7 +4,11 @@ import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
 import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
+import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
+import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
 import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
+import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
+import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import kotlinx.coroutines.delay
@@ -19,9 +23,11 @@ import javax.inject.Singleton
 class GameRepository @Inject constructor() {
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private val _game = MutableStateFlow<GameModel?>(null)
+    private val _inputs = MutableStateFlow<List<GameInputModel>?>(null)
     private var solution: MutableList<MutableList<GridCellModel>>? = null
     val gameBoard = _gameBoard.asStateFlow()
     val game = _game.asStateFlow()
+    val inputs = _inputs.asStateFlow()
 
      fun fillGameBoard(difficulty: String){
             val board = getFilledBoard()
@@ -36,9 +42,19 @@ class GameRepository @Inject constructor() {
                 Timber.d(row.map { it.value }.toString())
             }
             val boardWithRemovedCells = removeCellsFromBoard(board, amount)
+            var inputList: MutableList<GameInputModel>? = mutableListOf()
+
+            for (num in 1..9) {
+                inputList?.add(GameInputModel(value = num))
+
+                if (isNumberComplete(num, boardWithRemovedCells)) {
+                    inputList = updateGameInputs(num, inputList)
+                }
+            }
 
             _game.update { GameModel(difficulty = difficulty) }
             _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
+            _inputs.update { inputList }
 
             startGameTimer()
     }
@@ -53,7 +69,6 @@ class GameRepository @Inject constructor() {
     }
 
     fun selectCell(cell: GridCellModel) {
-
         if (_game.value?.isFinished == true) return
 
         var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
@@ -91,7 +106,6 @@ class GameRepository @Inject constructor() {
             }
 
             if (selectedCell == null) return
-
             if (!selectedCell.isEditable) return
 
             val row = selectedCell.rowNumber
@@ -107,40 +121,60 @@ class GameRepository @Inject constructor() {
                 newBoard[row][col] = selectedCell.copy(
                     value = number,
                     isPlayerPlaced = true,
-                    isEditable = false,
-                )
-            }else{
-                newBoard[row][col] = selectedCell.copy(
-                    value = number,
-                    isError = true,
+                    isEditable = false
                 )
 
                 newBoard.forEach { row ->
-                    row.forEach { cell -> cell.isEditable = false }
+                    row.forEach { cell ->
+                        if (cell.value == number) {
+                            cell.isLightUp = true
+                        }
+                    }
                 }
 
-                _gameBoard.update { copyBoard(newBoard) }
-                _game.update { _game.value?.copy(
-                    mistakes = _game.value?.mistakes?.plus(1) ?: 0
-                ) }
+                if(isNumberComplete(number,newBoard)) {
+                    val inputsCopy = updateGameInputs(number, _inputs.value)
+                    _inputs.update { inputsCopy }
+                }
 
-                if (_game.value?.mistakes!! >= 3) {
+                if (isBoardComplete(newBoard)) {
                     _game.update { _game.value?.copy(
                         isFinished = true
                     ) }
-                    Timber.d("You Lose!")
+                    Timber.d("You Win!")
                 }
+                }else{
+                    newBoard[row][col] = selectedCell.copy(
+                        value = number,
+                        isError = true,
+                    )
 
-                delay(2000)
-                newBoard[row][col] = selectedCell.copy(
-                    value = 0,
-                    isError = false,
-                    isPlayerPlaced = false
-                )
+                    newBoard.forEach { row ->
+                        row.forEach { cell -> cell.isEditable = false }
+                    }
 
-                newBoard.forEach { row ->
-                    row.forEach { cell -> cell.isEditable = true }
-                }
+                    _gameBoard.update { copyBoard(newBoard) }
+                    _game.update { _game.value?.copy(
+                        mistakes = _game.value?.mistakes?.plus(1) ?: 0
+                    ) }
+
+                    if (_game.value?.mistakes!! >= 3) {
+                        _game.update { _game.value?.copy(
+                            isFinished = true
+                        ) }
+                        Timber.d("You Lose!")
+                    }
+
+                    delay(2000)
+                    newBoard[row][col] = selectedCell.copy(
+                        value = 0,
+                        isError = false,
+                        isPlayerPlaced = false
+                    )
+
+                    newBoard.forEach { row ->
+                        row.forEach { cell -> cell.isEditable = true }
+                    }
             }
            _gameBoard.update { copyBoard(newBoard) }
       }

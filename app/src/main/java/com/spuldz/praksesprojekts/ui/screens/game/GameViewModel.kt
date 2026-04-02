@@ -14,7 +14,7 @@ class GameViewModel @Inject constructor(
 ) : ViewModel() {
     val gameBoard = gameRepository.gameBoard
     val game = gameRepository.game
-
+    val inputs = gameRepository.inputs
     fun generateGameBoard(difficulty: String) {
         gameRepository.fillGameBoard(difficulty)
     }

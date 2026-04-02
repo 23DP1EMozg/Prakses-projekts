@@ -8,6 +8,6 @@ data class GridCellModel(
     val squareStart: Pair<Int, Int>,
     var isSelected: Boolean = false,
     val isPlayerPlaced: Boolean = false,
-    val isLightUp: Boolean = false,
+    var isLightUp: Boolean = false,
     val isError: Boolean = false
 )
