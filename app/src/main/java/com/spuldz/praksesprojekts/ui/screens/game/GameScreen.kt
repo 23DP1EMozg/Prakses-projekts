@@ -41,6 +41,7 @@ import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 @Composable
