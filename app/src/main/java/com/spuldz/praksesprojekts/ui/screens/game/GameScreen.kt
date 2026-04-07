@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
@@ -67,7 +66,7 @@ private fun GameScreenLoading() {
         CircularProgressIndicator(
             modifier = Modifier.size(sizing.dp64),
             color = Color.White,
-            strokeWidth = 6.dp
+            strokeWidth = sizing.dp6
         )
     }
 }
