@@ -171,7 +171,7 @@ class GameRepository @Inject constructor() {
         _gameBoard.update { newBoard }
     }
 
-      fun addNumberToSelectedCell(number: Int) {
+    fun addNumberToSelectedCell(number: Int) {
         val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
         val selectedCellTemp = selectedCell ?: return
         if (newBoard == null) return
@@ -184,6 +184,9 @@ class GameRepository @Inject constructor() {
                 isPlayerPlaced = true
             )
         }else {
+            /*TODO: make the cell red for 3 seconds indicating
+                that the number was incorrect and then revert back to original state.
+                commented code isnt working but it shows somewhat how its supposed to work*/
 //            newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber] =
 //                newBoard[selectedCellTemp.rowNumber][selectedCellTemp.colNumber].copy(
 //                    isError = true
@@ -198,7 +201,6 @@ class GameRepository @Inject constructor() {
 
         _gameBoard.update { newBoard }
     }
-
 
     fun getSolutionCount(board: MutableList<MutableList<GridCellModel>>) : Int {
         var solutions = 0
