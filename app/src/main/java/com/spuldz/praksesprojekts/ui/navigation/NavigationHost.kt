@@ -20,7 +20,6 @@ object Game
 fun NavigationHost() {
     val navController = rememberNavController()
 
-
     NavHost(navController = navController, startDestination = Start) {
         composable<Start> {
             StartScreen(

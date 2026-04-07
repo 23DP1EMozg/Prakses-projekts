@@ -61,7 +61,7 @@ private fun GameScreenLoading() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0x88000000)),
+            .background(BackgroundColor),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
@@ -87,6 +87,8 @@ fun GameScreenContent(
 
 @Composable
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
     Box(
         modifier = Modifier
             .width(sizing.dp40)
@@ -99,7 +101,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
 
                 val strokeWidth = if (
                     (cell.colNumber + 1) % 3 == 0 || cell.colNumber == 0
-                ) 2.dp.toPx() else 0.5.dp.toPx()
+                ) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                 val xPos = if (cell.colNumber != 0) size.width else 0f
                 drawLine(
@@ -114,7 +116,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
                         color = Color.Black,
                         start = Offset(size.width, 0f),
                         end = Offset(size.width, size.width),
-                        strokeWidth = 0.5.dp.toPx()
+                        strokeWidth = strokeWidthSmall.toPx()
                     )
                 }
             }
@@ -135,6 +137,8 @@ private fun GameScreenGrid(
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ){
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -168,7 +172,7 @@ private fun GameScreenGrid(
                 modifier = Modifier
                     .height(sizing.dp40)
                     .drawBehind {
-                        val strokeWidth = if((rowIndex) % 3 == 0) 2.dp.toPx() else 0.5.dp.toPx()
+                        val strokeWidth = if((rowIndex) % 3 == 0) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                         drawLine(
                             color = Color.Black,
@@ -182,7 +186,7 @@ private fun GameScreenGrid(
                                 color = Color.Black,
                                 start = Offset(size.width, size.height),
                                 end = Offset(0f, size.height),
-                                strokeWidth = 2.dp.toPx()
+                                strokeWidth = strokeWidthLarge.toPx()
                             )
                         }
 
