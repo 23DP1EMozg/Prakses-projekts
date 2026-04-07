@@ -157,9 +157,7 @@ fun getSolutionCount(board: MutableList<MutableList<GridCellModel>>) : Int {
     return solutions
 }
 fun copyBoard(board: MutableList<MutableList<GridCellModel>>) : MutableList<MutableList<GridCellModel>> {
-    val copy = board.map { row ->
-        row.map { cell -> cell.copy() }
-    }
-
-    return copy.map { it.toMutableList() }.toMutableList()
+    return board.map { row ->
+        row.map { cell -> cell.copy() }.toMutableList()
+    }.toMutableList()
 }

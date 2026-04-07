@@ -60,10 +60,19 @@ class GameRepository @Inject constructor() {
     }
 
      fun startGameTimer() {
+         val startTime = System.currentTimeMillis()
          launchDefault {
-             while (!_game.value?.isFinished!!) {
+             while (_game.value?.isFinished == false) {
+                 val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
+                 val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
+
+                 _game.update {
+                     it?.copy(
+                         time = formatedTime,
+                         seconds = elapsedSeconds
+                     )
+                 }
                  delay(1000)
-                 updateGameTimerByOneSecond()
              }
          }
     }
@@ -185,15 +194,4 @@ class GameRepository @Inject constructor() {
             }
            _gameBoard.update { copyBoard(newBoard) }
       }
-
-    fun updateGameTimerByOneSecond(){
-        var seconds = _game.value?.seconds ?: return
-        seconds++
-        val formated = DateUtils.formatElapsedTime(seconds)
-        _game.update { _game.value?.copy(
-            time = formated,
-            seconds = seconds
-        )
-        }
-    }
 }
