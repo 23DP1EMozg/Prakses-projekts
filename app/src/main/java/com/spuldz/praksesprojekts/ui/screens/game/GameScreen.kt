@@ -288,26 +288,7 @@ private fun GameScreenGrid(
                     contentDescription = null,
                 )
                 Text(
-                    text = "Pencil",
-                    style = TextSm
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.eraser_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Text(
-                    text = "Eraser",
+                    text = stringResource(R.string.pencil),
                     style = TextSm
                 )
             }
@@ -326,10 +307,11 @@ private fun GameScreenGrid(
                     contentDescription = null,
                 )
                 Text(
-                    text = "Hint",
+                    text = stringResource(R.string.hint),
                     style = TextSm
                 )
             }
         }
     }
 }
+
