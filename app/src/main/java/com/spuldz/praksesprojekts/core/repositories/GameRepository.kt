@@ -71,26 +71,33 @@ class GameRepository @Inject constructor() {
     fun selectCell(cell: GridCellModel) {
         if (_game.value?.isFinished == true) return
 
-        var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
-        newBoard = newBoard?.map { it.map { col -> col.copy(
-            isSelected = false,
-            isLightUp = false
-        ) }.toMutableList() }?.toMutableList()
+        val selectedRow = cell.rowNumber
+        val selectedCol = cell.colNumber
+        val selectedValue = cell.value
 
-        newBoard?.get(cell.rowNumber)[cell.colNumber] = cell.copy(
-            isSelected = true,
-        )
+        val newBoard = _gameBoard.value?.mapIndexed { rowIndex, row ->
+            row.mapIndexed { colIndex, c ->
 
-        newBoard?.forEach { row ->
-            row.forEach { c ->
-                if (c.value == cell.value && cell.value != 0) newBoard[c.rowNumber][c.colNumber] =
-                    newBoard[c.rowNumber][c.colNumber].copy(isLightUp = true)
-            }
-        }
-        Timber.d(newBoard?.get(cell.rowNumber)[cell.colNumber].toString())
+                val isSelected = rowIndex == selectedRow && colIndex == selectedCol
+
+                val isLightUp =
+                    selectedValue != 0 && c.value == selectedValue
+
+                val isHighlighted =
+                    rowIndex == selectedRow || colIndex == selectedCol
+
+                c.copy(
+                    isSelected = isSelected,
+                    isLightUp = isLightUp,
+                    isHighlighted = isHighlighted
+                )
+            }.toMutableList()
+        }?.toMutableList()
+
+        Timber.d(newBoard?.get(selectedRow)?.get(selectedCol).toString())
+
         _gameBoard.update { newBoard }
     }
-
     suspend fun addNumberToSelectedCell(number: Int) {
         if (_game.value?.isFinished == true) return
 

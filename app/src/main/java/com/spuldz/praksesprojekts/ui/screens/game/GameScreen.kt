@@ -1,5 +1,9 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +40,7 @@ import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.Blue
+import com.spuldz.praksesprojekts.ui.theme.HighlightColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
@@ -103,6 +108,30 @@ fun GameScreenContent(
 
 @Composable
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+    val animatedSize by animateDpAsState(
+        targetValue = if (cell.isSelected) sizing.dp2 else sizing.dp0,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
+    val animatedBorderColor by animateColorAsState(
+        targetValue = if (cell.isSelected) Blue else Color.Transparent,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
+            else if (cell.isError) Color.Red
+            else if (cell.isHighlighted) HighlightColor
+            else PrimaryColor,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
     if (cell.isError) {
         Timber.d("ERROR CELL: $cell")
     }
@@ -110,11 +139,8 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
-            .background(
-                if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
-                else if (cell.isError) Color.Red
-                else PrimaryColor
-            )
+            .background(animatedBackgroundColor)
+            .border(animatedSize, animatedBorderColor)
             .clickable { onCellClick(cell) }
             .drawBehind {
 
