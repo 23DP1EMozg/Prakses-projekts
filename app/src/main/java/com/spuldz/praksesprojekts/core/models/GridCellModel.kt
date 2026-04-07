@@ -10,5 +10,6 @@ data class GridCellModel(
     val isPlayerPlaced: Boolean = false,
     var isLightUp: Boolean = false,
     val isError: Boolean = false,
-    val isHighlighted: Boolean = false
+    val isHighlighted: Boolean = false,
+    val pencilValue: String? = null
 )

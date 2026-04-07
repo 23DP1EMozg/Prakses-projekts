@@ -53,7 +53,7 @@ fun getFilledBoard() : MutableList<MutableList<GridCellModel>>{
     return board
 }
 
-private fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
+fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
     return !numberInRow(board[row], num) &&
             !numberInColumn(board, col, num) &&
             !numberInSquare(board[row][col], board, num)

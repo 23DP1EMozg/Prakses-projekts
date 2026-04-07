@@ -27,4 +27,8 @@ class GameViewModel @Inject constructor(
     fun addNumberToSelectedCell(number: Int) = launch {
         gameRepository.addNumberToSelectedCell(number)
     }
+
+    fun togglePencilMode() {
+        gameRepository.togglePencilMode()
+    }
 }

@@ -2,7 +2,6 @@ package com.spuldz.praksesprojekts.ui.screens.game
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,11 +39,13 @@ import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
+import com.spuldz.praksesprojekts.ui.theme.Black
 import com.spuldz.praksesprojekts.ui.theme.Blue
 import com.spuldz.praksesprojekts.ui.theme.HighlightColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
+import com.spuldz.praksesprojekts.ui.theme.TextPencil
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
@@ -66,6 +68,7 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         inputs = inputs,
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
+        onTogglePencilMode = viewModel::togglePencilMode
     )
 }
 
@@ -91,7 +94,8 @@ fun GameScreenContent(
     game: GameModel?,
     inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
-    onNumberClick: (Int) -> Unit
+    onNumberClick: (Int) -> Unit,
+    onTogglePencilMode: () -> Unit
 ) {
     if(grid == null){
         GameScreenLoading()
@@ -101,27 +105,14 @@ fun GameScreenContent(
             game = game,
             inputs = inputs,
             onCellClick = onCellClick,
-            onNumberClick = onNumberClick
+            onNumberClick = onNumberClick,
+            onTogglePencilMode = onTogglePencilMode
         )
     }
 }
 
 @Composable
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
-    val animatedSize by animateDpAsState(
-        targetValue = if (cell.isSelected) sizing.dp2 else sizing.dp0,
-        animationSpec = tween(
-            easing = EaseOut
-        )
-    )
-
-    val animatedBorderColor by animateColorAsState(
-        targetValue = if (cell.isSelected) Blue else Color.Transparent,
-        animationSpec = tween(
-            easing = EaseOut
-        )
-    )
-
     val animatedBackgroundColor by animateColorAsState(
         targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
             else if (cell.isError) Color.Red
@@ -140,7 +131,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
             .width(sizing.dp40)
             .height(sizing.dp40)
             .background(animatedBackgroundColor)
-            .border(animatedSize, animatedBorderColor)
+            .border(sizing.dp2, if (cell.isSelected) Blue else Color.Transparent)
             .clickable { onCellClick(cell) }
             .drawBehind {
 
@@ -169,9 +160,16 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
         Text(
             modifier = Modifier
                 .align(Alignment.Center),
-            text = if (cell.value == 0) "" else cell.value.toString(),
+            text = if (cell.value == 0) {
+                if (cell.pencilValue != null) {
+                    cell.pencilValue.map { it.toString() }.joinToString(" ")
+                }else {
+                    ""
+                }
+            }
+            else cell.value.toString(),
             color = if (cell.isPlayerPlaced) Blue else White,
-            style = TextLg
+            style = if (cell.value == 0 && cell.pencilValue != null) TextPencil else TextLg
         )
     }
 }
@@ -182,7 +180,8 @@ private fun GameScreenGrid(
     game: GameModel?,
     inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
-    onNumberClick: (Int) -> Unit
+    onNumberClick: (Int) -> Unit,
+    onTogglePencilMode: () -> Unit
 ){
     Column(
         modifier = Modifier
@@ -275,6 +274,8 @@ private fun GameScreenGrid(
             horizontalArrangement = Arrangement.spacedBy(sizing.dp14, Alignment.End)
         ) {
             Column(
+                modifier = Modifier
+                    .clickable { onTogglePencilMode() },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
@@ -286,28 +287,10 @@ private fun GameScreenGrid(
                     painter = painterResource(R.drawable.pencil_icon),
                     contentScale = ContentScale.Fit,
                     contentDescription = null,
+                    colorFilter = ColorFilter.tint(if (game?.pencilMode == true) PrimaryColor else Black)
                 )
                 Text(
                     text = "Pencil",
-                    style = TextSm
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.eraser_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Text(
-                    text = "Eraser",
                     style = TextSm
                 )
             }

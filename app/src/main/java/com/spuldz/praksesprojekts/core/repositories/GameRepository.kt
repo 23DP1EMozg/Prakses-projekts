@@ -3,11 +3,13 @@ package com.spuldz.praksesprojekts.core.repositories
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
+import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
 import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
 import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
 import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
 import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
 import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
+import com.spuldz.praksesprojekts.core.handlers.updatePencilEnteredNumbers
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -133,6 +135,11 @@ class GameRepository @Inject constructor() {
                 }
             }
 
+            if (_game.value?.pencilMode == true && selectedCell.value == 0) {
+                _gameBoard.update { enterPencilNumber(newBoard, number, selectedCell) }
+                return
+            }
+
             if (solution?.get(row)[col]?.value == number) {
                 newBoard[row][col] = selectedCell.copy(
                     value = number,
@@ -192,6 +199,12 @@ class GameRepository @Inject constructor() {
                         row.forEach { cell -> cell.isEditable = true }
                     }
             }
-           _gameBoard.update { copyBoard(newBoard) }
+           _gameBoard.update { updatePencilEnteredNumbers(copyBoard(newBoard)) }
       }
+
+    fun togglePencilMode() {
+        _game.update { it?.copy(
+            pencilMode = !it.pencilMode
+        ) }
+    }
 }

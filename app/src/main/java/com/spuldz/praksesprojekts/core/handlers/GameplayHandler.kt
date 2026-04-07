@@ -30,3 +30,39 @@ fun updateGameInputs(number: Int, inputs: List<GameInputModel>?) : MutableList<G
         }
         return inputsCopy
 }
+
+fun enterPencilNumber(board: MutableList<MutableList<GridCellModel>>, number: Int, cell: GridCellModel): MutableList<MutableList<GridCellModel>> {
+    var content = cell.pencilValue
+    val contentList = content?.trim()?.split("")
+    val boardCopy = copyBoard(board)
+
+    if (
+        contentList?.contains(number.toString()) == true ||
+        !isValid(board, cell.rowNumber, cell.colNumber, number)
+    ) {
+        return boardCopy
+    }
+
+    content = "${content ?: ""}$number"
+    boardCopy[cell.rowNumber][cell.colNumber] = cell.copy(
+        pencilValue = content
+    )
+
+    return boardCopy
+}
+
+fun updatePencilEnteredNumbers(board: MutableList<MutableList<GridCellModel>>?) : MutableList<MutableList<GridCellModel>> {
+    if (board == null) return mutableListOf()
+
+    val boardCopy = copyBoard(board).toMutableList()
+    val cells = boardCopy.flatten().filter { it.pencilValue != null && it.value == 0}
+
+    cells.forEach { c ->
+        val list = c.pencilValue?.trim()?.map { it.toString() }
+        val filtered = list?.filter { isValid(boardCopy, c.rowNumber, c.colNumber, it.toInt()) }
+        boardCopy[c.rowNumber][c.colNumber] = c.copy(
+            pencilValue = filtered?.joinToString("")
+        )
+    }
+    return boardCopy
+}
