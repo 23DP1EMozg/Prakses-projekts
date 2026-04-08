@@ -68,7 +68,8 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         inputs = inputs,
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
-        onTogglePencilMode = viewModel::togglePencilMode
+        onTogglePencilMode = viewModel::togglePencilMode,
+        onHint = viewModel::onHint
     )
 }
 
@@ -95,7 +96,8 @@ fun GameScreenContent(
     inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit,
-    onTogglePencilMode: () -> Unit
+    onTogglePencilMode: () -> Unit,
+    onHint: () -> Unit
 ) {
     if(grid == null){
         GameScreenLoading()
@@ -106,7 +108,8 @@ fun GameScreenContent(
             inputs = inputs,
             onCellClick = onCellClick,
             onNumberClick = onNumberClick,
-            onTogglePencilMode = onTogglePencilMode
+            onTogglePencilMode = onTogglePencilMode,
+            onHint = onHint
         )
     }
 }
@@ -181,7 +184,8 @@ private fun GameScreenGrid(
     inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit,
-    onTogglePencilMode: () -> Unit
+    onTogglePencilMode: () -> Unit,
+    onHint: () -> Unit
 ){
     Column(
         modifier = Modifier
@@ -208,7 +212,6 @@ private fun GameScreenGrid(
                 text = "${game?.time}",
                 style = TextSm
             )
-
         }
 
         for((rowIndex, row) in grid.withIndex()) {
@@ -273,46 +276,59 @@ private fun GameScreenGrid(
             modifier = Modifier.fillMaxWidth(0.9f),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp14, Alignment.End)
         ) {
-            Column(
-                modifier = Modifier
-                    .clickable { onTogglePencilMode() },
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.pencil_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(if (game?.pencilMode == true) PrimaryColor else Black)
-                )
-                Text(
-                    text = "Pencil",
-                    style = TextSm
-                )
-            }
+            Tool(
+                onClick = onTogglePencilMode,
+                name = "Pencil",
+                image = R.drawable.pencil_icon,
+                condition = game?.pencilMode == true,
+                game = game,
+            )
+            Tool(
+                onClick = onHint,
+                name = "Hint",
+                image = R.drawable.hint_icon,
+                condition = game?.hintMode == true,
+                game = game,
+                amount = 3
+            )
+        }
+    }
+}
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.hint_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Text(
-                    text = "Hint",
-                    style = TextSm
-                )
-            }
+@Composable
+fun Tool(
+    onClick: () -> Unit,
+    name: String,
+    image: Int,
+    condition: Boolean,
+    amount: Int? = null,
+    game: GameModel?
+) {
+    Column(
+        modifier = Modifier
+            .clickable { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier
+                .padding(top = sizing.dp20)
+                .width(sizing.dp50)
+                .height(sizing.dp50)
+            ,
+            painter = painterResource(image),
+            contentScale = ContentScale.Fit,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(if (condition) PrimaryColor else Black)
+        )
+        Text(
+            text = name,
+            style = TextSm
+        )
+        if (amount != null) {
+            Text(
+                text = "${game?.hintsLeft}/${amount}",
+                style = TextSm
+            )
         }
     }
 }

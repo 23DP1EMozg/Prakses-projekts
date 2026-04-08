@@ -2,11 +2,13 @@ package com.spuldz.praksesprojekts.core.repositories
 
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
+import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
 import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
 import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
 import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
 import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
+import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
 import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
 import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
 import com.spuldz.praksesprojekts.core.handlers.updatePencilEnteredNumbers
@@ -105,6 +107,19 @@ class GameRepository @Inject constructor() {
             }.toMutableList()
         }?.toMutableList()
 
+        if (_game.value?.hintMode == true && selectedValue == 0) {
+
+            if (_game.value?.hintsLeft == 0) {
+                return
+            }
+
+            _gameBoard.update { addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol]) }
+            _game.update { it?.copy(
+                hintsLeft = it.hintsLeft - 1
+            ) }
+            return
+        }
+
         Timber.d(newBoard?.get(selectedRow)?.get(selectedCol).toString())
 
         _gameBoard.update { newBoard }
@@ -112,7 +127,7 @@ class GameRepository @Inject constructor() {
     suspend fun addNumberToSelectedCell(number: Int) {
         if (_game.value?.isFinished == true) return
 
-        val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
+        var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
             val selectedCell = newBoard
                 ?.flatten()
                 ?.firstOrNull {it.isSelected}
@@ -147,13 +162,7 @@ class GameRepository @Inject constructor() {
                     isEditable = false
                 )
 
-                newBoard.forEach { row ->
-                    row.forEach { cell ->
-                        if (cell.value == number) {
-                            cell.isLightUp = true
-                        }
-                    }
-                }
+                newBoard = lightUpAllCells(newBoard, number)
 
                 if(isNumberComplete(number,newBoard)) {
                     val inputsCopy = updateGameInputs(number, _inputs.value)
@@ -204,7 +213,15 @@ class GameRepository @Inject constructor() {
 
     fun togglePencilMode() {
         _game.update { it?.copy(
-            pencilMode = !it.pencilMode
+            pencilMode = !it.pencilMode,
+            hintMode = false
+        ) }
+    }
+
+    fun toggleHintMode() {
+        _game.update { it?.copy(
+            hintMode = !it.hintMode,
+            pencilMode = false
         ) }
     }
 }

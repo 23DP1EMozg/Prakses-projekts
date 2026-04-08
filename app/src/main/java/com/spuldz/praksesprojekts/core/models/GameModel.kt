@@ -6,5 +6,7 @@ data class GameModel(
     val time: String = "00:00",
     val mistakes: Int = 0,
     val isFinished: Boolean = false,
-    val pencilMode: Boolean = false
+    val pencilMode: Boolean = false,
+    val hintMode: Boolean = false,
+    val hintsLeft: Int = 3
 )

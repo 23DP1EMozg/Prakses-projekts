@@ -31,4 +31,8 @@ class GameViewModel @Inject constructor(
     fun togglePencilMode() {
         gameRepository.togglePencilMode()
     }
+
+    fun onHint() {
+        gameRepository.toggleHintMode()
+    }
 }
