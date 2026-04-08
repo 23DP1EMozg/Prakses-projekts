@@ -2,7 +2,6 @@ package com.spuldz.praksesprojekts.ui.screens.game
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -109,19 +108,6 @@ fun GameScreenContent(
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
-    val animatedSize by animateDpAsState(
-        targetValue = if (cell.isSelected) sizing.dp2 else sizing.dp0,
-        animationSpec = tween(
-            easing = EaseOut
-        )
-    )
-
-    val animatedBorderColor by animateColorAsState(
-        targetValue = if (cell.isSelected) Blue else Color.Transparent,
-        animationSpec = tween(
-            easing = EaseOut
-        )
-    )
 
     val animatedBackgroundColor by animateColorAsState(
         targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
@@ -141,7 +127,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
             .width(sizing.dp40)
             .height(sizing.dp40)
             .background(animatedBackgroundColor)
-            .border(animatedSize, animatedBorderColor)
+            .border(if (cell.isSelected) sizing.dp2 else sizing.dp0, if (cell.isSelected) Blue else Color.Transparent)
             .clickable { onCellClick(cell) }
             .drawBehind {
 
