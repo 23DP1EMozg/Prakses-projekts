@@ -27,16 +27,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
+import com.spuldz.praksesprojekts.ui.theme.Blue
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
+import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 import timber.log.Timber
 
@@ -61,13 +62,13 @@ private fun GameScreenLoading() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0x88000000)),
+            .background(BackgroundColor),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
             modifier = Modifier.size(sizing.dp64),
             color = Color.White,
-            strokeWidth = 6.dp
+            strokeWidth = sizing.dp6
         )
     }
 }
@@ -87,19 +88,21 @@ fun GameScreenContent(
 
 @Composable
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
     Box(
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
             .background(
-                if (cell.isSelected) SecondaryColor else PrimaryColor
+                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
             )
             .clickable { onCellClick(cell) }
             .drawBehind {
 
                 val strokeWidth = if (
                     (cell.colNumber + 1) % 3 == 0 || cell.colNumber == 0
-                ) 2.dp.toPx() else 0.5.dp.toPx()
+                ) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                 val xPos = if (cell.colNumber != 0) size.width else 0f
                 drawLine(
@@ -114,7 +117,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
                         color = Color.Black,
                         start = Offset(size.width, 0f),
                         end = Offset(size.width, size.width),
-                        strokeWidth = 0.5.dp.toPx()
+                        strokeWidth = strokeWidthSmall.toPx()
                     )
                 }
             }
@@ -123,7 +126,7 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
             modifier = Modifier
                 .align(Alignment.Center),
             text = if (cell.value == 0) "" else cell.value.toString(),
-            color = Color.White,
+            color = if (cell.isPlayerPlaced) Blue else White,
             style = TextLg
         )
     }
@@ -134,7 +137,9 @@ private fun GameScreenGrid(
     grid: List<List<GridCellModel>>,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
-) {
+){
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -168,7 +173,7 @@ private fun GameScreenGrid(
                 modifier = Modifier
                     .height(sizing.dp40)
                     .drawBehind {
-                        val strokeWidth = if((rowIndex) % 3 == 0) 2.dp.toPx() else 0.5.dp.toPx()
+                        val strokeWidth = if((rowIndex) % 3 == 0) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                         drawLine(
                             color = Color.Black,
@@ -182,7 +187,7 @@ private fun GameScreenGrid(
                                 color = Color.Black,
                                 start = Offset(size.width, size.height),
                                 end = Offset(0f, size.height),
-                                strokeWidth = 2.dp.toPx()
+                                strokeWidth = strokeWidthLarge.toPx()
                             )
                         }
 
