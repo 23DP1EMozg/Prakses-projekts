@@ -53,7 +53,11 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 import timber.log.Timber
 
 @Composable
-fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
+fun GameScreen(
+    viewModel: GameViewModel = hiltViewModel(),
+    difficulty: String,
+    onNavigateHome: () -> Unit
+) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
     val game by viewModel.game.collectAsStateWithLifecycle()
     val inputs by viewModel.inputs.collectAsStateWithLifecycle()
@@ -62,7 +66,6 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         Timber.d(difficulty)
         viewModel.generateGameBoard(difficulty)
     }
-
     GameScreenContent(
         grid = grid,
         game = game,
@@ -71,7 +74,8 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         onNumberClick = viewModel::addNumberToSelectedCell,
         onTogglePencilMode = viewModel::togglePencilMode,
         onHint = viewModel::onHint,
-        getPencilGridRows = viewModel::getPencilGridRows
+        getPencilGridRows = viewModel::getPencilGridRows,
+        onNavigateHome = onNavigateHome
     )
 }
 
@@ -100,7 +104,8 @@ fun GameScreenContent(
     onNumberClick: (Int) -> Unit,
     onTogglePencilMode: () -> Unit,
     onHint: () -> Unit,
-    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>,
+    onNavigateHome: () -> Unit
 ) {
     if(grid == null){
         GameScreenLoading()
@@ -114,6 +119,10 @@ fun GameScreenContent(
             onTogglePencilMode = onTogglePencilMode,
             onHint = onHint,
             getPencilGridRows = getPencilGridRows
+        )
+        EndGamePopup(
+            game = game,
+            onNavigateHome = onNavigateHome
         )
     }
 }

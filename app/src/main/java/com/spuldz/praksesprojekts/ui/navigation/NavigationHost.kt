@@ -39,7 +39,12 @@ fun NavigationHost() {
         }
         composable<Game> { backStackEntry ->
             val game = backStackEntry.toRoute<Game>()
-            GameScreen(difficulty = game.difficulty)
+            GameScreen(
+                difficulty = game.difficulty,
+                onNavigateHome = {
+                    navController.navigate(route = Home)
+                }
+            )
         }
     }
 }

@@ -38,7 +38,7 @@ class GameRepository @Inject constructor() {
             val board = getFilledBoard()
             solution = board
             val amount = when(difficulty){
-                "Easy" -> 40
+                "Easy" -> 1
                 "Medium" -> 50
                 "Hard" -> 60
                 else -> 50
@@ -172,7 +172,8 @@ class GameRepository @Inject constructor() {
 
                 if (isBoardComplete(newBoard)) {
                     _game.update { _game.value?.copy(
-                        isFinished = true
+                        isFinished = true,
+                        isWin = true
                     ) }
                     Timber.d("You Win!")
                 }
