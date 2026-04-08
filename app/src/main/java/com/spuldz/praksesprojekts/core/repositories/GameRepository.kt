@@ -48,7 +48,7 @@ class GameRepository @Inject constructor() {
                                     value = num
                                 )
 
-                            if(generateSolutionAndFillBoard(board)) return true
+                            if (generateSolutionAndFillBoard(board)) return true
                             board[row][col] = board[row][col].copy( value = 0 )
                         }
                     }
@@ -88,7 +88,7 @@ class GameRepository @Inject constructor() {
         return board
     }
 
-    suspend fun fillGameBoard(difficulty: String){
+    suspend fun fillGameBoard(difficulty: String) {
         val board = generateBoilerplate()
         generateSolutionAndFillBoard(board)
 
@@ -109,7 +109,7 @@ class GameRepository @Inject constructor() {
                 !numberInSquare(board[row][col], board, num)
     }
 
-    private fun numberInRow(row: MutableList<GridCellModel>, number: Int): Boolean {
+    private fun numberInRow(row: MutableList<GridCellModel>, number: Int) : Boolean {
         for (cell in row) {
             if (cell.value == number) {
                 return true
@@ -122,7 +122,7 @@ class GameRepository @Inject constructor() {
         board: MutableList<MutableList<GridCellModel>>,
         col: Int,
         number: Int
-    ): Boolean {
+    ) : Boolean {
         for (row in board) {
             if (row[col].value == number) {
                 return true
