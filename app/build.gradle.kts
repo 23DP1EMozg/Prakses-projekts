@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.serialization.plugin)
+    alias(libs.plugins.google.devtools)
+    alias(libs.plugins.dagger.hilt.plugin)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -30,13 +33,24 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            isMinifyEnabled = false
+            isDebuggable = true
+        }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 }
 
@@ -64,4 +78,14 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.dynamic.features)
     implementation(libs.serialization)
+
+    // Dependency injection
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hilt.android.compiler)
+
+    // View model
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Timber
+    implementation(libs.timber)
 }

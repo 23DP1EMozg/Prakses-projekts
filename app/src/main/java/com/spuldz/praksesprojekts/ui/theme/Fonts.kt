@@ -17,8 +17,20 @@ val HomeTitle = TextStyle(
     fontSize = 34.sp,
 )
 
-val TextMd = TextStyle(
+val TextLg = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.SemiBold,
     fontSize = 28.sp
+)
+
+val TextMd = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp
+)
+
+val TextSm = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 12.sp
 )
