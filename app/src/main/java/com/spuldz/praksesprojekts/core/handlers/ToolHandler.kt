@@ -60,3 +60,31 @@ fun addHintToBoard(
 
     return lightUpAllCells(boardCopy, solutionValue)
 }
+
+fun getPencilRows(cell: GridCellModel) : MutableList<MutableList<String>> {
+    if (cell.pencilValue == null) return mutableListOf()
+
+    val numbers = cell.pencilValue.trim().split("")
+    val row1 = mutableListOf<String>()
+    val row2 = mutableListOf<String>()
+    val row3 = mutableListOf<String>()
+
+    for (i in 1..3) {
+        if (i <= numbers.size - 1) {
+            row1.add(numbers[i])
+        }else break
+    }
+
+    for (i in 4..6) {
+        if (i <= numbers.size - 1) {
+            row2.add(numbers[i])
+        }else break
+    }
+
+    for (i in 7..9) {
+        if (i <= numbers.size - 1) {
+            row3.add(numbers[i])
+        }else break
+    }
+    return mutableListOf(row1, row2, row3)
+}

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -69,7 +70,8 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
         onTogglePencilMode = viewModel::togglePencilMode,
-        onHint = viewModel::onHint
+        onHint = viewModel::onHint,
+        getPencilGridRows = viewModel::getPencilGridRows
     )
 }
 
@@ -97,7 +99,8 @@ fun GameScreenContent(
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit,
     onTogglePencilMode: () -> Unit,
-    onHint: () -> Unit
+    onHint: () -> Unit,
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ) {
     if(grid == null){
         GameScreenLoading()
@@ -109,13 +112,18 @@ fun GameScreenContent(
             onCellClick = onCellClick,
             onNumberClick = onNumberClick,
             onTogglePencilMode = onTogglePencilMode,
-            onHint = onHint
+            onHint = onHint,
+            getPencilGridRows = getPencilGridRows
         )
     }
 }
 
 @Composable
-private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+private fun GridCell(
+    cell: GridCellModel,
+    onCellClick: (GridCellModel) -> Unit,
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
+) {
     val animatedBackgroundColor by animateColorAsState(
         targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
             else if (cell.isError) Color.Red
@@ -160,20 +168,68 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
                 }
             }
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center),
-            text = if (cell.value == 0) {
-                if (cell.pencilValue != null) {
-                    cell.pencilValue.map { it.toString() }.joinToString(" ")
-                }else {
-                    ""
+        if (cell.pencilValue != null && cell.value == 0) {
+            val rows = getPencilGridRows(cell)
+            val row1 = rows[0]
+            val row2 = rows[1]
+            val row3 = rows[2]
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                 verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(1 / 3f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row1.forEach { num  ->
+                        Text(
+                            text = num,
+                            style = TextPencil
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(1 / 3f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row2.forEach { num  ->
+                        Text(
+                            text = num,
+                            style = TextPencil
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(1 / 3f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row3.forEach { num  ->
+                        Text(
+                            text = num,
+                            style = TextPencil
+                        )
+                    }
                 }
             }
-            else cell.value.toString(),
-            color = if (cell.isPlayerPlaced) Blue else White,
-            style = if (cell.value == 0 && cell.pencilValue != null) TextPencil else TextLg
-        )
+        }else {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.Center),
+                text = if (cell.value == 0) ""
+                else cell.value.toString(),
+                color = if (cell.isPlayerPlaced) Blue else White,
+                style = if (cell.value == 0 && cell.pencilValue != null) TextPencil else TextLg
+            )
+        }
     }
 }
 
@@ -185,7 +241,8 @@ private fun GameScreenGrid(
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit,
     onTogglePencilMode: () -> Unit,
-    onHint: () -> Unit
+    onHint: () -> Unit,
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ){
     Column(
         modifier = Modifier
@@ -240,7 +297,7 @@ private fun GameScreenGrid(
                     }
             ) {
                 for( cell in row) {
-                    GridCell(cell, onCellClick)
+                    GridCell(cell, onCellClick, getPencilGridRows)
                 }
             }
         }

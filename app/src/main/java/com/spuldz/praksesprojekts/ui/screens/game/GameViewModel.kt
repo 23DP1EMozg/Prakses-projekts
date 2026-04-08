@@ -35,4 +35,8 @@ class GameViewModel @Inject constructor(
     fun onHint() {
         gameRepository.toggleHintMode()
     }
+
+    fun getPencilGridRows(cell: GridCellModel) : MutableList<MutableList<String>> {
+      return gameRepository.getPencilGridRows(cell)
+    }
 }

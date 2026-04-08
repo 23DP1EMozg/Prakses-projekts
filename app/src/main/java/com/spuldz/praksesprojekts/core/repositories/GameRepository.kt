@@ -6,6 +6,7 @@ import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
 import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
 import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
+import com.spuldz.praksesprojekts.core.handlers.getPencilRows
 import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
 import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
 import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
@@ -223,5 +224,9 @@ class GameRepository @Inject constructor() {
             hintMode = !it.hintMode,
             pencilMode = false
         ) }
+    }
+
+    fun getPencilGridRows(cell: GridCellModel): MutableList<MutableList<String>> {
+        return getPencilRows(cell)
     }
 }
