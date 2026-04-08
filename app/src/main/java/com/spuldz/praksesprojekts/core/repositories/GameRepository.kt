@@ -14,7 +14,6 @@ class GameRepository @Inject constructor() {
 
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private var selectedCell: GridCellModel? = null
-
     val gameBoard = _gameBoard.asStateFlow()
 
     fun generateBoilerplate(): MutableList<MutableList<GridCellModel>> {
@@ -46,13 +45,13 @@ class GameRepository @Inject constructor() {
                 if (board[row][col].value == 0) {
                     val nums = (1..9).shuffled()
                     for (num in nums) {
-                        if(isValid(board, row, col, num)) {
+                        if (isValid(board, row, col, num)) {
                             board[row][col] = board[row][col]
                                 .copy(
                                     value = num
                                 )
 
-                            if(generateSolutionAndFillBoard(board)) return true
+                            if (generateSolutionAndFillBoard(board)) return true
                             board[row][col] = board[row][col].copy( value = 0 )
                         }
                     }
@@ -64,14 +63,17 @@ class GameRepository @Inject constructor() {
         return true
     }
 
-    fun removeCellsFromBoard(board: MutableList<MutableList<GridCellModel>>, amount: Int) : MutableList<MutableList<GridCellModel>>{
+    fun removeCellsFromBoard(
+        board: MutableList<MutableList<GridCellModel>>,
+        amount: Int
+    ) : MutableList<MutableList<GridCellModel>> {
         var times = 0
 
         while (times <= amount) {
             val randomRow = Random.nextInt(0,9)
             val randomCol = Random.nextInt(0,9)
 
-            if(board[randomRow][randomCol].value == 0){
+            if (board[randomRow][randomCol].value == 0) {
                 continue
             }
 
@@ -83,23 +85,23 @@ class GameRepository @Inject constructor() {
 
             var count = 0
             for (num in 1..9) {
-                if(isValid(board, randomRow, randomCol, num)) {
+                if (isValid(board, randomRow, randomCol, num)) {
                     count++
                 }
             }
 
-            if (count > 1){
+            if (count > 1) {
                 board[randomRow][randomCol] = board[randomRow][randomCol].copy(
                     value = prevValueCopy
                 )
-            }else{
+            } else {
                 times++
             }
         }
         return board
     }
 
-    suspend fun fillGameBoard(difficulty: String){
+    suspend fun fillGameBoard(difficulty: String) {
         val board = generateBoilerplate()
         generateSolutionAndFillBoard(board)
         val amount = if (difficulty == "Easy") 30
@@ -116,7 +118,7 @@ class GameRepository @Inject constructor() {
                 !numberInSquare(board[row][col], board, num)
     }
 
-    private fun numberInRow(row: MutableList<GridCellModel>, number: Int): Boolean {
+    private fun numberInRow(row: MutableList<GridCellModel>, number: Int) : Boolean {
         for (cell in row) {
             if (cell.value == number) {
                 return true
@@ -129,7 +131,7 @@ class GameRepository @Inject constructor() {
         board: MutableList<MutableList<GridCellModel>>,
         col: Int,
         number: Int
-    ): Boolean {
+    ) : Boolean {
         for (row in board) {
             if (row[col].value == number) {
                 return true
@@ -180,7 +182,7 @@ class GameRepository @Inject constructor() {
                 value = number,
                 isEditable = false
             )
-        }else {
+        } else {
             Timber.d("WRONG!")
         }
 

@@ -78,9 +78,9 @@ fun GameScreenContent(
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ) {
-    if(grid == null){
+    if(grid == null) {
         GameScreenLoading()
-    }else{
+    } else {
         GameScreenGrid(grid, onCellClick, onNumberClick)
     }
 }
@@ -134,7 +134,7 @@ private fun GameScreenGrid(
     grid: List<List<GridCellModel>>,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
-){
+) {
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -163,7 +163,7 @@ private fun GameScreenGrid(
 
         }
 
-        for((rowIndex, row) in grid.withIndex()) {
+        for ((rowIndex, row) in grid.withIndex()) {
             Row(
                 modifier = Modifier
                     .height(sizing.dp40)
@@ -177,7 +177,7 @@ private fun GameScreenGrid(
                             strokeWidth = strokeWidth
                         )
 
-                        if (rowIndex == 8){
+                        if (rowIndex == 8) {
                             drawLine(
                                 color = Color.Black,
                                 start = Offset(size.width, size.height),
@@ -282,7 +282,3 @@ private fun GameScreenGrid(
         }
     }
 }
-
-
-
-
