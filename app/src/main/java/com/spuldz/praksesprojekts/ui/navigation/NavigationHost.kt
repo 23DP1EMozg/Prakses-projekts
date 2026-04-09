@@ -43,6 +43,9 @@ fun NavigationHost() {
                 difficulty = game.difficulty,
                 onNavigateHome = {
                     navController.navigate(route = Home)
+                },
+                onPlayAgain = {
+                    navController.navigate(route = Game(game.difficulty))
                 }
             )
         }

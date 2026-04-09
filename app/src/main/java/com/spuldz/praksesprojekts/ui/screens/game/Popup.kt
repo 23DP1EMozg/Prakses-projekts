@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
@@ -30,7 +33,8 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @Composable
 fun EndGamePopup(
     game: GameModel?,
-    onNavigateHome: () -> Unit
+    onNavigateHome: () -> Unit,
+    onPlayAgain: () -> Unit
 ) {
     AnimatedVisibility(
         visible = game?.isFinished == true,
@@ -49,6 +53,7 @@ fun EndGamePopup(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .height(sizing.dp250)
+                    .clip(RoundedCornerShape(sizing.dp10))
                     .background(PrimaryColor),
                 verticalArrangement = Arrangement.Center
             ) {
@@ -62,21 +67,36 @@ fun EndGamePopup(
                         style = TextLg
                     )
                 }
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = sizing.dp20),
-                    horizontalArrangement = Arrangement.Center
+                        .padding(top = sizing.dp30),
+                horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Button(
+                        modifier = Modifier.width(sizing.dp150),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = SecondaryColor,
-                            contentColor = White
+                            contentColor = White,
                         ),
                         onClick = { onNavigateHome() }
                     ) {
                         Text(
                             text = "Return Home",
+                            style = TextSm
+                        )
+                    }
+
+                    Button(
+                        modifier = Modifier.width(sizing.dp150),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = SecondaryColor,
+                            contentColor = White
+                        ),
+                        onClick = { onPlayAgain() }
+                    ) {
+                        Text(
+                            text = "Play Again",
                             style = TextSm
                         )
                     }

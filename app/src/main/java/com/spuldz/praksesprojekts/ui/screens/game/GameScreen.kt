@@ -56,7 +56,8 @@ import timber.log.Timber
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel(),
     difficulty: String,
-    onNavigateHome: () -> Unit
+    onNavigateHome: () -> Unit,
+    onPlayAgain: () -> Unit
 ) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
     val game by viewModel.game.collectAsStateWithLifecycle()
@@ -75,7 +76,8 @@ fun GameScreen(
         onTogglePencilMode = viewModel::togglePencilMode,
         onHint = viewModel::onHint,
         getPencilGridRows = viewModel::getPencilGridRows,
-        onNavigateHome = onNavigateHome
+        onNavigateHome = onNavigateHome,
+        onPlayAgain = onPlayAgain
     )
 }
 
@@ -105,7 +107,8 @@ fun GameScreenContent(
     onTogglePencilMode: () -> Unit,
     onHint: () -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>,
-    onNavigateHome: () -> Unit
+    onNavigateHome: () -> Unit,
+    onPlayAgain: () -> Unit
 ) {
     if(grid == null){
         GameScreenLoading()
@@ -122,7 +125,8 @@ fun GameScreenContent(
         )
         EndGamePopup(
             game = game,
-            onNavigateHome = onNavigateHome
+            onNavigateHome = onNavigateHome,
+            onPlayAgain = onPlayAgain
         )
     }
 }

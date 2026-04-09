@@ -14,8 +14,8 @@ fun isNumberComplete(number: Int, board: MutableList<MutableList<GridCellModel>>
     return count == 9
 }
 
-fun isBoardComplete(board: MutableList<MutableList<GridCellModel>>): Boolean {
-    val emptyCell = board.flatten().firstOrNull {it.value == 0}
+fun isBoardComplete(board: MutableList<MutableList<GridCellModel>>?): Boolean {
+    val emptyCell = board?.flatten()?.firstOrNull {it.value == 0}
     return emptyCell == null
 }
 
