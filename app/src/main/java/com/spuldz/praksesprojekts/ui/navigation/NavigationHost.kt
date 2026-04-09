@@ -7,6 +7,10 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
+import com.spuldz.praksesprojekts.ui.screens.settings.AppearanceSettingsScreen
+import com.spuldz.praksesprojekts.ui.screens.settings.ControlsSettingsScreen
+import com.spuldz.praksesprojekts.ui.screens.settings.GameplaySettingsScreen
+import com.spuldz.praksesprojekts.ui.screens.settings.LanguageSettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.SettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.start.StartScreen
 import kotlinx.serialization.Serializable
@@ -19,6 +23,14 @@ object Home
 data class Game(val difficulty: String)
 @Serializable
 object Settings
+@Serializable
+object AppearanceSettings
+@Serializable
+object GameplaySettings
+@Serializable
+object ControlsSettings
+@Serializable
+object LanguageSettings
 
 @Composable
 fun NavigationHost() {
@@ -43,9 +55,34 @@ fun NavigationHost() {
                 }
             )
         }
-
+        // Settings screens
         composable<Settings> {
-            SettingsScreen()
+            SettingsScreen(
+                onAppearanceClick = {
+                    navController.navigate(route = AppearanceSettings)
+                },
+                onGameplayClick = {
+                    navController.navigate(route = GameplaySettings)
+                },
+                onControlsClick = {
+                    navController.navigate(route = ControlsSettings)
+                },
+                onLanguageClick = {
+                    navController.navigate(route = LanguageSettings)
+                }
+            )
+        }
+        composable<AppearanceSettings> {
+            AppearanceSettingsScreen()
+        }
+        composable<GameplaySettings>{
+            GameplaySettingsScreen()
+        }
+        composable<ControlsSettings> {
+            ControlsSettingsScreen()
+        }
+        composable<LanguageSettings> {
+            LanguageSettingsScreen()
         }
 
         composable<Game> { backStackEntry ->
