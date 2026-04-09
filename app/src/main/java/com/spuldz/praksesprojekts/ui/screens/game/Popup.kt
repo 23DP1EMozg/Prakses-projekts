@@ -22,6 +22,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
@@ -63,7 +65,7 @@ fun EndGamePopup(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = if (game?.isWin == true) "You Win!" else "You Lose!",
+                        text = if (game?.isWin == true) stringResource(R.string.you_win) else stringResource(R.string.you_lose),
                         style = TextLg
                     )
                 }
@@ -82,7 +84,7 @@ fun EndGamePopup(
                         onClick = { onNavigateHome() }
                     ) {
                         Text(
-                            text = "Return Home",
+                            text = stringResource(R.string.return_home),
                             style = TextSm
                         )
                     }
@@ -96,7 +98,7 @@ fun EndGamePopup(
                         onClick = { onPlayAgain() }
                     ) {
                         Text(
-                            text = "Play Again",
+                            text = stringResource(R.string.play_again),
                             style = TextSm
                         )
                     }
