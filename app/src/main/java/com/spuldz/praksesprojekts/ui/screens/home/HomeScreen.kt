@@ -1,6 +1,7 @@
 package com.spuldz.praksesprojekts.ui.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.zIndex
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.HomeTitle
-import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
@@ -43,10 +42,10 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToGameScreen: (difficulty: String) -> Unit
+    onNavigateToGameScreen: (difficulty: String) -> Unit,
+    onNavigateToSettingsScreen: () -> Unit
 ){
     val sheetState = rememberModalBottomSheetState()
-    //val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Column(
@@ -67,8 +66,8 @@ fun HomeScreen(
                 .padding(top = sizing.dp30),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
-            NavigationOption(stringResource(R.string.settings), R.drawable.settings_icon)
-            NavigationOption(stringResource(R.string.scores), R.drawable.best_scores_icon)
+            NavigationOption(stringResource(R.string.settings), R.drawable.settings_icon, { onNavigateToSettingsScreen() })
+            NavigationOption(stringResource(R.string.scores), R.drawable.best_scores_icon, {})
         }
         Row(
             modifier = Modifier
@@ -77,8 +76,8 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
 
-            NavigationOption(stringResource(R.string.profile), R.drawable.profile_icon)
-            NavigationOption(stringResource(R.string.stats), R.drawable.stats_icon)
+            NavigationOption(stringResource(R.string.profile), R.drawable.profile_icon, {})
+            NavigationOption(stringResource(R.string.stats), R.drawable.stats_icon, {})
         }
         Spacer(
             modifier = Modifier
@@ -146,12 +145,17 @@ fun DifficultyButton(text: String, onNavigateToGameScreen: (String) -> Unit) {
     }
 }
 @Composable
-fun NavigationOption(text: String, image: Int) {
+fun NavigationOption(
+    text: String,
+    image: Int,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .width(sizing.dp150)
             .height(sizing.dp150)
             .background(Color.White)
+            .clickable { onClick() }
     ) {
         Image(
             modifier = Modifier
@@ -174,13 +178,5 @@ fun NavigationOption(text: String, image: Int) {
                 style = TextLg
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    PraksesProjektsTheme {
-        HomeScreen({})
     }
 }
