@@ -25,11 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.core.models.GameModel
-import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
-import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
+import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextSm
-import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
@@ -38,6 +36,7 @@ fun EndGamePopup(
     onNavigateHome: () -> Unit,
     onPlayAgain: () -> Unit
 ) {
+    val theme = LocalTheme.current
     AnimatedVisibility(
         visible = game?.isFinished == true,
         enter = fadeIn(),
@@ -56,7 +55,7 @@ fun EndGamePopup(
                     .fillMaxWidth(0.7f)
                     .height(sizing.dp250)
                     .clip(RoundedCornerShape(sizing.dp10))
-                    .background(PrimaryColor),
+                    .background(theme.Primary),
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(
@@ -66,7 +65,8 @@ fun EndGamePopup(
                 ) {
                     Text(
                         text = if (game?.isWin == true) stringResource(R.string.you_win) else stringResource(R.string.you_lose),
-                        style = TextLg
+                        style = TextLg,
+                        color = theme.Text
                     )
                 }
                 Column(
@@ -78,28 +78,30 @@ fun EndGamePopup(
                     Button(
                         modifier = Modifier.width(sizing.dp150),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = SecondaryColor,
-                            contentColor = White,
+                            containerColor = theme.Secondary,
+                            contentColor = theme.Text,
                         ),
                         onClick = { onNavigateHome() }
                     ) {
                         Text(
                             text = stringResource(R.string.return_home),
-                            style = TextSm
+                            style = TextSm,
+                            color = theme.Text
                         )
                     }
 
                     Button(
                         modifier = Modifier.width(sizing.dp150),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = SecondaryColor,
-                            contentColor = White
+                            containerColor = theme.Secondary,
+                            contentColor = theme.Text
                         ),
                         onClick = { onPlayAgain() }
                     ) {
                         Text(
                             text = stringResource(R.string.play_again),
-                            style = TextSm
+                            style = TextSm,
+                            color = theme.Text
                         )
                     }
                 }
