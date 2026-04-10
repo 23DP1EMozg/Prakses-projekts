@@ -2,17 +2,14 @@ package com.spuldz.praksesprojekts.core.repositories
 
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
-import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
+import com.spuldz.praksesprojekts.core.handlers.ToolHandler
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
-import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
 import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
-import com.spuldz.praksesprojekts.core.handlers.getPencilRows
 import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
 import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
 import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
 import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
 import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
-import com.spuldz.praksesprojekts.core.handlers.updatePencilEnteredNumbers
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -33,6 +30,7 @@ class GameRepository @Inject constructor() {
     val gameBoard = _gameBoard.asStateFlow()
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
+    val toolHandler = ToolHandler()
 
      fun fillGameBoard(difficulty: String){
             val board = getFilledBoard()
@@ -114,7 +112,7 @@ class GameRepository @Inject constructor() {
                 return
             }
 
-            _gameBoard.update { addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol]) }
+            _gameBoard.update { toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol]) }
             _game.update { it?.copy(
                 hintsLeft = it.hintsLeft - 1
             ) }
@@ -152,7 +150,7 @@ class GameRepository @Inject constructor() {
             }
 
             if (_game.value?.pencilMode == true && selectedCell.value == 0) {
-                _gameBoard.update { enterPencilNumber(newBoard, number, selectedCell) }
+                _gameBoard.update { toolHandler.enterPencilNumber(newBoard, number, selectedCell) }
                 return
             }
 
@@ -209,7 +207,7 @@ class GameRepository @Inject constructor() {
                         row.forEach { cell -> cell.isEditable = true }
                     }
             }
-           _gameBoard.update { updatePencilEnteredNumbers(copyBoard(newBoard)) }
+           _gameBoard.update { toolHandler.updatePencilEnteredNumbers(copyBoard(newBoard)) }
       }
 
     fun togglePencilMode() {
@@ -227,6 +225,6 @@ class GameRepository @Inject constructor() {
     }
 
     fun getPencilGridRows(cell: GridCellModel): MutableList<MutableList<String>> {
-        return getPencilRows(cell)
+        return toolHandler.getPencilRows(cell)
     }
 }

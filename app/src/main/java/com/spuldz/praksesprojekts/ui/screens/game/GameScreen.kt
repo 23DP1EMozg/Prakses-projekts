@@ -174,8 +174,7 @@ private fun GridCell(
             val row2 = rows[1]
             val row3 = rows[2]
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                  verticalArrangement = Arrangement.Center
             ) {
                 Row(
@@ -222,8 +221,7 @@ private fun GridCell(
             }
         }else {
             Text(
-                modifier = Modifier
-                    .align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center),
                 text = if (cell.value == 0) ""
                 else cell.value.toString(),
                 color = if (cell.isPlayerPlaced) Blue else White,
