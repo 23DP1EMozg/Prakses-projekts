@@ -91,9 +91,9 @@ fun GameScreenContent(
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ) {
-    if(grid == null) {
+    if (grid == null) {
         GameScreenLoading()
-    }else{
+    } else {
         GameScreenGrid(
             grid = grid,
             game = game,
@@ -226,7 +226,7 @@ private fun GameScreenGrid(
 
                     }
             ) {
-                for( cell in row) {
+                for ( cell in row) {
                     GridCell(cell, onCellClick)
                 }
             }
