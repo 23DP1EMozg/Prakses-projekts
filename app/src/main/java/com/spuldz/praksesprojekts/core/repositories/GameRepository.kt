@@ -157,7 +157,7 @@ class GameRepository @Inject constructor() {
                     ) }
                     Timber.d("You Win!")
                 }
-                }else{
+                } else {
                     newBoard[row][col] = selectedCell.copy(
                         value = number,
                         isError = true,
@@ -187,12 +187,6 @@ class GameRepository @Inject constructor() {
                         isError = false,
                         isPlayerPlaced = false
                     )
-
-//                    newBoard = newBoard.map { row ->
-//                        row.map { cell -> cell.copy(
-//                            isEditable = true
-//                        ) }.toMutableList()
-//                    }.toMutableList()
             }
            _gameBoard.update { generationHandler.copyBoard(newBoard) }
       }
