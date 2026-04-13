@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">PraksesProjekts</string>
-    <string name="welcome">Welcome</string>
+    <string name="welcome">Sveicināti</string>
     <string name="sudoku">Sudoku</string>
     <string name="settings">Iestatījumi</string>
     <string name="scores">Rezultāti</string>
@@ -16,4 +16,13 @@
     <string name="you_lose">Tu Zaudēji!</string>
     <string name="return_home">Uz Sākumu</string>
     <string name="play_again">Spēlēt Atkārtoti</string>
+    <string name="appearance">Izskats</string>
+    <string name="gameplay">Spēle</string>
+    <string name="controls">Vadība</string>
+    <string name="language">Valoda</string>
+    <string name="easy">Viegli</string>
+    <string name="medium">Vidēji</string>
+    <string name="hard">Grūti</string>
+    <string name="pencil">Zīmulis</string>
+    <string name="hint">Mājiens</string>
 </resources>
