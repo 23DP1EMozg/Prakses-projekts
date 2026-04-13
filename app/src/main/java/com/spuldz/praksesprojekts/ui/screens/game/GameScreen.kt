@@ -333,14 +333,14 @@ private fun GameScreenGrid(
         ) {
             Tool(
                 onClick = onTogglePencilMode,
-                name = "Pencil",
+                name = stringResource(R.string.pencil),
                 image = R.drawable.pencil_icon,
                 condition = game?.pencilMode == true,
                 game = game,
             )
             Tool(
                 onClick = onHint,
-                name = "Hint",
+                name = stringResource(R.string.hint),
                 image = R.drawable.hint_icon,
                 condition = game?.hintMode == true,
                 game = game,

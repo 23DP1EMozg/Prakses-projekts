@@ -113,9 +113,11 @@ class GameRepository @Inject constructor() {
             }
 
             _gameBoard.update { toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol]) }
-            _game.update { it?.copy(
-                hintsLeft = it.hintsLeft - 1
-            ) }
+            _game.update {
+                it?.copy(
+                    hintsLeft = it.hintsLeft - 1
+                )
+            }
             return
         }
 
