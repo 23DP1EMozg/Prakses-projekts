@@ -26,32 +26,33 @@ class GameBoardGenerationHandler {
 
     fun getFilledBoard() : MutableList<MutableList<GridCellModel>> {
         val board = generateBoilerplate()
-        fun generateSolutionAndFillBoard(
-            board: MutableList<MutableList<GridCellModel>>
-        ): Boolean {
-            for (row in 0..8) {
-                for (col in 0..8) {
-                    if (board[row][col].value == 0) {
-                        val numbers = (1..9).shuffled()
-                        for (num in numbers) {
-                            if(isValid(board, row, col, num)) {
-                                board[row][col] = board[row][col]
-                                    .copy(
-                                        value = num
-                                    )
-
-                                if(generateSolutionAndFillBoard(board)) return true
-                                board[row][col] = board[row][col].copy( value = 0 )
-                            }
-                        }
-                        return false
-                    }
-                }
-            }
-            return true
-        }
         generateSolutionAndFillBoard(board)
         return board
+    }
+
+    private fun generateSolutionAndFillBoard(
+        board: MutableList<MutableList<GridCellModel>>
+    ): Boolean {
+        for (row in 0..8) {
+            for (col in 0..8) {
+                if (board[row][col].value == 0) {
+                    val numbers = (1..9).shuffled()
+                    for (num in numbers) {
+                        if(isValid(board, row, col, num)) {
+                            board[row][col] = board[row][col]
+                                .copy(
+                                    value = num
+                                )
+
+                            if(generateSolutionAndFillBoard(board)) return true
+                            board[row][col] = board[row][col].copy( value = 0 )
+                        }
+                    }
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     private fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
