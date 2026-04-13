@@ -44,7 +44,8 @@ fun AppearanceSettingsScreen() {
         }
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(top = sizing.dp30),
             verticalArrangement = Arrangement.spacedBy(sizing.dp10)
         ) {
             themes.mapIndexed { index, theme ->
