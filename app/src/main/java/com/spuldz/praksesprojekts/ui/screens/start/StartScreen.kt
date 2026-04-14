@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
@@ -27,7 +28,8 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
 fun StartScreen(
-    onNavigateToHomeScreen: () -> Unit
+    onNavigateToHomeScreen: () -> Unit,
+    viewModel: StartScreenViewModel = hiltViewModel()
 ) {
     val theme = LocalTheme.current
 

@@ -16,16 +16,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
-import com.spuldz.praksesprojekts.ui.theme.setTheme
 import com.spuldz.praksesprojekts.ui.theme.sizing
 import com.spuldz.praksesprojekts.ui.theme.themes
 
 @Composable
-fun AppearanceSettingsScreen() {
+fun AppearanceSettingsScreen(
+     viewModel: SettingsViewModel = hiltViewModel()
+) {
     val theme = LocalTheme.current
     Column(
         modifier = Modifier
@@ -53,7 +55,7 @@ fun AppearanceSettingsScreen() {
             themes.mapIndexed { index, theme ->
                 ColorThemeOption(
                     text = theme.name,
-                    onClick = { setTheme(index) },
+                    onClick = { viewModel.setAppTheme(index) },
                     color1 = theme.Primary,
                     color2 = theme.Secondary,
                     color3 = theme.Background
