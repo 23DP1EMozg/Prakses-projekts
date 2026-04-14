@@ -14,6 +14,12 @@ class SettingsRepository @Inject constructor(
     val db: LanguageDAO
 ){
     suspend fun savePreferredLanguage(context: Context, language: Language) {
+        val previousLanguage = withContext(Dispatchers.IO) {
+            db.getLanguage()
+        }
+
+        if (previousLanguage?.languageCode == language.languageCode) return
+
         withContext(Dispatchers.IO) {
             db.insert(language)
         }
