@@ -88,4 +88,8 @@ dependencies {
 
     // Timber
     implementation(libs.timber)
+
+    // Room
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 }
