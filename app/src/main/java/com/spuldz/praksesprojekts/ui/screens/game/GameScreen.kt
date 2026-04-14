@@ -258,6 +258,14 @@ private fun GameScreenGrid(
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ){
     val theme = LocalTheme.current
+
+    val difficulty = when (game?.difficulty) {
+        "Easy" -> stringResource(R.string.easy)
+        "Medium" -> stringResource(R.string.medium)
+        "Hard" -> stringResource(R.string.medium)
+        else -> stringResource(R.string.medium)
+    }
+
     Column(
         modifier = Modifier
             .background(theme.Background)
@@ -277,7 +285,7 @@ private fun GameScreenGrid(
                 color = theme.Text
             )
             Text(
-                text = stringResource(R.string.difficulty) + ": ${game?.difficulty}",
+                text = stringResource(R.string.difficulty) + ": $difficulty",
                 style = TextSm,
                 color = theme.Text
             )
@@ -287,7 +295,6 @@ private fun GameScreenGrid(
                 color = theme.Text
             )
         }
-
         for((rowIndex, row) in grid.withIndex()) {
             Row(
                 modifier = Modifier
@@ -352,14 +359,14 @@ private fun GameScreenGrid(
         ) {
             Tool(
                 onClick = onTogglePencilMode,
-                name = "Pencil",
+                name = stringResource(R.string.pencil),
                 image = R.drawable.pencil_icon,
                 condition = game?.pencilMode == true,
                 game = game,
             )
             Tool(
                 onClick = onHint,
-                name = "Hint",
+                name = stringResource(R.string.hint),
                 image = R.drawable.hint_icon,
                 condition = game?.hintMode == true,
                 game = game,
