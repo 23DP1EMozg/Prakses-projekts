@@ -3,7 +3,7 @@ package com.spuldz.praksesprojekts.core.di
 import android.content.Context
 import androidx.room.Room
 import com.spuldz.praksesprojekts.core.database.AppDatabase
-import com.spuldz.praksesprojekts.core.database.dao.LanguageDAO
+import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,5 +24,5 @@ object MainModule {
 
     @Provides
     @Singleton
-    fun provideDao(database: AppDatabase): LanguageDAO = database.languageDao()
+    fun providePreferencesDao(database: AppDatabase): PreferencesDAO = database.preferencesDao()
 }

@@ -35,8 +35,9 @@ private val _sudokuTheme = MutableStateFlow(themes[0])
 val sudokuTheme = _sudokuTheme.asStateFlow()
 val LocalTheme = staticCompositionLocalOf { DefaultTheme }
 
-fun setTheme(theme: Int) {
-    _sudokuTheme.update { themes[theme] }
+fun setTheme(themeId: Int) {
+    val theme = themes[themeId]
+    _sudokuTheme.update { theme }
 }
 
 @Composable

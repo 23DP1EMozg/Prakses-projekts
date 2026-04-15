@@ -16,6 +16,7 @@ import com.spuldz.praksesprojekts.core.database.AppDatabase
 import com.spuldz.praksesprojekts.ui.navigation.NavigationHost
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
             .allowMainThreadQueries()
             .build()
 
-        val langCode = tempDb.languageDao().getLanguage()?.languageCode ?: "en"
+        val langCode = tempDb.preferencesDao().getPreferences()?.languageCode ?: Locale.getDefault().language
         tempDb.close()
 
         super.attachBaseContext(LocaleManager.wrap(newBase, langCode))
