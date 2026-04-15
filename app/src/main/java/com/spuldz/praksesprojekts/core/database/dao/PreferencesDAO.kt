@@ -9,11 +9,14 @@ import com.spuldz.praksesprojekts.core.database.entities.Preferences
 @Dao
 interface PreferencesDAO {
     @Query("SELECT * FROM preferences WHERE id = 1 LIMIT 1")
-    suspend fun getPreferences(): Preferences?
+    fun getPreferences(): Preferences?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(preferences: Preferences)
 
     @Query("UPDATE preferences SET theme = :themeId WHERE id = 1")
     fun updateTheme(themeId: Int)
+
+    @Query("UPDATE preferences SET language_code = :code WHERE id = 1")
+    fun updateLanguage(code: String)
 }

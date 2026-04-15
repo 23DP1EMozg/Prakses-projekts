@@ -1,7 +1,6 @@
 package com.spuldz.praksesprojekts.core.database
 
 import androidx.room.RoomDatabase
-import com.spuldz.praksesprojekts.core.database.dao.LanguageDAO
 import com.spuldz.praksesprojekts.core.database.entities.Language
 import androidx.room.Database
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
@@ -15,6 +14,5 @@ import com.spuldz.praksesprojekts.core.database.entities.Preferences
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun languageDao(): LanguageDAO
     abstract fun preferencesDao(): PreferencesDAO
 }
