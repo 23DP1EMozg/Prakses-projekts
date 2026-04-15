@@ -15,6 +15,7 @@ class GameViewModel @Inject constructor(
     val gameBoard = gameRepository.gameBoard
     val game = gameRepository.game
     val inputs = gameRepository.inputs
+    val preferences = gameRepository.preferences
     fun generateGameBoard(difficulty: String) {
         gameRepository.fillGameBoard(difficulty)
     }
@@ -38,5 +39,9 @@ class GameViewModel @Inject constructor(
 
     fun getPencilGridRows(cell: GridCellModel) : MutableList<MutableList<String>> {
       return gameRepository.getPencilGridRows(cell)
+    }
+
+    fun updateInputLayout() {
+        gameRepository.updateInputLayout()
     }
 }

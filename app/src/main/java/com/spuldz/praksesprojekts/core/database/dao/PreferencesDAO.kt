@@ -9,7 +9,7 @@ import com.spuldz.praksesprojekts.core.database.entities.Preferences
 @Dao
 interface PreferencesDAO {
     @Query("SELECT * FROM preferences WHERE id = 1 LIMIT 1")
-    fun getPreferences(): Preferences?
+    fun getPreferences(): Preferences
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(preferences: Preferences)
@@ -19,4 +19,7 @@ interface PreferencesDAO {
 
     @Query("UPDATE preferences SET language_code = :code WHERE id = 1")
     fun updateLanguage(code: String)
+
+    @Query("UPDATE preferences SET input_layout = :layout WHERE id = 1")
+    fun updateInputLayout(layout: String)
 }

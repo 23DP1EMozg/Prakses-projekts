@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
+import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -57,10 +57,13 @@ fun GameScreen(
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
     val game by viewModel.game.collectAsStateWithLifecycle()
     val inputs by viewModel.inputs.collectAsStateWithLifecycle()
+    val preferences by viewModel.preferences.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         Timber.d(difficulty)
         viewModel.generateGameBoard(difficulty)
+        viewModel.updateInputLayout()
+        Timber.d("GAME SCREEN LAUNCH EFFECT: $preferences")
     }
     GameScreenContent(
         grid = grid,
@@ -72,7 +75,8 @@ fun GameScreen(
         onHint = viewModel::onHint,
         getPencilGridRows = viewModel::getPencilGridRows,
         onNavigateHome = onNavigateHome,
-        onPlayAgain = onPlayAgain
+        onPlayAgain = onPlayAgain,
+        preferences = preferences
     )
 }
 
@@ -104,7 +108,8 @@ fun GameScreenContent(
     onHint: () -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>,
     onNavigateHome: () -> Unit,
-    onPlayAgain: () -> Unit
+    onPlayAgain: () -> Unit,
+    preferences: Preferences
 ) {
     if(grid == null){
         GameScreenLoading()
@@ -117,7 +122,8 @@ fun GameScreenContent(
             onNumberClick = onNumberClick,
             onTogglePencilMode = onTogglePencilMode,
             onHint = onHint,
-            getPencilGridRows = getPencilGridRows
+            getPencilGridRows = getPencilGridRows,
+            preferences = preferences
         )
         EndGamePopup(
             game = game,
@@ -255,10 +261,10 @@ private fun GameScreenGrid(
     onNumberClick: (Int) -> Unit,
     onTogglePencilMode: () -> Unit,
     onHint: () -> Unit,
-    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
-){
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>,
+    preferences: Preferences
+) {
     val theme = LocalTheme.current
-
     val difficulty = when (game?.difficulty) {
         "Easy" -> stringResource(R.string.easy)
         "Medium" -> stringResource(R.string.medium)
@@ -295,12 +301,12 @@ private fun GameScreenGrid(
                 color = theme.Text
             )
         }
-        for((rowIndex, row) in grid.withIndex()) {
+        for ((rowIndex, row) in grid.withIndex()) {
             Row(
                 modifier = Modifier
                     .height(sizing.dp40)
                     .drawBehind {
-                        val strokeWidth = if((rowIndex) % 3 == 0) 2.dp.toPx() else 0.5.dp.toPx()
+                        val strokeWidth = if ((rowIndex) % 3 == 0) 2.dp.toPx() else 0.5.dp.toPx()
 
                         drawLine(
                             color = Black,
@@ -309,7 +315,7 @@ private fun GameScreenGrid(
                             strokeWidth = strokeWidth
                         )
 
-                        if (rowIndex == 8){
+                        if (rowIndex == 8) {
                             drawLine(
                                 color = Black,
                                 start = Offset(size.width, size.height),
@@ -320,57 +326,27 @@ private fun GameScreenGrid(
 
                     }
             ) {
-                for( cell in row) {
+                for (cell in row) {
                     GridCell(cell, onCellClick, getPencilGridRows)
                 }
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = sizing.dp10),
-            horizontalArrangement = Arrangement.spacedBy(sizing.dp4, Alignment.CenterHorizontally)
-        ) {
-            if (inputs != null) {
-                for (input in inputs) {
-                    Box(
-                        modifier = Modifier
-                            .height(sizing.dp70)
-                            .width(sizing.dp38)
-                            .background(theme.Secondary.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
-                            .border(sizing.dp2, theme.Primary.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
-                            .clickable { if (!input.isComplete) {onNumberClick(input.value)} }
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .align(Alignment.Center),
-                            text = input.value.toString(),
-                            color = theme.Text.copy(alpha = if (input.isComplete) {0.3f} else {1f}),
-                            style = TextLg
-                        )
-                    }
-                }
-            }
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(0.9f),
-            horizontalArrangement = Arrangement.spacedBy(sizing.dp14, Alignment.End)
-        ) {
-            Tool(
-                onClick = onTogglePencilMode,
-                name = stringResource(R.string.pencil),
-                image = R.drawable.pencil_icon,
-                condition = game?.pencilMode == true,
+        if (preferences.inputLayout == "Row") {
+            InputLayoutRow(
+                inputs = inputs,
+                onNumberClick = onNumberClick,
+                onTogglePencilMode = onTogglePencilMode,
                 game = game,
+                onHint = onHint
             )
-            Tool(
-                onClick = onHint,
-                name = stringResource(R.string.hint),
-                image = R.drawable.hint_icon,
-                condition = game?.hintMode == true,
+        } else {
+            InputLayoutGrid(
+                inputs = inputs,
+                onNumberClick = onNumberClick,
+                onTogglePencilMode = onTogglePencilMode,
                 game = game,
-                amount = 3
+                onHint = onHint
             )
         }
     }
@@ -387,16 +363,13 @@ fun Tool(
 ) {
     val theme = LocalTheme.current
     Column(
-        modifier = Modifier
-            .clickable { onClick() },
+        modifier = Modifier.clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
             modifier = Modifier
-                .padding(top = sizing.dp20)
                 .width(sizing.dp50)
-                .height(sizing.dp50)
-            ,
+                .height(sizing.dp50),
             painter = painterResource(image),
             contentScale = ContentScale.Fit,
             contentDescription = null,
