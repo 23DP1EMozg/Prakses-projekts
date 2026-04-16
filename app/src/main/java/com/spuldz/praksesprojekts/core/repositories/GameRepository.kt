@@ -2,6 +2,8 @@ package com.spuldz.praksesprojekts.core.repositories
 
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
+import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
+import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
 import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
@@ -25,20 +27,31 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class GameRepository @Inject constructor() {
+class GameRepository @Inject constructor(
+    private val preferencesDao: PreferencesDAO
+) {
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private val _game = MutableStateFlow<GameModel?>(null)
     private val _inputs = MutableStateFlow<List<GameInputModel>?>(null)
+    private val _preferences = MutableStateFlow(Preferences())
     private var solution: MutableList<MutableList<GridCellModel>>? = null
     val gameBoard = _gameBoard.asStateFlow()
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
+    val preferences = _preferences.asStateFlow()
 
+    fun updateInputLayout() {
+        launchDefault {
+            val prefs = preferencesDao.getPreferences()
+            Timber.d("PREFERENCES: %s", prefs.toString())
+            _preferences.update { prefs }
+        }
+    }
      fun fillGameBoard(difficulty: String){
             val board = getFilledBoard()
             solution = board
-            val amount = when(difficulty){
-                "Easy" -> 1
+            val amount = when(difficulty) {
+                "Easy" -> 40
                 "Medium" -> 50
                 "Hard" -> 60
                 else -> 50

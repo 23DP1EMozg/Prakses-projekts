@@ -9,6 +9,6 @@ import java.util.Locale
 data class Preferences(
     @PrimaryKey val id: Int = 1,
     @ColumnInfo(name = "theme") val theme: Int = 0,
-    @ColumnInfo(name = "input_layout") val inputLayout: String = "ROW",
+    @ColumnInfo(name = "input_layout") val inputLayout: String = "row",
     @ColumnInfo(name = "language_code") val languageCode: String = Locale.getDefault().language
 )

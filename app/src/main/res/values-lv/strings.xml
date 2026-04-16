@@ -27,4 +27,8 @@
     <string name="hint">Mājiens</string>
     <string name="latvian">Latviešu</string>
     <string name="english">Angļu</string>
+    <string name="game_input_layout">Spēles pogu izkārtojums</string>
+    <string name="row">Rinda</string>
+    <string name="grid">Režģis</string>
+    <string name="grid_center">Centrēts Režģis</string>
 </resources>

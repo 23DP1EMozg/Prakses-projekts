@@ -1,4 +1,4 @@
-package com.spuldz.praksesprojekts.ui.screens.start
+package com.spuldz.praksesprojekts.core.repositories
 
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
@@ -20,7 +20,7 @@ class StartScreenRepository @Inject constructor(
                     preferencesDao.insert(Preferences())
                 }
             } else {
-                val themeIndex = preferencesDao.getPreferences()?.theme ?: 0
+                val themeIndex = preferencesDao.getPreferences().theme
                 setTheme(themeIndex)
             }
         }

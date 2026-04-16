@@ -35,6 +35,7 @@ data class TailwindSizing(
     val dp42: Dp = 42.dp,
     val dp44: Dp = 44.dp,
     val dp50: Dp = 50.dp,
+    val dp60: Dp = 60.dp,
     val dp64: Dp = 64.dp,
     val dp70: Dp = 70.dp,
     val dp100: Dp = 100.dp,

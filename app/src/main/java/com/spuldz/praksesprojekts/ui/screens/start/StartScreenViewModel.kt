@@ -1,6 +1,7 @@
 package com.spuldz.praksesprojekts.ui.screens.start
 
 import androidx.lifecycle.ViewModel
+import com.spuldz.praksesprojekts.core.repositories.StartScreenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

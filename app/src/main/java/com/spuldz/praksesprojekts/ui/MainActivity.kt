@@ -16,26 +16,24 @@ import com.spuldz.praksesprojekts.core.database.AppDatabase
 import com.spuldz.praksesprojekts.ui.navigation.NavigationHost
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context) {
+            val tempDb = Room
+                .databaseBuilder(
+                    newBase,
+                    AppDatabase::class.java,
+                    "database"
+                )
+                .allowMainThreadQueries()
+                .build()
 
-        val tempDb = Room
-            .databaseBuilder(
-                newBase,
-                AppDatabase::class.java,
-                "database"
-            )
-            .allowMainThreadQueries()
-            .build()
+            val langCode = tempDb.preferencesDao().getPreferences().languageCode
+            tempDb.close()
 
-        val langCode = tempDb.preferencesDao().getPreferences()?.languageCode ?: Locale.getDefault().language
-        tempDb.close()
-
-        super.attachBaseContext(LocaleManager.wrap(newBase, langCode))
+            super.attachBaseContext(LocaleManager.wrap(newBase, langCode))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.spuldz.praksesprojekts.core.common.launchDefault
+import com.spuldz.praksesprojekts.core.repositories.SettingsRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -12,6 +13,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
+    val prefs = settingsRepository.prefs
+
     fun setLanguage(context: Context, languageCode: String) {
         viewModelScope.launch {
             settingsRepository.savePreferredLanguage(context, languageCode)
@@ -21,6 +24,12 @@ class SettingsViewModel @Inject constructor(
     fun setAppTheme(themeId: Int) {
         launchDefault {
             settingsRepository.setAppTheme(themeId)
+        }
+    }
+
+    fun setGameInputLayout(layout: String) {
+        launchDefault {
+            settingsRepository.setGameInputLayout(layout)
         }
     }
 }
