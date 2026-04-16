@@ -53,9 +53,11 @@ class SettingsRepository @Inject constructor(
     suspend fun setGameInputLayout(layout: String) {
         withContext(Dispatchers.IO) {
             preferencesDao.updateInputLayout(layout)
-            _prefs.update { it.copy(
-                inputLayout = layout
-            ) }
+            _prefs.update {
+                it.copy(
+                    inputLayout = layout
+                )
+            }
         }
     }
 }

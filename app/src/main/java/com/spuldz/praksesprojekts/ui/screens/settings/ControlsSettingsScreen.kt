@@ -71,11 +71,13 @@ fun ControlsSettingsScreen(
             ControlOption(
                 text = stringResource(R.string.row),
                 onClick = { viewModel.setGameInputLayout("row") },
-                prefs = prefs
+                prefs = prefs,
+                name = "row"
             )
             ControlOption(
                 text = stringResource(R.string.grid),
                 onClick = { viewModel.setGameInputLayout("grid") },
+                name = "grid",
                 prefs = prefs
             )
             ControlOption(
@@ -93,7 +95,7 @@ fun ControlOption(
     text: String,
     onClick: () -> Unit,
     prefs: Preferences?,
-    name: String = text
+    name: String
 ) {
     val theme = LocalTheme.current
 
