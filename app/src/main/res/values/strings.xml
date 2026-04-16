@@ -27,4 +27,8 @@
     <string name="hint">Hint</string>
     <string name="latvian">Latvian</string>
     <string name="english">English</string>
+    <string name="game_input_layout">Game Input Layout</string>
+    <string name="row">Row</string>
+    <string name="grid">Grid</string>
+    <string name="grid_center">Grid Center</string>
 </resources>

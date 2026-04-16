@@ -27,6 +27,7 @@ import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.sizing
+import java.util.Locale.getDefault
 
 @Composable
 fun ControlsSettingsScreen(
@@ -58,14 +59,29 @@ fun ControlsSettingsScreen(
                 .padding(top = sizing.dp30),
             verticalArrangement = Arrangement.spacedBy(sizing.dp10)
         ) {
+            Row(
+                modifier = Modifier.padding(horizontal = sizing.dp10)
+            ) {
+                Text(
+                    text = stringResource(R.string.game_input_layout),
+                    style = TextMd,
+                    color = theme.Text
+                )
+            }
             ControlOption(
-                text = "Row",
-                onClick = { viewModel.setGameInputLayout("Row") },
+                text = stringResource(R.string.row),
+                onClick = { viewModel.setGameInputLayout("row") },
                 prefs = prefs
             )
             ControlOption(
-                text = "Grid",
-                onClick = { viewModel.setGameInputLayout("Grid") },
+                text = stringResource(R.string.grid),
+                onClick = { viewModel.setGameInputLayout("grid") },
+                prefs = prefs
+            )
+            ControlOption(
+                text = stringResource(R.string.grid_center),
+                name = "grid_center",
+                onClick = { viewModel.setGameInputLayout("grid_center") },
                 prefs = prefs
             )
         }
@@ -76,7 +92,8 @@ fun ControlsSettingsScreen(
 fun ControlOption(
     text: String,
     onClick: () -> Unit,
-    prefs: Preferences?
+    prefs: Preferences?,
+    name: String = text
 ) {
     val theme = LocalTheme.current
 
@@ -95,7 +112,7 @@ fun ControlOption(
             color = theme.Text,
             text = text
         )
-        if (prefs?.inputLayout == text) {
+        if (prefs?.inputLayout == name.lowercase(getDefault())) {
             Image(
                 modifier = Modifier
                     .height(sizing.dp30),

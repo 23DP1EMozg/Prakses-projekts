@@ -332,22 +332,31 @@ private fun GameScreenGrid(
             }
         }
 
-        if (preferences.inputLayout == "Row") {
-            InputLayoutRow(
-                inputs = inputs,
-                onNumberClick = onNumberClick,
-                onTogglePencilMode = onTogglePencilMode,
-                game = game,
-                onHint = onHint
-            )
-        } else {
-            InputLayoutGrid(
-                inputs = inputs,
-                onNumberClick = onNumberClick,
-                onTogglePencilMode = onTogglePencilMode,
-                game = game,
-                onHint = onHint
-            )
+        when (preferences.inputLayout) {
+            "row" ->
+                InputLayoutRow(
+                    inputs = inputs,
+                    onNumberClick = onNumberClick,
+                    onTogglePencilMode = onTogglePencilMode,
+                    game = game,
+                    onHint = onHint
+                )
+            "grid" ->
+                InputLayoutGrid(
+                    inputs = inputs,
+                    onNumberClick = onNumberClick,
+                    onTogglePencilMode = onTogglePencilMode,
+                    game = game,
+                    onHint = onHint
+                )
+            "grid_center" ->
+                InputLayoutGridCenter(
+                    inputs = inputs,
+                    onNumberClick = onNumberClick,
+                    onTogglePencilMode = onTogglePencilMode,
+                    game = game,
+                    onHint = onHint
+                )
         }
     }
 }
