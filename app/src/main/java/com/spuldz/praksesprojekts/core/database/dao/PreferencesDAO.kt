@@ -9,10 +9,10 @@ import com.spuldz.praksesprojekts.core.database.entities.Preferences
 @Dao
 interface PreferencesDAO {
     @Query("SELECT * FROM preferences WHERE id = 1 LIMIT 1")
-    fun getPreferences(): Preferences
+    fun getPreferences(): Preferences?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(preferences: Preferences)
+    fun insert(preferences: Preferences)
 
     @Query("UPDATE preferences SET theme = :themeId WHERE id = 1")
     fun updateTheme(themeId: Int)
@@ -22,4 +22,9 @@ interface PreferencesDAO {
 
     @Query("UPDATE preferences SET input_layout = :layout WHERE id = 1")
     fun updateInputLayout(layout: String)
+
+    @Query("UPDATE preferences SET hint_count = :count WHERE id = 1")
+    fun updateHintCount(count: Int)
+
+
 }

@@ -9,5 +9,6 @@ data class GameModel(
     val pencilMode: Boolean = false,
     val hintMode: Boolean = false,
     val hintsLeft: Int = 3,
+    val hintCount: Int = 3,
     val isWin: Boolean = false
 )

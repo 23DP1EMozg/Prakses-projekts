@@ -32,4 +32,10 @@ class SettingsViewModel @Inject constructor(
             settingsRepository.setGameInputLayout(layout)
         }
     }
+
+    fun setHintCount(count: String) {
+        launchDefault {
+            settingsRepository.setHintCount(count)
+        }
+    }
 }
