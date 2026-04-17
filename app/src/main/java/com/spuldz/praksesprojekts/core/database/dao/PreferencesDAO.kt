@@ -26,5 +26,6 @@ interface PreferencesDAO {
     @Query("UPDATE preferences SET hint_count = :count WHERE id = 1")
     fun updateHintCount(count: Int)
 
-
+    @Query("UPDATE preferences SET mistake_limit = :limit WHERE id = 1")
+    fun updateMistakeLimit(limit: Int)
 }

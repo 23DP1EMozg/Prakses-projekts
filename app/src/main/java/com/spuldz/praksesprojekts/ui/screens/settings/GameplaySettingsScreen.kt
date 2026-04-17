@@ -60,18 +60,18 @@ fun GameplaySettingsScreen(
         ) {
             Option(
                 text = "Hints",
-                value = prefs.hint_count.toString(),
+                value = prefs.hintCount.toString(),
                 onChange = { value -> viewModel.setHintCount(value) },
                 label = "",
                 placeholder = "hints"
             )
-//            Option(
-//                text = "Mistake Limit",
-//                value = prefs.hint_count.toString(),
-//                onChange = { value -> viewModel.setHintCount(value) },
-//                label = "",
-//                placeholder = "mistake limit"
-//            )
+            Option(
+                text = "Mistake Limit",
+                value = prefs.mistakeLimit.toString(),
+                onChange = { value -> viewModel.setMistakeLimit(value) },
+                label = "",
+                placeholder = "mistake limit"
+            )
         }
     }
 }

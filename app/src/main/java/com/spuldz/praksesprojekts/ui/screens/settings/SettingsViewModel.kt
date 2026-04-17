@@ -38,4 +38,10 @@ class SettingsViewModel @Inject constructor(
             settingsRepository.setHintCount(count)
         }
     }
+
+    fun setMistakeLimit(limit: String) {
+        launchDefault {
+            settingsRepository.setMistakeLimit(limit)
+        }
+    }
 }

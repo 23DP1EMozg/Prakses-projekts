@@ -69,16 +69,32 @@ class SettingsRepository @Inject constructor(
         withContext(Dispatchers.IO) {
             val num = settingsHandler.validateNumberInput(
                 newValue = count,
-                oldValue = _prefs.value.hint_count,
-                81
+                oldValue = _prefs.value.hintCount,
+                maxLength = 81
             )
             preferencesDao.updateHintCount(num)
             _prefs.update {
                 it.copy(
-                    hint_count = num
+                    hintCount = num
                 )
             }
-            Timber.d(_prefs.value.hint_count.toString())
+            Timber.d(_prefs.value.hintCount.toString())
+        }
+    }
+
+    suspend fun setMistakeLimit(limit: String) {
+        withContext(Dispatchers.IO) {
+            val num = settingsHandler.validateNumberInput(
+                newValue = limit,
+                oldValue = _prefs.value.mistakeLimit,
+                maxLength = 81
+            )
+            preferencesDao.updateMistakeLimit(num)
+            _prefs.update {
+                it.copy(
+                    mistakeLimit = num
+                )
+            }
         }
     }
 }

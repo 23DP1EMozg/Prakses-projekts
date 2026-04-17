@@ -79,8 +79,9 @@ class GameRepository @Inject constructor(
                 _game.update {
                     GameModel(
                         difficulty = difficulty,
-                        hintsLeft = preferencesDao.getPreferences()?.hint_count ?: 3,
-                        hintCount = preferencesDao.getPreferences()?.hint_count ?: 3
+                        hintsLeft = preferencesDao.getPreferences()?.hintCount ?: 3,
+                        hintCount = preferencesDao.getPreferences()?.hintCount ?: 3,
+                        mistakeLimit = preferencesDao.getPreferences()?.mistakeLimit ?: 3
                     )
                 }
             }
@@ -219,7 +220,7 @@ class GameRepository @Inject constructor(
                         mistakes = _game.value?.mistakes?.plus(1) ?: 0
                     ) }
 
-                    if (_game.value?.mistakes!! >= 3) {
+                    if (_game.value?.mistakes!! >= _game.value?.mistakeLimit!!) {
                         _game.update { _game.value?.copy(
                             isFinished = true
                         ) }
