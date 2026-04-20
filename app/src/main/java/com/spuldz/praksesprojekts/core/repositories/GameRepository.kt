@@ -91,24 +91,34 @@ class GameRepository @Inject constructor(
             _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
             _inputs.update { inputList }
 
-            startGameTimer()
+         //   startGameTimer()
     }
 
-    suspend fun startGameTimer() {
-         val startTime = System.currentTimeMillis()
-             while (_game.value?.isFinished == false) {
-                 val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
-                 val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
-
-                 _game.update {
-                     it?.copy(
-                         time = formatedTime,
-                         seconds = elapsedSeconds
-                     )
-                 }
-                 delay(1000)
-             }
+    fun updateGameTimer(seconds: Long) {
+        val formatedTime = DateUtils.formatElapsedTime(seconds)
+        _game.update {
+            it?.copy(
+                time = formatedTime,
+                seconds = seconds
+            )
+        }
     }
+
+//    suspend fun startGameTimer() {
+//         val startTime = System.currentTimeMillis()
+//             while (_game.value?.isFinished == false) {
+//                 val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
+//                 val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
+//
+//                 _game.update {
+//                     it?.copy(
+//                         time = formatedTime,
+//                         seconds = elapsedSeconds
+//                     )
+//                 }
+//                 delay(1000)
+//             }
+//    }
 
     fun selectCell(cell: GridCellModel) {
         if (_game.value?.isFinished == true) return
