@@ -41,7 +41,8 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @Composable
 fun HomeScreen(
     onNavigateToGameScreen: (difficulty: String) -> Unit,
-    onNavigateToSettingsScreen: () -> Unit
+    onNavigateToSettingsScreen: () -> Unit,
+    onNavigateToScoresScreen: () -> Unit
 ){
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -65,8 +66,16 @@ fun HomeScreen(
                 .padding(top = sizing.dp30),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
-            NavigationOption(stringResource(R.string.settings), R.drawable.settings_icon, { onNavigateToSettingsScreen() })
-            NavigationOption(stringResource(R.string.scores), R.drawable.best_scores_icon, {})
+            NavigationOption(
+                stringResource(R.string.settings),
+                R.drawable.settings_icon,
+                { onNavigateToSettingsScreen() }
+            )
+            NavigationOption(
+                stringResource(R.string.scores),
+                R.drawable.best_scores_icon,
+                { onNavigateToScoresScreen() }
+            )
         }
         Row(
             modifier = Modifier
@@ -75,8 +84,16 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
 
-            NavigationOption(stringResource(R.string.profile), R.drawable.profile_icon, {})
-            NavigationOption(stringResource(R.string.stats), R.drawable.stats_icon, {})
+            NavigationOption(
+                stringResource(R.string.profile),
+                R.drawable.profile_icon,
+                {}
+            )
+            NavigationOption(
+                stringResource(R.string.stats),
+                R.drawable.stats_icon,
+                {}
+            )
         }
         Spacer(
             modifier = Modifier

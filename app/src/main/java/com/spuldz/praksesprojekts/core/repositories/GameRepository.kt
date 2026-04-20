@@ -3,6 +3,7 @@ package com.spuldz.praksesprojekts.core.repositories
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
+import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
@@ -30,7 +31,8 @@ import javax.inject.Singleton
 
 @Singleton
 class GameRepository @Inject constructor(
-    private val preferencesDao: PreferencesDAO
+    private val preferencesDao: PreferencesDAO,
+    private val scoreDao: ScoreDAO
 ) {
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private val _game = MutableStateFlow<GameModel?>(null)
@@ -258,4 +260,5 @@ class GameRepository @Inject constructor(
     fun getPencilGridRows(cell: GridCellModel): MutableList<MutableList<String>> {
         return getPencilRows(cell)
     }
+
 }

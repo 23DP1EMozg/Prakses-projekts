@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
+import com.spuldz.praksesprojekts.ui.screens.scores.ScoresScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.AppearanceSettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.ControlsSettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.GameplaySettingsScreen
@@ -31,6 +32,8 @@ object GameplaySettings
 object ControlsSettings
 @Serializable
 object LanguageSettings
+@Serializable
+object Scores
 
 @Composable
 fun NavigationHost() {
@@ -52,9 +55,17 @@ fun NavigationHost() {
                 },
                 onNavigateToSettingsScreen = {
                     navController.navigate(route = Settings)
+                },
+                onNavigateToScoresScreen = {
+                    navController.navigate(route = Scores)
                 }
             )
         }
+
+        composable<Scores> {
+            ScoresScreen()
+        }
+
         // Settings screens
         composable<Settings> {
             SettingsScreen(

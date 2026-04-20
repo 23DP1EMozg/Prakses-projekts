@@ -5,7 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Language(
+data class Score(
     @PrimaryKey val id: Int,
-    @ColumnInfo(name = "language_code") val languageCode: String,
+    @ColumnInfo(name = "seconds") val seconds: Int,
+    @ColumnInfo(name = "difficulty") val difficulty: String
 )
