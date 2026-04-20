@@ -2,14 +2,10 @@ package com.spuldz.praksesprojekts.core.repositories
 
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
+import com.spuldz.praksesprojekts.core.handlers.GameBoardGenerationHandler
+import com.spuldz.praksesprojekts.core.handlers.GameplayHandler
 import com.spuldz.praksesprojekts.core.handlers.ToolHandler
-import com.spuldz.praksesprojekts.core.handlers.copyBoard
-import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
-import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
-import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
 import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
-import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
-import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -31,13 +27,11 @@ class GameRepository @Inject constructor() {
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
     val toolHandler = ToolHandler()
-    val game = _game.asStateFlow()
-    val inputs = _inputs.asStateFlow()
     val generationHandler = GameBoardGenerationHandler()
     val gameplayHandler = GameplayHandler()
 
      fun fillGameBoard(difficulty: String){
-            val board = getFilledBoard()
+            val board = generationHandler.getFilledBoard()
             solution = board
             val amount = when(difficulty){
                 "Easy" -> 40
@@ -48,14 +42,14 @@ class GameRepository @Inject constructor() {
             for (row in board) {
                 Timber.d(row.map { it.value }.toString())
             }
-            val boardWithRemovedCells = removeCellsFromBoard(board, amount)
+            val boardWithRemovedCells = generationHandler.removeCellsFromBoard(board, amount)
             var inputList: MutableList<GameInputModel>? = mutableListOf()
 
             for (num in 1..9) {
                 inputList?.add(GameInputModel(value = num))
 
-                if (isNumberComplete(num, boardWithRemovedCells)) {
-                    inputList = updateGameInputs(num, inputList)
+                if (gameplayHandler.isNumberComplete(num, boardWithRemovedCells)) {
+                    inputList = gameplayHandler.updateGameInputs(num, inputList)
                 }
             }
 
@@ -163,12 +157,12 @@ class GameRepository @Inject constructor() {
 
                 newBoard = lightUpAllCells(newBoard, number)
 
-                if(isNumberComplete(number,newBoard)) {
-                    val inputsCopy = updateGameInputs(number, _inputs.value)
+                if(gameplayHandler.isNumberComplete(number,newBoard)) {
+                    val inputsCopy = gameplayHandler.updateGameInputs(number, _inputs.value)
                     _inputs.update { inputsCopy }
                 }
 
-                if (isBoardComplete(newBoard)) {
+                if (gameplayHandler.isBoardComplete(newBoard)) {
                     _game.update { _game.value?.copy(
                         isFinished = true
                     ) }
@@ -184,7 +178,7 @@ class GameRepository @Inject constructor() {
                         row.forEach { cell -> cell.isEditable = false }
                     }
 
-                    _gameBoard.update { copyBoard(newBoard) }
+                    _gameBoard.update { generationHandler.copyBoard(newBoard) }
                     _game.update { _game.value?.copy(
                         mistakes = _game.value?.mistakes?.plus(1) ?: 0
                     ) }
@@ -207,7 +201,7 @@ class GameRepository @Inject constructor() {
                         row.forEach { cell -> cell.isEditable = true }
                     }
             }
-           _gameBoard.update { toolHandler.updatePencilEnteredNumbers(copyBoard(newBoard)) }
+           _gameBoard.update { toolHandler.updatePencilEnteredNumbers(generationHandler.copyBoard(newBoard)) }
       }
 
     fun togglePencilMode() {
