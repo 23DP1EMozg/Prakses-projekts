@@ -14,4 +14,10 @@
     <string name="difficulty">Difficulty</string>
     <string name="pencil">Pencil</string>
     <string name="hint">Hint</string>
+    <string name="pencil">Pencil</string>
+    <string name="hint">Hint</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
+
 </resources>

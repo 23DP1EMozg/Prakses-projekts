@@ -101,7 +101,7 @@ fun GameScreenContent(
     onHint: () -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ) {
-    if(grid == null) {
+    if (grid == null) {
         GameScreenLoading()
     }else{
         GameScreenGrid(
@@ -138,12 +138,27 @@ private fun GridCell(
     }
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
+
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
+            else if (cell.isError) Color.Red
+            else if (cell.isHighlighted) HighlightColor
+            else PrimaryColor,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
+    if (cell.isError) {
+        Timber.d("ERROR CELL: $cell")
+    }
     Box(
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
-            .background(animatedBackgroundColor)
-            .border(sizing.dp2, if (cell.isSelected) Blue else Color.Transparent)
+            .background(
+                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
+            )
             .clickable { onCellClick(cell) }
             .drawBehind {
 

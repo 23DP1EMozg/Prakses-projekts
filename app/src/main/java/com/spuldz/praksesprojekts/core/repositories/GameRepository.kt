@@ -31,6 +31,10 @@ class GameRepository @Inject constructor() {
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
     val toolHandler = ToolHandler()
+    val game = _game.asStateFlow()
+    val inputs = _inputs.asStateFlow()
+    val generationHandler = GameBoardGenerationHandler()
+    val gameplayHandler = GameplayHandler()
 
      fun fillGameBoard(difficulty: String){
             val board = getFilledBoard()
