@@ -286,7 +286,7 @@ private fun GameScreenGrid(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(R.string.mistakes) + ": ${game?.mistakes}/3",
+                text = stringResource(R.string.mistakes) + ": ${game?.mistakes}/${game?.mistakeLimit}",
                 style = TextSm,
                 color = theme.Text
             )

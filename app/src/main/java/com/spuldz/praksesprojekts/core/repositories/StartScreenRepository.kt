@@ -20,7 +20,7 @@ class StartScreenRepository @Inject constructor(
                     preferencesDao.insert(Preferences())
                 }
             } else {
-                val themeIndex = preferencesDao.getPreferences().theme
+                val themeIndex = preferencesDao.getPreferences()?.theme ?: return@launchDefault
                 setTheme(themeIndex)
             }
         }

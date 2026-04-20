@@ -78,7 +78,7 @@ fun InputLayoutRow(
             image = R.drawable.hint_icon,
             condition = game?.hintMode == true,
             game = game,
-            amount = 3
+            amount = game?.hintCount
         )
     }
 }

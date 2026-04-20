@@ -18,10 +18,12 @@ import com.spuldz.praksesprojekts.core.handlers.updatePencilEnteredNumbers
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,10 +46,13 @@ class GameRepository @Inject constructor(
         launchDefault {
             val prefs = preferencesDao.getPreferences()
             Timber.d("PREFERENCES: %s", prefs.toString())
+
+            if (prefs == null) return@launchDefault
+
             _preferences.update { prefs }
         }
     }
-     fun fillGameBoard(difficulty: String){
+     suspend fun fillGameBoard(difficulty: String){
             val board = getFilledBoard()
             solution = board
             val amount = when(difficulty) {
@@ -70,16 +75,24 @@ class GameRepository @Inject constructor(
                 }
             }
 
-            _game.update { GameModel(difficulty = difficulty) }
+            withContext(Dispatchers.IO) {
+                _game.update {
+                    GameModel(
+                        difficulty = difficulty,
+                        hintsLeft = preferencesDao.getPreferences()?.hintCount ?: 3,
+                        hintCount = preferencesDao.getPreferences()?.hintCount ?: 3,
+                        mistakeLimit = preferencesDao.getPreferences()?.mistakeLimit ?: 3
+                    )
+                }
+            }
             _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
             _inputs.update { inputList }
 
             startGameTimer()
     }
 
-     fun startGameTimer() {
+     suspend fun startGameTimer() {
          val startTime = System.currentTimeMillis()
-         launchDefault {
              while (_game.value?.isFinished == false) {
                  val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
                  val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
@@ -92,7 +105,6 @@ class GameRepository @Inject constructor(
                  }
                  delay(1000)
              }
-         }
     }
 
     fun selectCell(cell: GridCellModel) {
@@ -208,7 +220,7 @@ class GameRepository @Inject constructor(
                         mistakes = _game.value?.mistakes?.plus(1) ?: 0
                     ) }
 
-                    if (_game.value?.mistakes!! >= 3) {
+                    if (_game.value?.mistakes!! >= _game.value?.mistakeLimit!!) {
                         _game.update { _game.value?.copy(
                             isFinished = true
                         ) }

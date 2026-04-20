@@ -5,12 +5,14 @@ import android.content.Context
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.handlers.SettingsHandler
 import com.spuldz.praksesprojekts.ui.theme.setTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,16 +21,29 @@ class SettingsRepository @Inject constructor(
     val preferencesDao: PreferencesDAO
 ){
     private val _prefs = MutableStateFlow(Preferences())
+    private val _changes = MutableStateFlow(false)
     val prefs = _prefs.asStateFlow()
+    val changes = _changes.asStateFlow()
+    val settingsHandler = SettingsHandler()
 
     init {
         launchDefault {
-            _prefs.update { preferencesDao.getPreferences() }
+            val p = preferencesDao.getPreferences() ?: return@launchDefault
+            _prefs.update { p }
         }
     }
+
+    suspend fun resetInputs() {
+        withContext(Dispatchers.IO) {
+            val p = preferencesDao.getPreferences() ?: return@withContext
+            _prefs.update { p }
+            _changes.update { false }
+        }
+    }
+
     suspend fun savePreferredLanguage(context: Context, language: String) {
         val previousLanguage = withContext(Dispatchers.IO) {
-            preferencesDao.getPreferences().languageCode
+            preferencesDao.getPreferences()?.languageCode
         }
 
         if (previousLanguage == language) return
@@ -58,6 +73,61 @@ class SettingsRepository @Inject constructor(
                     inputLayout = layout
                 )
             }
+        }
+    }
+
+    suspend fun setHintCount(count: String) {
+        withContext(Dispatchers.IO) {
+            val num = settingsHandler.validateNumberInput(
+                newValue = count,
+                oldValue = _prefs.value.hintCount,
+                maxLength = 81
+            )
+            //preferencesDao.updateHintCount(num)
+            _prefs.update {
+                it.copy(
+                    hintCount = num
+                )
+            }
+            _changes.update {
+                settingsHandler.checkForChanges(
+                    _prefs.value,
+                    preferencesDao.getPreferences()
+                )
+            }
+            Timber.d(_prefs.value.hintCount.toString())
+        }
+    }
+
+    suspend fun setMistakeLimit(limit: String) {
+        withContext(Dispatchers.IO) {
+            val num = settingsHandler.validateNumberInput(
+                newValue = limit,
+                oldValue = _prefs.value.mistakeLimit,
+                maxLength = 81
+            )
+            //preferencesDao.updateMistakeLimit(num)
+            _prefs.update {
+                it.copy(
+                    mistakeLimit = num
+                )
+            }
+            _changes.update {
+                settingsHandler.checkForChanges(
+                    _prefs.value,
+                    preferencesDao.getPreferences()
+                )
+            }
+        }
+    }
+
+    suspend fun saveGameplaySettings() {
+        withContext(Dispatchers.IO) {
+            preferencesDao.insert(Preferences(
+                hintCount = _prefs.value.hintCount,
+                mistakeLimit = _prefs.value.mistakeLimit
+            ))
+            _changes.update { false }
         }
     }
 }

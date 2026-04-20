@@ -14,6 +14,7 @@ class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     val prefs = settingsRepository.prefs
+    val changes = settingsRepository.changes
 
     fun setLanguage(context: Context, languageCode: String) {
         viewModelScope.launch {
@@ -30,6 +31,30 @@ class SettingsViewModel @Inject constructor(
     fun setGameInputLayout(layout: String) {
         launchDefault {
             settingsRepository.setGameInputLayout(layout)
+        }
+    }
+
+    fun setHintCount(count: String) {
+        launchDefault {
+            settingsRepository.setHintCount(count)
+        }
+    }
+
+    fun setMistakeLimit(limit: String) {
+        launchDefault {
+            settingsRepository.setMistakeLimit(limit)
+        }
+    }
+
+    fun resetInputs() {
+        launchDefault {
+            settingsRepository.resetInputs()
+        }
+    }
+
+    fun saveGameplaySettings() {
+        launchDefault {
+            settingsRepository.saveGameplaySettings()
         }
     }
 }
