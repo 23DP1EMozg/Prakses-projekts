@@ -15,8 +15,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.core.database.entities.Score
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
@@ -43,7 +45,7 @@ fun ScoresScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Scores",
+                text = stringResource(R.string.scores),
                 style = TextLg,
                 color = theme.Text
             )
@@ -68,6 +70,13 @@ fun ScoresScreen(
 @Composable
 fun ScoreCard(score: Score, place: Int) {
     val theme = LocalTheme.current
+
+    val difficulty = when (score.difficulty) {
+        "Easy" -> stringResource(R.string.easy)
+        "Medium" -> stringResource(R.string.medium)
+        "Hard" -> stringResource(R.string.medium)
+        else -> stringResource(R.string.medium)
+    }
 
     Row(
         modifier = Modifier
@@ -107,7 +116,7 @@ fun ScoreCard(score: Score, place: Int) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = score.difficulty,
+                text = difficulty,
                 style = TextMd,
                 color = theme.Text
             )
