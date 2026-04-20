@@ -3,7 +3,9 @@ package com.spuldz.praksesprojekts.core.repositories
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
+import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.database.entities.Score
 import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
 import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
@@ -30,7 +32,8 @@ import javax.inject.Singleton
 
 @Singleton
 class GameRepository @Inject constructor(
-    private val preferencesDao: PreferencesDAO
+    private val preferencesDao: PreferencesDAO,
+    private val scoreDao: ScoreDAO
 ) {
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private val _game = MutableStateFlow<GameModel?>(null)
@@ -56,7 +59,7 @@ class GameRepository @Inject constructor(
             val board = getFilledBoard()
             solution = board
             val amount = when(difficulty) {
-                "Easy" -> 40
+                "Easy" -> 1
                 "Medium" -> 50
                 "Hard" -> 60
                 else -> 50
@@ -88,24 +91,34 @@ class GameRepository @Inject constructor(
             _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
             _inputs.update { inputList }
 
-            startGameTimer()
+         //   startGameTimer()
     }
 
-     suspend fun startGameTimer() {
-         val startTime = System.currentTimeMillis()
-             while (_game.value?.isFinished == false) {
-                 val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
-                 val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
-
-                 _game.update {
-                     it?.copy(
-                         time = formatedTime,
-                         seconds = elapsedSeconds
-                     )
-                 }
-                 delay(1000)
-             }
+    fun updateGameTimer(seconds: Long) {
+        val formatedTime = DateUtils.formatElapsedTime(seconds)
+        _game.update {
+            it?.copy(
+                time = formatedTime,
+                seconds = seconds
+            )
+        }
     }
+
+//    suspend fun startGameTimer() {
+//         val startTime = System.currentTimeMillis()
+//             while (_game.value?.isFinished == false) {
+//                 val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
+//                 val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
+//
+//                 _game.update {
+//                     it?.copy(
+//                         time = formatedTime,
+//                         seconds = elapsedSeconds
+//                     )
+//                 }
+//                 delay(1000)
+//             }
+//    }
 
     fun selectCell(cell: GridCellModel) {
         if (_game.value?.isFinished == true) return
@@ -203,7 +216,12 @@ class GameRepository @Inject constructor(
                         isFinished = true,
                         isWin = true
                     ) }
-                    Timber.d("You Win!")
+                    withContext(Dispatchers.IO) {
+                        scoreDao.insert(Score(
+                            seconds = _game.value?.seconds ?: 0,
+                            difficulty = _game.value?.difficulty ?: "difficulty"
+                        ))
+                    }
                 }
                 }else{
                     newBoard[row][col] = selectedCell.copy(

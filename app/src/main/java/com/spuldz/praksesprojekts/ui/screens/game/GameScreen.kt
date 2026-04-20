@@ -60,10 +60,8 @@ fun GameScreen(
     val preferences by viewModel.preferences.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        Timber.d(difficulty)
         viewModel.generateGameBoard(difficulty)
         viewModel.updateInputLayout()
-        Timber.d("GAME SCREEN LAUNCH EFFECT: $preferences")
     }
     GameScreenContent(
         grid = grid,

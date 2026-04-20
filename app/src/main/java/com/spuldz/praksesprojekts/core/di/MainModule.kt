@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.spuldz.praksesprojekts.core.database.AppDatabase
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
+import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,4 +26,8 @@ object MainModule {
     @Provides
     @Singleton
     fun providePreferencesDao(database: AppDatabase): PreferencesDAO = database.preferencesDao()
+
+    @Provides
+    @Singleton
+    fun provideScoreDao(database: AppDatabase): ScoreDAO = database.scoreDao()
 }
