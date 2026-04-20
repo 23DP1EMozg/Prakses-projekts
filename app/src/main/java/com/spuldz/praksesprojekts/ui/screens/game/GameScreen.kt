@@ -136,7 +136,6 @@ private fun GridCell(
     if (cell.isError) {
         Timber.d("ERROR CELL: $cell")
     }
-private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
     Box(
