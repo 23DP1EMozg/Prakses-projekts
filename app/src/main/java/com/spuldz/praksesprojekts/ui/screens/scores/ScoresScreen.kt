@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.core.database.entities.Score
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
@@ -20,8 +24,14 @@ import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
-fun ScoresScreen() {
+fun ScoresScreen(
+    viewModel: ScoresViewModel = hiltViewModel()
+) {
     val theme = LocalTheme.current
+    val scores by viewModel.scores.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.getAllScores()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -41,24 +51,16 @@ fun ScoresScreen() {
 
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(top = sizing.dp10),
             verticalArrangement = Arrangement.spacedBy(sizing.dp10)
         ) {
-            ScoreCard(
-                Score(
-                    1,
-                    302,
-                    "hard"
-                ), 1
-            )
-
-            ScoreCard(
-                Score(
-                    2,
-                    423,
-                    "medium"
-                ), 2
-            )
+            scores.forEachIndexed { index, score ->
+                ScoreCard(
+                    score,
+                    index + 1
+                )
+            }
         }
     }
 }
@@ -93,7 +95,7 @@ fun ScoreCard(score: Score, place: Int) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = DateUtils.formatElapsedTime(score.seconds.toLong()),
+                text = DateUtils.formatElapsedTime(score.seconds),
                 style = TextMd,
                 color = theme.Text
             )

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Score(
-    @PrimaryKey val id: Int,
-    @ColumnInfo(name = "seconds") val seconds: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "seconds") val seconds: Long,
     @ColumnInfo(name = "difficulty") val difficulty: String
 )

@@ -5,6 +5,7 @@ import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.database.entities.Score
 import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
 import com.spuldz.praksesprojekts.core.handlers.copyBoard
 import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
@@ -58,7 +59,7 @@ class GameRepository @Inject constructor(
             val board = getFilledBoard()
             solution = board
             val amount = when(difficulty) {
-                "Easy" -> 40
+                "Easy" -> 1
                 "Medium" -> 50
                 "Hard" -> 60
                 else -> 50
@@ -93,7 +94,7 @@ class GameRepository @Inject constructor(
             startGameTimer()
     }
 
-     suspend fun startGameTimer() {
+    suspend fun startGameTimer() {
          val startTime = System.currentTimeMillis()
              while (_game.value?.isFinished == false) {
                  val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
@@ -205,7 +206,12 @@ class GameRepository @Inject constructor(
                         isFinished = true,
                         isWin = true
                     ) }
-                    Timber.d("You Win!")
+                    withContext(Dispatchers.IO) {
+                        scoreDao.insert(Score(
+                            seconds = _game.value?.seconds ?: 0,
+                            difficulty = _game.value?.difficulty ?: "difficulty"
+                        ))
+                    }
                 }
                 }else{
                     newBoard[row][col] = selectedCell.copy(
@@ -260,5 +266,4 @@ class GameRepository @Inject constructor(
     fun getPencilGridRows(cell: GridCellModel): MutableList<MutableList<String>> {
         return getPencilRows(cell)
     }
-
 }
