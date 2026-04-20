@@ -92,4 +92,7 @@ dependencies {
     // Room
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
+
+    // GSON
+    implementation(libs.gson)
 }

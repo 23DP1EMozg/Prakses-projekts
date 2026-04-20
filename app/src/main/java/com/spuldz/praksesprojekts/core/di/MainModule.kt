@@ -3,6 +3,7 @@ package com.spuldz.praksesprojekts.core.di
 import android.content.Context
 import androidx.room.Room
 import com.spuldz.praksesprojekts.core.database.AppDatabase
+import com.spuldz.praksesprojekts.core.database.dao.GameStateDAO
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import dagger.Module
@@ -30,4 +31,8 @@ object MainModule {
     @Provides
     @Singleton
     fun provideScoreDao(database: AppDatabase): ScoreDAO = database.scoreDao()
+
+    @Provides
+    @Singleton
+    fun provideGameStateDao(database: AppDatabase): GameStateDAO = database.gameStateDao()
 }
