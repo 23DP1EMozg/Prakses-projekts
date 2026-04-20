@@ -44,9 +44,8 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @Composable
 fun HomeScreen(
     onNavigateToGameScreen: (difficulty: String) -> Unit
-){
+) {
     val sheetState = rememberModalBottomSheetState()
-    //val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Column(

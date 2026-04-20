@@ -133,11 +133,11 @@ class GameRepository @Inject constructor() {
                 ?.flatten()
                 ?.firstOrNull {it.isSelected}
 
-            if (newBoard != null) {
-                for (row in newBoard) {
-                    Timber.d(row.map { it.isSelected }.toString())
-                }
-            }
+      fun addNumberToSelectedCell(number: Int) {
+        val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
+        val selectedCellTemp = selectedCell ?: return
+        if (newBoard == null) return
+        if (!selectedCellTemp.isEditable) return
 
             if (selectedCell == null) return
             if (!selectedCell.isEditable) return
