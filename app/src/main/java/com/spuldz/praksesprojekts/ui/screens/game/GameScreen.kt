@@ -1,5 +1,8 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,9 +33,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
+import com.spuldz.praksesprojekts.core.models.GameInputModel
+import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.Blue
+import com.spuldz.praksesprojekts.ui.theme.HighlightColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
@@ -44,6 +50,8 @@ import timber.log.Timber
 @Composable
 fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
     val grid by viewModel.gameBoard.collectAsStateWithLifecycle()
+    val game by viewModel.game.collectAsStateWithLifecycle()
+    val inputs by viewModel.inputs.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         Timber.d(difficulty)
@@ -52,6 +60,8 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
 
     GameScreenContent(
         grid = grid,
+        game = game,
+        inputs = inputs,
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
     )
@@ -76,13 +86,21 @@ private fun GameScreenLoading() {
 @Composable
 fun GameScreenContent(
     grid: List<List<GridCellModel>>?,
+    game: GameModel?,
+    inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ) {
-    if(grid == null) {
+    if (grid == null) {
         GameScreenLoading()
     } else {
-        GameScreenGrid(grid, onCellClick, onNumberClick)
+        GameScreenGrid(
+            grid = grid,
+            game = game,
+            inputs = inputs,
+            onCellClick = onCellClick,
+            onNumberClick = onNumberClick
+        )
     }
 }
 
@@ -90,13 +108,26 @@ fun GameScreenContent(
 private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
+
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
+            else if (cell.isError) Color.Red
+            else if (cell.isHighlighted) HighlightColor
+            else PrimaryColor,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
+    if (cell.isError) {
+        Timber.d("ERROR CELL: $cell")
+    }
     Box(
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
-            .background(
-                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
-            )
+            .background(animatedBackgroundColor)
+            .border(if (cell.isSelected) sizing.dp2 else sizing.dp0, if (cell.isSelected) Blue else Color.Transparent)
             .clickable { onCellClick(cell) }
             .drawBehind {
 
@@ -135,6 +166,8 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
 @Composable
 private fun GameScreenGrid(
     grid: List<List<GridCellModel>>,
+    game: GameModel?,
+    inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
     onNumberClick: (Int) -> Unit
 ){
@@ -154,15 +187,15 @@ private fun GameScreenGrid(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = stringResource(R.string.mistakes) + ": 0/3",
+                text = stringResource(R.string.mistakes) + ": ${game?.mistakes}/3",
                 style = TextSm
             )
             Text(
-                text = stringResource(R.string.difficulty) + ": normal",
+                text = stringResource(R.string.difficulty) + ": ${game?.difficulty}",
                 style = TextSm
             )
             Text(
-                text = "00:00",
+                text = "${game?.time}",
                 style = TextSm
             )
 
@@ -193,7 +226,7 @@ private fun GameScreenGrid(
 
                     }
             ) {
-                for( cell in row) {
+                for ( cell in row) {
                     GridCell(cell, onCellClick)
                 }
             }
@@ -205,22 +238,24 @@ private fun GameScreenGrid(
                 .padding(top = sizing.dp10),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp4, Alignment.CenterHorizontally)
         ) {
-            for (num in 1..9) {
-                Box(
-                    modifier = Modifier
-                        .height(sizing.dp70)
-                        .width(sizing.dp38)
-                        .background(SecondaryColor)
-                        .border(sizing.dp2, PrimaryColor)
-                        .clickable { onNumberClick(num) }
-                ) {
-                    Text(
+            if (inputs != null) {
+                for (input in inputs) {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center),
-                        text = num.toString(),
-                        color = Color.White,
-                        style = TextLg
-                    )
+                            .height(sizing.dp70)
+                            .width(sizing.dp38)
+                            .background(SecondaryColor.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
+                            .border(sizing.dp2, PrimaryColor.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
+                            .clickable { if (!input.isComplete) {onNumberClick(input.value)} }
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .align(Alignment.Center),
+                            text = input.value.toString(),
+                            color = Color.White.copy(alpha = if (input.isComplete) {0.3f} else {1f}),
+                            style = TextLg
+                        )
+                    }
                 }
             }
         }
@@ -242,26 +277,7 @@ private fun GameScreenGrid(
                     contentDescription = null,
                 )
                 Text(
-                    text = "Pencil",
-                    style = TextSm
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.eraser_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Text(
-                    text = "Eraser",
+                    text = stringResource(R.string.pencil),
                     style = TextSm
                 )
             }
@@ -280,7 +296,7 @@ private fun GameScreenGrid(
                     contentDescription = null,
                 )
                 Text(
-                    text = "Hint",
+                    text = stringResource(R.string.hint),
                     style = TextSm
                 )
             }

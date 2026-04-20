@@ -10,11 +10,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository,
 ) : ViewModel() {
     val gameBoard = gameRepository.gameBoard
-
-    fun generateGameBoard(difficulty: String) = launch {
+    val game = gameRepository.game
+    val inputs = gameRepository.inputs
+    fun generateGameBoard(difficulty: String) {
         gameRepository.fillGameBoard(difficulty)
     }
 
@@ -23,8 +24,7 @@ class GameViewModel @Inject constructor(
         gameRepository.selectCell(cell)
     }
 
-    fun addNumberToSelectedCell(number: Int) {
+    fun addNumberToSelectedCell(number: Int) = launch {
         gameRepository.addNumberToSelectedCell(number)
     }
-
 }
