@@ -55,11 +55,11 @@ class GameBoardGenerationHandler {
         return true
     }
 
-    private fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
-        return !numberInRow(board[row], num) &&
-                !numberInColumn(board, col, num) &&
-                !numberInSquare(board[row][col], board, num)
-    }
+fun isValid(board: MutableList<MutableList<GridCellModel>>, row: Int, col: Int, num: Int) : Boolean {
+    return !numberInRow(board[row], num) &&
+            !numberInColumn(board, col, num) &&
+            !numberInSquare(board[row][col], board, num)
+}
 
     private fun numberInRow(row: MutableList<GridCellModel>, number: Int): Boolean {
         for (cell in row) {

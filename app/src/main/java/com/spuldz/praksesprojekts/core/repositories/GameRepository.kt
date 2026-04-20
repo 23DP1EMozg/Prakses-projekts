@@ -4,6 +4,8 @@ import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.handlers.GameBoardGenerationHandler
 import com.spuldz.praksesprojekts.core.handlers.GameplayHandler
+import com.spuldz.praksesprojekts.core.handlers.ToolHandler
+import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -24,13 +26,14 @@ class GameRepository @Inject constructor() {
     val gameBoard = _gameBoard.asStateFlow()
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
+    val toolHandler = ToolHandler()
     val generationHandler = GameBoardGenerationHandler()
     val gameplayHandler = GameplayHandler()
 
-     fun fillGameBoard(difficulty: String) {
+     fun fillGameBoard(difficulty: String){
             val board = generationHandler.getFilledBoard()
             solution = board
-            val amount = when(difficulty) {
+            val amount = when(difficulty){
                 "Easy" -> 40
                 "Medium" -> 50
                 "Hard" -> 60
@@ -101,34 +104,48 @@ class GameRepository @Inject constructor() {
             }.toMutableList()
         }?.toMutableList()
 
-        Timber.d("selected cell: ${newBoard?.get(selectedRow)?.get(selectedCol).toString()}")
+        if (_game.value?.hintMode == true && selectedValue == 0) {
+
+            if (_game.value?.hintsLeft == 0) {
+                return
+            }
+
+            _gameBoard.update { toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol]) }
+            _game.update {
+                it?.copy(
+                    hintsLeft = it.hintsLeft - 1
+                )
+            }
+            return
+        }
+
+        Timber.d(newBoard?.get(selectedRow)?.get(selectedCol).toString())
 
         _gameBoard.update { newBoard }
     }
     suspend fun addNumberToSelectedCell(number: Int) {
         if (_game.value?.isFinished == true) return
 
-        val newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
+        var newBoard = _gameBoard.value?.map { it.toMutableList() }?.toMutableList()
             val selectedCell = newBoard
                 ?.flatten()
                 ?.firstOrNull {it.isSelected}
 
-            if (newBoard != null) {
-                for (row in newBoard) {
-                    Timber.d(row.map { it.isSelected }.toString())
-                }
-            }
+        val selectedCellTemp = selectedCell ?: return
+        if (!selectedCellTemp.isEditable) return
 
-            if (selectedCell == null) return
-            if (!selectedCell.isEditable) return
-
-            val row = selectedCell.rowNumber
+          val row = selectedCell.rowNumber
             val col = selectedCell.colNumber
 
             if (solution != null) {
                 for (row in solution) {
                     Timber.d(row.map { it.value }.toString())
                 }
+            }
+
+            if (_game.value?.pencilMode == true && selectedCell.value == 0) {
+                _gameBoard.update { toolHandler.enterPencilNumber(newBoard, number, selectedCell) }
+                return
             }
 
             if (solution?.get(row)[col]?.value == number) {
@@ -138,15 +155,9 @@ class GameRepository @Inject constructor() {
                     isEditable = false
                 )
 
-                newBoard.forEach { row ->
-                    row.forEach { cell ->
-                        if (cell.value == number) {
-                            cell.isLightUp = true
-                        }
-                    }
-                }
+                newBoard = lightUpAllCells(newBoard, number)
 
-                if (gameplayHandler.isNumberComplete(number,newBoard)) {
+                if(gameplayHandler.isNumberComplete(number,newBoard)) {
                     val inputsCopy = gameplayHandler.updateGameInputs(number, _inputs.value)
                     _inputs.update { inputsCopy }
                 }
@@ -157,19 +168,17 @@ class GameRepository @Inject constructor() {
                     ) }
                     Timber.d("You Win!")
                 }
-                } else {
+                }else{
                     newBoard[row][col] = selectedCell.copy(
                         value = number,
                         isError = true,
                     )
 
-                    val newBoardCopy = newBoard.map { row ->
-                        row.map { cell -> cell.copy(
-                            isEditable = false
-                        ) }.toMutableList()
-                    }.toMutableList()
+                    newBoard.forEach { row ->
+                        row.forEach { cell -> cell.isEditable = false }
+                    }
 
-                    _gameBoard.update { generationHandler.copyBoard(newBoardCopy) }
+                    _gameBoard.update { generationHandler.copyBoard(newBoard) }
                     _game.update { _game.value?.copy(
                         mistakes = _game.value?.mistakes?.plus(1) ?: 0
                     ) }
@@ -187,7 +196,30 @@ class GameRepository @Inject constructor() {
                         isError = false,
                         isPlayerPlaced = false
                     )
+
+                    newBoard.forEach { row ->
+                        row.forEach { cell -> cell.isEditable = true }
+                    }
             }
-           _gameBoard.update { generationHandler.copyBoard(newBoard) }
+           _gameBoard.update { toolHandler.updatePencilEnteredNumbers(generationHandler.copyBoard(newBoard)) }
       }
+
+    fun togglePencilMode() {
+        _game.update { it?.copy(
+            pencilMode = !it.pencilMode,
+            hintMode = false
+        ) }
+    }
+
+    fun toggleHintMode() {
+        _game.update { it?.copy(
+            hintMode = !it.hintMode,
+            pencilMode = false
+        ) }
+    }
+
+    fun getPencilGridRows(cell: GridCellModel): MutableList<MutableList<String>> {
+        return toolHandler.getPencilRows(cell)
+    }
 }
+

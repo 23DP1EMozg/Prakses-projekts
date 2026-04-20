@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,11 +39,13 @@ import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
+import com.spuldz.praksesprojekts.ui.theme.Black
 import com.spuldz.praksesprojekts.ui.theme.Blue
 import com.spuldz.praksesprojekts.ui.theme.HighlightColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
+import com.spuldz.praksesprojekts.ui.theme.TextPencil
 import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
@@ -64,6 +68,9 @@ fun GameScreen(viewModel: GameViewModel = hiltViewModel(), difficulty: String) {
         inputs = inputs,
         onCellClick = viewModel::selectCell,
         onNumberClick = viewModel::addNumberToSelectedCell,
+        onTogglePencilMode = viewModel::togglePencilMode,
+        onHint = viewModel::onHint,
+        getPencilGridRows = viewModel::getPencilGridRows
     )
 }
 
@@ -89,23 +96,46 @@ fun GameScreenContent(
     game: GameModel?,
     inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
-    onNumberClick: (Int) -> Unit
+    onNumberClick: (Int) -> Unit,
+    onTogglePencilMode: () -> Unit,
+    onHint: () -> Unit,
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ) {
     if (grid == null) {
         GameScreenLoading()
-    } else {
+    }else{
         GameScreenGrid(
             grid = grid,
             game = game,
             inputs = inputs,
             onCellClick = onCellClick,
-            onNumberClick = onNumberClick
+            onNumberClick = onNumberClick,
+            onTogglePencilMode = onTogglePencilMode,
+            onHint = onHint,
+            getPencilGridRows = getPencilGridRows
         )
     }
 }
 
 @Composable
-private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) {
+private fun GridCell(
+    cell: GridCellModel,
+    onCellClick: (GridCellModel) -> Unit,
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
+) {
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
+            else if (cell.isError) Color.Red
+            else if (cell.isHighlighted) HighlightColor
+            else PrimaryColor,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
+    if (cell.isError) {
+        Timber.d("ERROR CELL: $cell")
+    }
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
 
@@ -126,8 +156,9 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
-            .background(animatedBackgroundColor)
-            .border(if (cell.isSelected) sizing.dp2 else sizing.dp0, if (cell.isSelected) Blue else Color.Transparent)
+            .background(
+                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
+            )
             .clickable { onCellClick(cell) }
             .drawBehind {
 
@@ -153,13 +184,66 @@ private fun GridCell(cell: GridCellModel, onCellClick: (GridCellModel) -> Unit) 
                 }
             }
     ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center),
-            text = if (cell.value == 0) "" else cell.value.toString(),
-            color = if (cell.isPlayerPlaced) Blue else White,
-            style = TextLg
-        )
+        if (cell.pencilValue != null && cell.value == 0) {
+            val rows = getPencilGridRows(cell)
+            val row1 = rows[0]
+            val row2 = rows[1]
+            val row3 = rows[2]
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                 verticalArrangement = Arrangement.Center
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(1 / 3f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row1.forEach { num  ->
+                        Text(
+                            text = num,
+                            style = TextPencil
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(1 / 3f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row2.forEach { num  ->
+                        Text(
+                            text = num,
+                            style = TextPencil
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(1 / 3f),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    row3.forEach { num  ->
+                        Text(
+                            text = num,
+                            style = TextPencil
+                        )
+                    }
+                }
+            }
+        }else {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                text = if (cell.value == 0) ""
+                else cell.value.toString(),
+                color = if (cell.isPlayerPlaced) Blue else White,
+                style = if (cell.value == 0 && cell.pencilValue != null) TextPencil else TextLg
+            )
+        }
     }
 }
 
@@ -169,7 +253,10 @@ private fun GameScreenGrid(
     game: GameModel?,
     inputs: List<GameInputModel>?,
     onCellClick: (GridCellModel) -> Unit,
-    onNumberClick: (Int) -> Unit
+    onNumberClick: (Int) -> Unit,
+    onTogglePencilMode: () -> Unit,
+    onHint: () -> Unit,
+    getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ){
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
@@ -198,7 +285,6 @@ private fun GameScreenGrid(
                 text = "${game?.time}",
                 style = TextSm
             )
-
         }
 
         for ((rowIndex, row) in grid.withIndex()) {
@@ -226,8 +312,8 @@ private fun GameScreenGrid(
 
                     }
             ) {
-                for ( cell in row) {
-                    GridCell(cell, onCellClick)
+                for( cell in row) {
+                    GridCell(cell, onCellClick, getPencilGridRows)
                 }
             }
         }
@@ -263,43 +349,59 @@ private fun GameScreenGrid(
             modifier = Modifier.fillMaxWidth(0.9f),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp14, Alignment.End)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.pencil_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Text(
-                    text = stringResource(R.string.pencil),
-                    style = TextSm
-                )
-            }
+            Tool(
+                onClick = onTogglePencilMode,
+                name = stringResource(R.string.pencil),
+                image = R.drawable.pencil_icon,
+                condition = game?.pencilMode == true,
+                game = game,
+            )
+            Tool(
+                onClick = onHint,
+                name = stringResource(R.string.hint),
+                image = R.drawable.hint_icon,
+                condition = game?.hintMode == true,
+                game = game,
+                amount = 3
+            )
+        }
+    }
+}
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    modifier = Modifier
-                        .padding(top = sizing.dp20)
-                        .width(sizing.dp50)
-                        .height(sizing.dp50)
-                    ,
-                    painter = painterResource(R.drawable.hint_icon),
-                    contentScale = ContentScale.Fit,
-                    contentDescription = null,
-                )
-                Text(
-                    text = stringResource(R.string.hint),
-                    style = TextSm
-                )
-            }
+@Composable
+fun Tool(
+    onClick: () -> Unit,
+    name: String,
+    image: Int,
+    condition: Boolean,
+    amount: Int? = null,
+    game: GameModel?
+) {
+    Column(
+        modifier = Modifier
+            .clickable { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            modifier = Modifier
+                .padding(top = sizing.dp20)
+                .width(sizing.dp50)
+                .height(sizing.dp50)
+            ,
+            painter = painterResource(image),
+            contentScale = ContentScale.Fit,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(if (condition) PrimaryColor else Black)
+        )
+        Text(
+            text = name,
+            style = TextSm
+        )
+        if (amount != null) {
+            Text(
+                text = "${game?.hintsLeft}/${amount}",
+                style = TextSm
+            )
         }
     }
 }

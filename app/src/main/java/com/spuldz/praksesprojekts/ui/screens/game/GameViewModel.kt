@@ -27,4 +27,16 @@ class GameViewModel @Inject constructor(
     fun addNumberToSelectedCell(number: Int) = launch {
         gameRepository.addNumberToSelectedCell(number)
     }
+
+    fun togglePencilMode() {
+        gameRepository.togglePencilMode()
+    }
+
+    fun onHint() {
+        gameRepository.toggleHintMode()
+    }
+
+    fun getPencilGridRows(cell: GridCellModel) : MutableList<MutableList<String>> {
+      return gameRepository.getPencilGridRows(cell)
+    }
 }

@@ -34,3 +34,8 @@ val TextSm = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 12.sp
 )
+
+val TextPencil = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontSize = 8.sp
+)

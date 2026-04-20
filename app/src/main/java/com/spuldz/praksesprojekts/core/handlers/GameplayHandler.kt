@@ -32,3 +32,15 @@ class GameplayHandler {
         return inputsCopy
     }
 }
+
+fun lightUpAllCells(board: MutableList<MutableList<GridCellModel>>, number: Int?): MutableList<MutableList<GridCellModel>> {
+    val boardCopy = copyBoard(board)
+    boardCopy.forEach { row ->
+        row.forEach { cell ->
+            if (cell.value == number) {
+                cell.isLightUp = true
+            }
+        }
+    }
+    return boardCopy
+}
