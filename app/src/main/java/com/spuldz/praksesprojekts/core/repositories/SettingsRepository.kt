@@ -21,7 +21,9 @@ class SettingsRepository @Inject constructor(
     val preferencesDao: PreferencesDAO
 ){
     private val _prefs = MutableStateFlow(Preferences())
+    private val _changes = MutableStateFlow(false)
     val prefs = _prefs.asStateFlow()
+    val changes = _changes.asStateFlow()
     val settingsHandler = SettingsHandler()
 
     init {
@@ -30,6 +32,15 @@ class SettingsRepository @Inject constructor(
             _prefs.update { p }
         }
     }
+
+    suspend fun resetInputs() {
+        withContext(Dispatchers.IO) {
+            val p = preferencesDao.getPreferences() ?: return@withContext
+            _prefs.update { p }
+            _changes.update { false }
+        }
+    }
+
     suspend fun savePreferredLanguage(context: Context, language: String) {
         val previousLanguage = withContext(Dispatchers.IO) {
             preferencesDao.getPreferences()?.languageCode
@@ -72,10 +83,16 @@ class SettingsRepository @Inject constructor(
                 oldValue = _prefs.value.hintCount,
                 maxLength = 81
             )
-            preferencesDao.updateHintCount(num)
+            //preferencesDao.updateHintCount(num)
             _prefs.update {
                 it.copy(
                     hintCount = num
+                )
+            }
+            _changes.update {
+                settingsHandler.checkForChanges(
+                    _prefs.value,
+                    preferencesDao.getPreferences()
                 )
             }
             Timber.d(_prefs.value.hintCount.toString())
@@ -89,12 +106,28 @@ class SettingsRepository @Inject constructor(
                 oldValue = _prefs.value.mistakeLimit,
                 maxLength = 81
             )
-            preferencesDao.updateMistakeLimit(num)
+            //preferencesDao.updateMistakeLimit(num)
             _prefs.update {
                 it.copy(
                     mistakeLimit = num
                 )
             }
+            _changes.update {
+                settingsHandler.checkForChanges(
+                    _prefs.value,
+                    preferencesDao.getPreferences()
+                )
+            }
+        }
+    }
+
+    suspend fun saveGameplaySettings() {
+        withContext(Dispatchers.IO) {
+            preferencesDao.insert(Preferences(
+                hintCount = _prefs.value.hintCount,
+                mistakeLimit = _prefs.value.mistakeLimit
+            ))
+            _changes.update { false }
         }
     }
 }

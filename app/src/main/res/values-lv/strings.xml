@@ -31,4 +31,7 @@
     <string name="row">Rinda</string>
     <string name="grid">Režģis</string>
     <string name="grid_center">Centrēts Režģis</string>
+    <string name="mistake_limit">Kļūdu limits</string>
+    <string name="hints">Mājieni</string>
+    <string name="save">Saglabāt</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.spuldz.praksesprojekts.core.handlers
 
+import com.spuldz.praksesprojekts.core.database.entities.Preferences
+
 class SettingsHandler {
 
     fun validateNumberInput(newValue: String, oldValue: Int, maxLength: Int) : Int{
@@ -16,5 +18,10 @@ class SettingsHandler {
         }
 
         return num
+    }
+
+    fun checkForChanges(prefs: Preferences, dbPrefs: Preferences?) : Boolean{
+        return prefs.hintCount != dbPrefs?.hintCount ||
+                prefs.mistakeLimit != dbPrefs.mistakeLimit
     }
 }

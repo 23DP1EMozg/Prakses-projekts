@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +36,11 @@ fun GameplaySettingsScreen(
 ) {
     val theme = LocalTheme.current
     val prefs by viewModel.prefs.collectAsStateWithLifecycle()
+    val changes by viewModel.changes.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit){
+        viewModel.resetInputs()
+    }
 
     Column(
         modifier = Modifier
@@ -56,22 +63,38 @@ fun GameplaySettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = sizing.dp30),
-            verticalArrangement = Arrangement.spacedBy(sizing.dp10)
+            verticalArrangement = Arrangement.spacedBy(sizing.dp10),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Option(
-                text = "Hints",
+                text = stringResource(R.string.hints),
                 value = prefs.hintCount.toString(),
                 onChange = { value -> viewModel.setHintCount(value) },
                 label = "",
-                placeholder = "hints"
+                placeholder = stringResource(R.string.hints)
             )
             Option(
-                text = "Mistake Limit",
+                text = stringResource(R.string.mistake_limit),
                 value = prefs.mistakeLimit.toString(),
                 onChange = { value -> viewModel.setMistakeLimit(value) },
                 label = "",
-                placeholder = "mistake limit"
+                placeholder = stringResource(R.string.mistake_limit)
             )
+            if (changes) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .height(sizing.dp64)
+                        .background(theme.Primary),
+                    onClick = { viewModel.saveGameplaySettings() },
+                ) {
+                    Text(
+                        text = stringResource(R.string.save),
+                        style = TextMd,
+                        color = theme.Text
+                    )
+                }
+            }
         }
     }
 }

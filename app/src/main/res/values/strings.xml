@@ -31,4 +31,7 @@
     <string name="row">Row</string>
     <string name="grid">Grid</string>
     <string name="grid_center">Grid Center</string>
+    <string name="mistake_limit">Mistake Limit</string>
+    <string name="hints">Hints</string>
+    <string name="save">Save</string>
 </resources>
