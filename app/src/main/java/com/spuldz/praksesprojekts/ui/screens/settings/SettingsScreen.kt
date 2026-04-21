@@ -28,8 +28,7 @@ fun SettingsScreen() {
             .padding(top = sizing.dp30)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
@@ -52,9 +51,7 @@ fun SettingsScreen() {
 }
 
 @Composable
-fun Category(
-    text: String
-) {
+fun Category(text: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
