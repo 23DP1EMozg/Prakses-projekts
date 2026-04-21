@@ -1,5 +1,8 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -130,6 +133,8 @@ private fun GridCell(
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ) {
     val theme = LocalTheme.current
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
     val animatedBackgroundColor by animateColorAsState(
         targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) theme.Secondary
             else if (cell.isError) theme.Error
