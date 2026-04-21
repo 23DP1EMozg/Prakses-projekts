@@ -20,4 +20,9 @@
     <string name="controls">Kontroles</string>
     <string name="gameplay">Spēle</string>
     <string name="language">Valoda</string>
+    <string name="pencil">Zīmulis</string>
+    <string name="hint">Mājiens</string>
+    <string name="easy">Viegls</string>
+    <string name="medium">Vidējs</string>
+    <string name="hard">Grūts</string>
 </resources>

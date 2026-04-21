@@ -41,8 +41,7 @@ fun EndGamePopup(
         visible = game?.isFinished == true,
         enter = fadeIn(),
         exit = fadeOut(),
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         Box(
             modifier = Modifier

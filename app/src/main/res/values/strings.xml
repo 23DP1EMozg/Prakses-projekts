@@ -20,4 +20,10 @@
     <string name="controls">Controls</string>
     <string name="gameplay">Gameplay</string>
     <string name="language">Language</string>
+    <string name="pencil">Pencil</string>
+    <string name="hint">Hint</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
+
 </resources>

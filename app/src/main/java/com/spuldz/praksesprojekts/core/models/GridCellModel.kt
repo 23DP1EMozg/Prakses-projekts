@@ -1,7 +1,7 @@
 package com.spuldz.praksesprojekts.core.models
 
 data class GridCellModel(
-    var value: Int,
+    val value: Int,
     var isEditable: Boolean = false,
     val rowNumber: Int,
     val colNumber: Int,
