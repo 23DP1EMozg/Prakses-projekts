@@ -11,7 +11,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 // Colors for background
-var BackgroundColor = Color(0xff5c5b5b)
+var BackgroundColor = Color(0xff303030)
+val BackgroundLighterColor = Color(0xff5c5b5b)
 val PrimaryColor = Color(0xfffab22d)
 val SecondaryColor = Color(0xffb38022)
 val HighlightColor = Color(0xffdea63e)

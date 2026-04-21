@@ -21,5 +21,8 @@
     <string name="easy">Easy</string>
     <string name="medium">Medium</string>
     <string name="hard">Hard</string>
-
+    <string name="appearance">Appearance</string>
+    <string name="controls">Controls</string>
+    <string name="gameplay">Gameplay</string>
+    <string name="language">Language</string>
 </resources>
