@@ -25,15 +25,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
 import com.spuldz.praksesprojekts.R
-import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.HomeTitle
-import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
+import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.White
@@ -47,18 +45,19 @@ fun HomeScreen(
 ){
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val theme = LocalTheme.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundColor),
+            .background(theme.Background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             modifier = Modifier.padding(top = sizing.dp30),
             text = stringResource(R.string.sudoku),
             style = HomeTitle,
-            color = Color.White
+            color = theme.Text
         )
         Row(
             modifier = Modifier
@@ -89,8 +88,8 @@ fun HomeScreen(
                 .fillMaxWidth(0.6f)
                 .height(sizing.dp40),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryColor,
-                contentColor = Color.White
+                containerColor = theme.Primary,
+                contentColor = theme.Text
             ),
             onClick = { showBottomSheet = true }
         ) {
@@ -104,19 +103,22 @@ fun HomeScreen(
                 showBottomSheet = false
             },
             sheetState = sheetState,
+            containerColor = theme.Secondary,
             modifier = Modifier
                 .padding(top = sizing.dp18)
                 .padding(bottom = sizing.dp18)
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .background(theme.Secondary),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(sizing.dp10)
             ) {
                 Text(
                     text = stringResource(R.string.choose_difficulty),
-                    style = TextMd
+                    style = TextMd,
+                    color = theme.Text
                 )
                 Spacer(
                     modifier = Modifier
@@ -132,11 +134,13 @@ fun HomeScreen(
 
 @Composable
 fun DifficultyButton(text: String, onNavigateToGameScreen: (String) -> Unit) {
+    val theme = LocalTheme.current
+
     Button(
         onClick = { onNavigateToGameScreen(text) },
         colors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryColor,
-            contentColor = White
+            containerColor = theme.Primary,
+            contentColor = theme.Text
         ),
         modifier = Modifier
             .fillMaxWidth(0.7f))
@@ -150,11 +154,11 @@ fun NavigationOption(
     image: Int,
     onClick: () -> Unit
 ) {
+    val theme = LocalTheme.current
     Box(
         modifier = Modifier
             .width(sizing.dp150)
             .height(sizing.dp150)
-            .background(Color.White)
             .clickable { onClick() }
     ) {
         Image(
@@ -168,13 +172,13 @@ fun NavigationOption(
             modifier = Modifier
                 .zIndex(3f)
                 .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.7f)),
+                .background(theme.Background.copy(alpha = 0.7f)),
         ){
             Text(
                 modifier = Modifier
                     .align(Alignment.Center),
                 text = text,
-                color = Color.White,
+                color = White,
                 style = TextLg
             )
         }

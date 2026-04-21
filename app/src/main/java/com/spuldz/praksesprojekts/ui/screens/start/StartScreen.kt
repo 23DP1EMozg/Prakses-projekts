@@ -20,20 +20,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.spuldz.praksesprojekts.R
-import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
+import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.PraksesProjektsTheme
-import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.TitleStyle
-import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
 fun StartScreen(
     onNavigateToHomeScreen: () -> Unit
 ) {
+    val theme = LocalTheme.current
+
     Column(
         modifier = Modifier
-            .background(BackgroundColor)
+            .background(theme.Background)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -55,8 +55,8 @@ fun StartScreen(
                 .fillMaxWidth(0.5f)
                 .padding(top = sizing.dp20),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryColor,
-                contentColor = White
+                containerColor = theme.Primary,
+                contentColor = theme.Text
             ),
             onClick = { onNavigateToHomeScreen() }
         ) {

@@ -1,5 +1,8 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,15 +38,11 @@ import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
-import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.Black
-import com.spuldz.praksesprojekts.ui.theme.Blue
-import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
-import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
+import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextPencil
 import com.spuldz.praksesprojekts.ui.theme.TextSm
-import com.spuldz.praksesprojekts.ui.theme.White
 import com.spuldz.praksesprojekts.ui.theme.sizing
 import timber.log.Timber
 
@@ -78,10 +77,11 @@ fun GameScreen(
 
 @Composable
 private fun GameScreenLoading() {
+    val theme = LocalTheme.current
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundColor),
+            .background(theme.Background),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
@@ -132,11 +132,18 @@ private fun GridCell(
     onCellClick: (GridCellModel) -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ) {
-    if (cell.isError) {
-        Timber.d("ERROR CELL: $cell")
-    }
+    val theme = LocalTheme.current
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) theme.Secondary
+            else if (cell.isError) theme.Error
+            else if (cell.isHighlighted) theme.HighlightColor
+            else theme.Primary,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
 
     if (cell.isError) {
         Timber.d("ERROR CELL: $cell")
@@ -145,9 +152,8 @@ private fun GridCell(
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
-            .background(
-                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
-            )
+            .background(animatedBackgroundColor)
+            .border(sizing.dp2, if (cell.isSelected) theme.PlacedCellText else Color.Transparent)
             .clickable { onCellClick(cell) }
             .drawBehind {
 
@@ -191,7 +197,8 @@ private fun GridCell(
                     row1.forEach { num  ->
                         Text(
                             text = num,
-                            style = TextPencil
+                            style = TextPencil,
+                            color = theme.Text
                         )
                     }
                 }
@@ -205,7 +212,8 @@ private fun GridCell(
                     row2.forEach { num  ->
                         Text(
                             text = num,
-                            style = TextPencil
+                            style = TextPencil,
+                            color = theme.Text
                         )
                     }
                 }
@@ -219,7 +227,8 @@ private fun GridCell(
                     row3.forEach { num  ->
                         Text(
                             text = num,
-                            style = TextPencil
+                            style = TextPencil,
+                            color = theme.Text
                         )
                     }
                 }
@@ -229,7 +238,7 @@ private fun GridCell(
                 modifier = Modifier.align(Alignment.Center),
                 text = if (cell.value == 0) ""
                 else cell.value.toString(),
-                color = if (cell.isPlayerPlaced) Blue else White,
+                color = if (cell.isPlayerPlaced) theme.PlacedCellText else theme.Text,
                 style = if (cell.value == 0 && cell.pencilValue != null) TextPencil else TextLg
             )
         }
@@ -247,11 +256,12 @@ private fun GameScreenGrid(
     onHint: () -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ){
+    val theme = LocalTheme.current
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
     Column(
         modifier = Modifier
-            .background(BackgroundColor)
+            .background(theme.Background)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -264,15 +274,18 @@ private fun GameScreenGrid(
         ) {
             Text(
                 text = stringResource(R.string.mistakes) + ": ${game?.mistakes}/3",
-                style = TextSm
+                style = TextSm,
+                color = theme.Text
             )
             Text(
                 text = stringResource(R.string.difficulty) + ": ${game?.difficulty}",
-                style = TextSm
+                style = TextSm,
+                color = theme.Text
             )
             Text(
                 text = "${game?.time}",
-                style = TextSm
+                style = TextSm,
+                color = theme.Text
             )
         }
 
@@ -284,7 +297,7 @@ private fun GameScreenGrid(
                         val strokeWidth = if((rowIndex) % 3 == 0) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                         drawLine(
-                            color = Color.Black,
+                            color = Black,
                             start = Offset(size.width, 0f),
                             end = Offset(0f, 0f),
                             strokeWidth = strokeWidth
@@ -292,7 +305,7 @@ private fun GameScreenGrid(
 
                         if (rowIndex == 8) {
                             drawLine(
-                                color = Color.Black,
+                                color = Black,
                                 start = Offset(size.width, size.height),
                                 end = Offset(0f, size.height),
                                 strokeWidth = strokeWidthLarge.toPx()
@@ -319,15 +332,15 @@ private fun GameScreenGrid(
                         modifier = Modifier
                             .height(sizing.dp70)
                             .width(sizing.dp38)
-                            .background(SecondaryColor.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
-                            .border(sizing.dp2, PrimaryColor.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
+                            .background(theme.Secondary.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
+                            .border(sizing.dp2, theme.Primary.copy(alpha = if (input.isComplete) {0.3f} else {1f}))
                             .clickable { if (!input.isComplete) {onNumberClick(input.value)} }
                     ) {
                         Text(
                             modifier = Modifier
                                 .align(Alignment.Center),
                             text = input.value.toString(),
-                            color = Color.White.copy(alpha = if (input.isComplete) {0.3f} else {1f}),
+                            color = theme.Text.copy(alpha = if (input.isComplete) {0.3f} else {1f}),
                             style = TextLg
                         )
                     }
@@ -366,6 +379,7 @@ fun Tool(
     amount: Int? = null,
     game: GameModel?
 ) {
+    val theme = LocalTheme.current
     Column(
         modifier = Modifier
             .clickable { onClick() },
@@ -380,16 +394,18 @@ fun Tool(
             painter = painterResource(image),
             contentScale = ContentScale.Fit,
             contentDescription = null,
-            colorFilter = ColorFilter.tint(if (condition) PrimaryColor else Black)
+            colorFilter = ColorFilter.tint(if (condition) theme.Primary else theme.Text)
         )
         Text(
             text = name,
-            style = TextSm
+            style = TextSm,
+            color = theme.Text
         )
         if (amount != null) {
             Text(
                 text = "${game?.hintsLeft}/${amount}",
-                style = TextSm
+                style = TextSm,
+                color = theme.Text
             )
         }
     }

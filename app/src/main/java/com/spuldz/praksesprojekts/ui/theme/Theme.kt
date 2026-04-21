@@ -1,51 +1,64 @@
 package com.spuldz.praksesprojekts.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+data class Theme(
+    val name: String,
+    val Primary: Color,
+    val Secondary: Color,
+    val Text: Color,
+    val Background: Color,
+    val PlacedCellText: Color,
+    val HighlightColor: Color,
+    val Error: Color,
+    val BackgroundLighter: Color
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+val themes = listOf(
+    DefaultTheme,
+    MidnightNeonTheme,
+    ArcticFrostTheme,
+    CyberPunkTheme,
+    EmeraldForestTheme
 )
+
+private val _sudokuTheme = MutableStateFlow(themes[0])
+val sudokuTheme = _sudokuTheme.asStateFlow()
+val LocalTheme = staticCompositionLocalOf { DefaultTheme }
+
+fun setTheme(theme: Int) {
+    _sudokuTheme.update { themes[theme] }
+}
 
 @Composable
 fun PraksesProjektsTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val theme = sudokuTheme.collectAsState().value
+
+    val colorScheme = lightColorScheme(
+        primary = theme.Primary,
+        secondary = theme.Secondary,
+        background = theme.Background,
+        onBackground = theme.Text
+    )
+    CompositionLocalProvider(
+        LocalTheme provides theme
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            content = content
+        )
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
-    )
 }

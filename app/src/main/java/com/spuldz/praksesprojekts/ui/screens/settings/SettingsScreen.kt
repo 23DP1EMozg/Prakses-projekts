@@ -1,6 +1,7 @@
 package com.spuldz.praksesprojekts.ui.screens.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,18 +14,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.spuldz.praksesprojekts.R
-import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
-import com.spuldz.praksesprojekts.ui.theme.BackgroundLighterColor
+import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    onAppearanceClick: () -> Unit,
+    onGameplayClick: () -> Unit,
+    onControlsClick: () -> Unit,
+    onLanguageClick: () -> Unit
+) {
+    val theme = LocalTheme.current
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BackgroundColor)
+            .background(theme.Background)
             .padding(top = sizing.dp30)
     ) {
         Row(
@@ -33,7 +39,8 @@ fun SettingsScreen() {
         ) {
             Text(
                 text = stringResource(R.string.settings),
-                style = TextLg
+                style = TextLg,
+                color = theme.Text
             )
         }
         Column(
@@ -42,27 +49,33 @@ fun SettingsScreen() {
                 .padding(top = sizing.dp30),
             verticalArrangement = Arrangement.spacedBy(sizing.dp10)
         ) {
-            Category(stringResource(R.string.appearance))
-            Category(stringResource(R.string.gameplay))
-            Category(stringResource(R.string.controls))
-            Category(stringResource(R.string.language))
+            Category(stringResource(R.string.appearance), onAppearanceClick)
+            Category(stringResource(R.string.gameplay), onGameplayClick)
+            Category(stringResource(R.string.controls), onControlsClick)
+            Category(stringResource(R.string.language), onLanguageClick)
         }
     }
 }
 
 @Composable
-fun Category(text: String) {
+fun Category(
+    text: String,
+    onClick: () -> Unit
+) {
+    val theme = LocalTheme.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(sizing.dp64)
-            .background(BackgroundLighterColor)
-            .padding(horizontal = sizing.dp10),
+            .background(theme.BackgroundLighter)
+            .padding(horizontal = sizing.dp10)
+            .clickable { onClick() },
         verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = text,
-            style = TextMd
+            style = TextMd,
+            color = theme.Text
         )
     }
 }
