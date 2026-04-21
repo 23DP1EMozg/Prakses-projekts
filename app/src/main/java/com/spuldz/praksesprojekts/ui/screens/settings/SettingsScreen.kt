@@ -34,8 +34,7 @@ fun SettingsScreen(
             .padding(top = sizing.dp30)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
@@ -50,10 +49,10 @@ fun SettingsScreen(
                 .padding(top = sizing.dp30),
             verticalArrangement = Arrangement.spacedBy(sizing.dp10)
         ) {
-            Category("Appearance", onAppearanceClick)
-            Category("Gameplay", onGameplayClick)
-            Category("Controls", onControlsClick)
-            Category("Language", onLanguageClick)
+            Category(stringResource(R.string.appearance), onAppearanceClick)
+            Category(stringResource(R.string.gameplay), onGameplayClick)
+            Category(stringResource(R.string.controls), onControlsClick)
+            Category(stringResource(R.string.language), onLanguageClick)
         }
     }
 }
