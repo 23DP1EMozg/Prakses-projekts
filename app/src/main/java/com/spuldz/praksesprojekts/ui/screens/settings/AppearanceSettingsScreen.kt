@@ -15,6 +15,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
@@ -37,7 +39,7 @@ fun AppearanceSettingsScreen() {
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Appearance",
+                text = stringResource(R.string.appearance),
                 style = TextLg,
                 color = theme.Text
             )
