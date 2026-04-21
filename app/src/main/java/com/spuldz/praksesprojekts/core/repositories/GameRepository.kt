@@ -5,7 +5,6 @@ import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.handlers.GameBoardGenerationHandler
 import com.spuldz.praksesprojekts.core.handlers.GameplayHandler
 import com.spuldz.praksesprojekts.core.handlers.ToolHandler
-import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -34,7 +33,7 @@ class GameRepository @Inject constructor() {
             val board = generationHandler.getFilledBoard()
             solution = board
             val amount = when(difficulty){
-                "Easy" -> 40
+                "Easy" -> 1
                 "Medium" -> 50
                 "Hard" -> 60
                 else -> 50
@@ -109,13 +108,14 @@ class GameRepository @Inject constructor() {
             if (_game.value?.hintsLeft == 0) {
                 return
             }
-
-            _gameBoard.update { toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol]) }
-            _game.update {
-                it?.copy(
-                    hintsLeft = it.hintsLeft - 1
-                )
-            }
+            val updatedBoard = toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol])
+            val win = gameplayHandler.isBoardComplete(updatedBoard)
+            _gameBoard.update { updatedBoard }
+            _game.update { it?.copy(
+                hintsLeft = it.hintsLeft - 1,
+                isFinished = win,
+                isWin = win
+            ) }
             return
         }
 
@@ -155,7 +155,7 @@ class GameRepository @Inject constructor() {
                     isEditable = false
                 )
 
-                newBoard = lightUpAllCells(newBoard, number)
+                newBoard = gameplayHandler.lightUpAllCells(newBoard, number)
 
                 if(gameplayHandler.isNumberComplete(number,newBoard)) {
                     val inputsCopy = gameplayHandler.updateGameInputs(number, _inputs.value)
@@ -164,7 +164,8 @@ class GameRepository @Inject constructor() {
 
                 if (gameplayHandler.isBoardComplete(newBoard)) {
                     _game.update { _game.value?.copy(
-                        isFinished = true
+                        isFinished = true,
+                        isWin = true
                     ) }
                     Timber.d("You Win!")
                 }

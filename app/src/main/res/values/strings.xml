@@ -12,6 +12,10 @@
     <string name="choose_difficulty">Choose Difficulty</string>
     <string name="mistakes">Mistakes</string>
     <string name="difficulty">Difficulty</string>
+    <string name="you_win">You Win!</string>
+    <string name="you_lose">You Lose!</string>
+    <string name="return_home">Return Home</string>
+    <string name="play_again">Play Again</string>
     <string name="pencil">Pencil</string>
     <string name="hint">Hint</string>
     <string name="easy">Easy</string>

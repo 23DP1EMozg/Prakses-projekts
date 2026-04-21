@@ -3,6 +3,8 @@ package com.spuldz.praksesprojekts.core.handlers
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 
 class ToolHandler {
+    val generationHandler = GameBoardGenerationHandler()
+    val gameplayHandler = GameplayHandler()
     fun enterPencilNumber(
         board: MutableList<MutableList<GridCellModel>>,
         number: Int,
@@ -10,11 +12,11 @@ class ToolHandler {
     ) : MutableList<MutableList<GridCellModel>> {
         var content = cell.pencilValue
         val contentList = content?.trim()?.split("")
-        val boardCopy = copyBoard(board)
+        val boardCopy = generationHandler.copyBoard(board)
 
         if (
             contentList?.contains(number.toString()) == true ||
-            !isValid(board, cell.rowNumber, cell.colNumber, number)
+            !generationHandler.isValid(board, cell.rowNumber, cell.colNumber, number)
         ) {
             return boardCopy
         }
@@ -30,12 +32,12 @@ class ToolHandler {
     fun updatePencilEnteredNumbers(board: MutableList<MutableList<GridCellModel>>?) : MutableList<MutableList<GridCellModel>> {
         if (board == null) return mutableListOf()
 
-        val boardCopy = copyBoard(board).toMutableList()
+        val boardCopy = generationHandler.copyBoard(board).toMutableList()
         val cells = boardCopy.flatten().filter { it.pencilValue != null && it.value == 0}
 
         cells.forEach { c ->
             val list = c.pencilValue?.trim()?.map { it.toString() }
-            val filtered = list?.filter { isValid(boardCopy, c.rowNumber, c.colNumber, it.toInt()) }
+            val filtered = list?.filter { generationHandler.isValid(boardCopy, c.rowNumber, c.colNumber, it.toInt()) }
             boardCopy[c.rowNumber][c.colNumber] = c.copy(
                 pencilValue = filtered?.joinToString("")
             )
@@ -51,7 +53,7 @@ class ToolHandler {
         if (board == null) return mutableListOf()
         if (cell == null) return mutableListOf()
 
-        val boardCopy = copyBoard(board)
+        val boardCopy = generationHandler.copyBoard(board)
         val row: Int = cell.rowNumber
         val col: Int = cell.colNumber
         val solutionValue = solution?.get(row)[col]?.value
@@ -63,7 +65,7 @@ class ToolHandler {
             isSelected = true
         ).let { boardCopy[row][col] = it }
 
-        return lightUpAllCells(boardCopy, solutionValue)
+        return gameplayHandler.lightUpAllCells(boardCopy, solutionValue)
     }
 
     fun getPencilRows(cell: GridCellModel) : MutableList<MutableList<String>> {

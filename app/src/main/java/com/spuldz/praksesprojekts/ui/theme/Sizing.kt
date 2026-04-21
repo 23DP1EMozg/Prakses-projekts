@@ -39,7 +39,9 @@ data class TailwindSizing(
     val dp64: Dp = 64.dp,
     val dp70: Dp = 70.dp,
     val dp100: Dp = 100.dp,
-    val dp150: Dp = 150.dp
+    val dp150: Dp = 150.dp,
+    val dp250: Dp = 250.dp
+
 )
 
 val LocalSizing = compositionLocalOf { TailwindSizing() }

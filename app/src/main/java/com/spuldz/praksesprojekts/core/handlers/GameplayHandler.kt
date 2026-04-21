@@ -4,6 +4,7 @@ import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 
 class GameplayHandler {
+    val generationHandler = GameBoardGenerationHandler()
     fun isNumberComplete(number: Int, board: MutableList<MutableList<GridCellModel>>) : Boolean {
         var count = 0
         board.forEach { row ->
@@ -15,8 +16,8 @@ class GameplayHandler {
         return count == 9
     }
 
-    fun isBoardComplete(board: MutableList<MutableList<GridCellModel>>): Boolean {
-        val emptyCell = board.flatten().firstOrNull {it.value == 0}
+    fun isBoardComplete(board: MutableList<MutableList<GridCellModel>>?): Boolean {
+        val emptyCell = board?.flatten()?.firstOrNull {it.value == 0}
         return emptyCell == null
     }
 
@@ -31,16 +32,16 @@ class GameplayHandler {
         }
         return inputsCopy
     }
-}
 
-fun lightUpAllCells(board: MutableList<MutableList<GridCellModel>>, number: Int?): MutableList<MutableList<GridCellModel>> {
-    val boardCopy = copyBoard(board)
-    boardCopy.forEach { row ->
-        row.forEach { cell ->
-            if (cell.value == number) {
-                cell.isLightUp = true
+    fun lightUpAllCells(board: MutableList<MutableList<GridCellModel>>, number: Int?): MutableList<MutableList<GridCellModel>> {
+        val boardCopy = generationHandler.copyBoard(board)
+        boardCopy.forEach { row ->
+            row.forEach { cell ->
+                if (cell.value == number) {
+                    cell.isLightUp = true
+                }
             }
         }
+        return boardCopy
     }
-    return boardCopy
 }

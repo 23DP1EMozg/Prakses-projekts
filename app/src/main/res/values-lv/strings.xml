@@ -12,6 +12,10 @@
     <string name="choose_difficulty">Izvēlies Sarežģītību</string>
     <string name="mistakes">Kļūdas</string>
     <string name="difficulty">Grūtība</string>
+    <string name="you_win">Tu Uzvarēji!</string>
+    <string name="you_lose">Tu Zaudēji!</string>
+    <string name="return_home">Uz Sākumu</string>
+    <string name="play_again">Spēlēt Atkārtoti</string>
     <string name="pencil">Zīmulis</string>
     <string name="hint">Mājiens</string>
     <string name="easy">Viegls</string>
