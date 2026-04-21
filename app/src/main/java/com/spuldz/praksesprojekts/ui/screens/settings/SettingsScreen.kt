@@ -42,10 +42,10 @@ fun SettingsScreen() {
                 .padding(top = sizing.dp30),
             verticalArrangement = Arrangement.spacedBy(sizing.dp10)
         ) {
-            Category("Appearance")
-            Category("Gameplay")
-            Category("Controls")
-            Category("Language")
+            Category(stringResource(R.string.appearance))
+            Category(stringResource(R.string.gameplay))
+            Category(stringResource(R.string.controls))
+            Category(stringResource(R.string.language))
         }
     }
 }
