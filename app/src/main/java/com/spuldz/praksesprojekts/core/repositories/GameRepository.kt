@@ -2,21 +2,15 @@ package com.spuldz.praksesprojekts.core.repositories
 
 import android.text.format.DateUtils
 import com.spuldz.praksesprojekts.core.common.launchDefault
+import com.spuldz.praksesprojekts.core.database.dao.GameStateDAO
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
+import com.spuldz.praksesprojekts.core.database.entities.GameState
 import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.database.entities.Score
-import com.spuldz.praksesprojekts.core.handlers.addHintToBoard
-import com.spuldz.praksesprojekts.core.handlers.copyBoard
-import com.spuldz.praksesprojekts.core.handlers.enterPencilNumber
-import com.spuldz.praksesprojekts.core.handlers.getFilledBoard
-import com.spuldz.praksesprojekts.core.handlers.getPencilRows
-import com.spuldz.praksesprojekts.core.handlers.isBoardComplete
-import com.spuldz.praksesprojekts.core.handlers.isNumberComplete
-import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
-import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
-import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
-import com.spuldz.praksesprojekts.core.handlers.updatePencilEnteredNumbers
+import com.spuldz.praksesprojekts.core.handlers.GameBoardGenerationHandler
+import com.spuldz.praksesprojekts.core.handlers.GameplayHandler
+import com.spuldz.praksesprojekts.core.handlers.ToolHandler
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -33,13 +27,17 @@ import javax.inject.Singleton
 @Singleton
 class GameRepository @Inject constructor(
     private val preferencesDao: PreferencesDAO,
-    private val scoreDao: ScoreDAO
+    private val scoreDao: ScoreDAO,
+    private val gameStateDao: GameStateDAO
 ) {
     private val _gameBoard = MutableStateFlow<List<List<GridCellModel>>?>(null)
     private val _game = MutableStateFlow<GameModel?>(null)
     private val _inputs = MutableStateFlow<List<GameInputModel>?>(null)
     private val _preferences = MutableStateFlow(Preferences())
     private var solution: MutableList<MutableList<GridCellModel>>? = null
+    val generationHandler = GameBoardGenerationHandler()
+    val gameplayHandler = GameplayHandler()
+    val toolHandler = ToolHandler()
     val gameBoard = _gameBoard.asStateFlow()
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
@@ -55,43 +53,70 @@ class GameRepository @Inject constructor(
             _preferences.update { prefs }
         }
     }
-     suspend fun fillGameBoard(difficulty: String){
-            val board = getFilledBoard()
-            solution = board
-            val amount = when(difficulty) {
-                "Easy" -> 1
-                "Medium" -> 50
-                "Hard" -> 60
-                else -> 50
-            }
-            for (row in board) {
-                Timber.d(row.map { it.value }.toString())
-            }
-            val boardWithRemovedCells = removeCellsFromBoard(board, amount)
-            var inputList: MutableList<GameInputModel>? = mutableListOf()
 
-            for (num in 1..9) {
-                inputList?.add(GameInputModel(value = num))
+    suspend fun saveGame() {
+        gameStateDao.insert(
+            GameState(
+                id = 1,
+                grid = _gameBoard.value,
+                game = _game.value,
+                inputs = _inputs.value
+            )
+        )
+    }
 
-                if (isNumberComplete(num, boardWithRemovedCells)) {
-                    inputList = updateGameInputs(num, inputList)
-                }
+    suspend fun loadGame(loadedGame: GameState?) {
+        if (loadedGame == null) {
+            saveGame()
+        } else {
+            _gameBoard.update { loadedGame.grid }
+            _game.update { loadedGame.game }
+            _inputs.update { loadedGame.inputs }
+        }
+    }
+
+    suspend fun fillGameBoard(difficulty: String, loadedGame: Boolean = false, gameState: GameState?){
+
+        if (loadedGame) {
+            loadGame(gameState)
+            return
+        }
+
+        val board = generationHandler.getFilledBoard()
+        solution = board
+        val amount = when(difficulty) {
+            "Easy" -> 1
+            "Medium" -> 50
+            "Hard" -> 60
+            else -> 50
+        }
+        for (row in board) {
+            Timber.d(row.map { it.value }.toString())
+        }
+        val boardWithRemovedCells = generationHandler.removeCellsFromBoard(board, amount)
+        var inputList: MutableList<GameInputModel>? = mutableListOf()
+
+        for (num in 1..9) {
+            inputList?.add(GameInputModel(value = num))
+
+            if (gameplayHandler.isNumberComplete(num, boardWithRemovedCells)) {
+                inputList = gameplayHandler.updateGameInputs(num, inputList)
             }
+        }
 
-            withContext(Dispatchers.IO) {
-                _game.update {
-                    GameModel(
-                        difficulty = difficulty,
-                        hintsLeft = preferencesDao.getPreferences()?.hintCount ?: 3,
-                        hintCount = preferencesDao.getPreferences()?.hintCount ?: 3,
-                        mistakeLimit = preferencesDao.getPreferences()?.mistakeLimit ?: 3
-                    )
-                }
+        withContext(Dispatchers.IO) {
+            _game.update {
+                GameModel(
+                    difficulty = difficulty,
+                    hintsLeft = preferencesDao.getPreferences()?.hintCount ?: 3,
+                    hintCount = preferencesDao.getPreferences()?.hintCount ?: 3,
+                    mistakeLimit = preferencesDao.getPreferences()?.mistakeLimit ?: 3
+                )
             }
-            _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
-            _inputs.update { inputList }
-
-         //   startGameTimer()
+        }
+        _gameBoard.update { boardWithRemovedCells.map { it.toList() }.toList() }
+        _inputs.update { inputList }
+        saveGame()
     }
 
     fun updateGameTimer(seconds: Long) {
@@ -104,23 +129,7 @@ class GameRepository @Inject constructor(
         }
     }
 
-//    suspend fun startGameTimer() {
-//         val startTime = System.currentTimeMillis()
-//             while (_game.value?.isFinished == false) {
-//                 val elapsedSeconds = ((System.currentTimeMillis() - startTime) / 1000)
-//                 val formatedTime = DateUtils.formatElapsedTime(elapsedSeconds)
-//
-//                 _game.update {
-//                     it?.copy(
-//                         time = formatedTime,
-//                         seconds = elapsedSeconds
-//                     )
-//                 }
-//                 delay(1000)
-//             }
-//    }
-
-    fun selectCell(cell: GridCellModel) {
+    suspend fun selectCell(cell: GridCellModel) {
         if (_game.value?.isFinished == true) return
 
         val selectedRow = cell.rowNumber
@@ -151,14 +160,15 @@ class GameRepository @Inject constructor(
             if (_game.value?.hintsLeft == 0) {
                 return
             }
-            val updatedBoard = addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol])
-            val win = isBoardComplete(updatedBoard)
+            val updatedBoard = toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol])
+            val win = gameplayHandler.isBoardComplete(updatedBoard)
             _gameBoard.update { updatedBoard }
             _game.update { it?.copy(
                 hintsLeft = it.hintsLeft - 1,
                 isFinished = win,
                 isWin = win
             ) }
+            saveGame()
             return
         }
 
@@ -193,7 +203,8 @@ class GameRepository @Inject constructor(
             }
 
             if (_game.value?.pencilMode == true && selectedCell.value == 0) {
-                _gameBoard.update { enterPencilNumber(newBoard, number, selectedCell) }
+                _gameBoard.update { toolHandler.enterPencilNumber(newBoard, number, selectedCell) }
+                saveGame()
                 return
             }
 
@@ -204,14 +215,14 @@ class GameRepository @Inject constructor(
                     isEditable = false
                 )
 
-                newBoard = lightUpAllCells(newBoard, number)
+                newBoard = gameplayHandler.lightUpAllCells(newBoard, number)
 
-                if(isNumberComplete(number,newBoard)) {
-                    val inputsCopy = updateGameInputs(number, _inputs.value)
+                if(gameplayHandler.isNumberComplete(number,newBoard)) {
+                    val inputsCopy = gameplayHandler.updateGameInputs(number, _inputs.value)
                     _inputs.update { inputsCopy }
                 }
 
-                if (isBoardComplete(newBoard)) {
+                if (gameplayHandler.isBoardComplete(newBoard)) {
                     _game.update { _game.value?.copy(
                         isFinished = true,
                         isWin = true
@@ -222,8 +233,9 @@ class GameRepository @Inject constructor(
                             difficulty = _game.value?.difficulty ?: "difficulty"
                         ))
                     }
+                    gameStateDao.deleteGameState()
                 }
-                }else{
+                } else {
                     newBoard[row][col] = selectedCell.copy(
                         value = number,
                         isError = true,
@@ -233,7 +245,7 @@ class GameRepository @Inject constructor(
                         row.forEach { cell -> cell.isEditable = false }
                     }
 
-                    _gameBoard.update { copyBoard(newBoard) }
+                    _gameBoard.update { generationHandler.copyBoard(newBoard) }
                     _game.update { _game.value?.copy(
                         mistakes = _game.value?.mistakes?.plus(1) ?: 0
                     ) }
@@ -243,6 +255,7 @@ class GameRepository @Inject constructor(
                             isFinished = true
                         ) }
                         Timber.d("You Lose!")
+                        gameStateDao.deleteGameState()
                     }
 
                     delay(2000)
@@ -256,8 +269,11 @@ class GameRepository @Inject constructor(
                         row.forEach { cell -> cell.isEditable = true }
                     }
             }
-           _gameBoard.update { updatePencilEnteredNumbers(copyBoard(newBoard)) }
-      }
+           _gameBoard.update { toolHandler.updatePencilEnteredNumbers(generationHandler.copyBoard(newBoard)) }
+            if (!gameplayHandler.isBoardComplete(newBoard)) {
+                saveGame()
+            }
+    }
 
     fun togglePencilMode() {
         _game.update { it?.copy(
@@ -274,6 +290,6 @@ class GameRepository @Inject constructor(
     }
 
     fun getPencilGridRows(cell: GridCellModel): MutableList<MutableList<String>> {
-        return getPencilRows(cell)
+        return toolHandler.getPencilRows(cell)
     }
 }
