@@ -44,9 +44,8 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @Composable
 fun HomeScreen(
     onNavigateToGameScreen: (difficulty: String) -> Unit
-){
+) {
     val sheetState = rememberModalBottomSheetState()
-    //val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Column(
@@ -123,9 +122,9 @@ fun HomeScreen(
                     modifier = Modifier
                         .height(sizing.dp18)
                 )
-                DifficultyButton("Easy", { onNavigateToGameScreen("Easy") })
-                DifficultyButton("Medium", { onNavigateToGameScreen("Medium") })
-                DifficultyButton("Hard", { onNavigateToGameScreen("Hard") })
+                DifficultyButton(stringResource(R.string.easy), { onNavigateToGameScreen("Easy") })
+                DifficultyButton(stringResource(R.string.medium), { onNavigateToGameScreen("Medium") })
+                DifficultyButton(stringResource(R.string.hard), { onNavigateToGameScreen("Hard") })
             }
         }
     }

@@ -16,4 +16,10 @@
     <string name="you_lose">You Lose!</string>
     <string name="return_home">Return Home</string>
     <string name="play_again">Play Again</string>
+    <string name="pencil">Pencil</string>
+    <string name="hint">Hint</string>
+    <string name="easy">Easy</string>
+    <string name="medium">Medium</string>
+    <string name="hard">Hard</string>
+
 </resources>

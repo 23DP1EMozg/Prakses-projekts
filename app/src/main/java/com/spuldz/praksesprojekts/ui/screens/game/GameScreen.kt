@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
@@ -86,13 +85,13 @@ private fun GameScreenLoading() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0x88000000)),
+            .background(BackgroundColor),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
             modifier = Modifier.size(sizing.dp64),
             color = Color.White,
-            strokeWidth = 6.dp
+            strokeWidth = sizing.dp6
         )
     }
 }
@@ -110,7 +109,7 @@ fun GameScreenContent(
     onNavigateHome: () -> Unit,
     onPlayAgain: () -> Unit
 ) {
-    if(grid == null){
+    if (grid == null) {
         GameScreenLoading()
     }else{
         GameScreenGrid(
@@ -150,18 +149,35 @@ private fun GridCell(
     if (cell.isError) {
         Timber.d("ERROR CELL: $cell")
     }
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
+
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
+            else if (cell.isError) Color.Red
+            else if (cell.isHighlighted) HighlightColor
+            else PrimaryColor,
+        animationSpec = tween(
+            easing = EaseOut
+        )
+    )
+
+    if (cell.isError) {
+        Timber.d("ERROR CELL: $cell")
+    }
     Box(
         modifier = Modifier
             .width(sizing.dp40)
             .height(sizing.dp40)
-            .background(animatedBackgroundColor)
-            .border(sizing.dp2, if (cell.isSelected) Blue else Color.Transparent)
+            .background(
+                if (cell.isLightUp || cell.isSelected) SecondaryColor else PrimaryColor
+            )
             .clickable { onCellClick(cell) }
             .drawBehind {
 
                 val strokeWidth = if (
                     (cell.colNumber + 1) % 3 == 0 || cell.colNumber == 0
-                ) 2.dp.toPx() else 0.5.dp.toPx()
+                ) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                 val xPos = if (cell.colNumber != 0) size.width else 0f
                 drawLine(
@@ -176,7 +192,7 @@ private fun GridCell(
                         color = Color.Black,
                         start = Offset(size.width, 0f),
                         end = Offset(size.width, size.width),
-                        strokeWidth = 0.5.dp.toPx()
+                        strokeWidth = strokeWidthSmall.toPx()
                     )
                 }
             }
@@ -187,8 +203,7 @@ private fun GridCell(
             val row2 = rows[1]
             val row3 = rows[2]
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                  verticalArrangement = Arrangement.Center
             ) {
                 Row(
@@ -235,8 +250,7 @@ private fun GridCell(
             }
         }else {
             Text(
-                modifier = Modifier
-                    .align(Alignment.Center),
+                modifier = Modifier.align(Alignment.Center),
                 text = if (cell.value == 0) ""
                 else cell.value.toString(),
                 color = if (cell.isPlayerPlaced) Blue else White,
@@ -257,6 +271,8 @@ private fun GameScreenGrid(
     onHint: () -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ){
+    val strokeWidthLarge = sizing.dp2
+    val strokeWidthSmall = sizing.dp05
     Column(
         modifier = Modifier
             .background(BackgroundColor)
@@ -284,12 +300,12 @@ private fun GameScreenGrid(
             )
         }
 
-        for((rowIndex, row) in grid.withIndex()) {
+        for ((rowIndex, row) in grid.withIndex()) {
             Row(
                 modifier = Modifier
                     .height(sizing.dp40)
                     .drawBehind {
-                        val strokeWidth = if((rowIndex) % 3 == 0) 2.dp.toPx() else 0.5.dp.toPx()
+                        val strokeWidth = if((rowIndex) % 3 == 0) strokeWidthLarge.toPx() else strokeWidthSmall.toPx()
 
                         drawLine(
                             color = Color.Black,
@@ -298,12 +314,12 @@ private fun GameScreenGrid(
                             strokeWidth = strokeWidth
                         )
 
-                        if (rowIndex == 8){
+                        if (rowIndex == 8) {
                             drawLine(
                                 color = Color.Black,
                                 start = Offset(size.width, size.height),
                                 end = Offset(0f, size.height),
-                                strokeWidth = 2.dp.toPx()
+                                strokeWidth = strokeWidthLarge.toPx()
                             )
                         }
 
@@ -348,14 +364,14 @@ private fun GameScreenGrid(
         ) {
             Tool(
                 onClick = onTogglePencilMode,
-                name = "Pencil",
+                name = stringResource(R.string.pencil),
                 image = R.drawable.pencil_icon,
                 condition = game?.pencilMode == true,
                 game = game,
             )
             Tool(
                 onClick = onHint,
-                name = "Hint",
+                name = stringResource(R.string.hint),
                 image = R.drawable.hint_icon,
                 condition = game?.hintMode == true,
                 game = game,

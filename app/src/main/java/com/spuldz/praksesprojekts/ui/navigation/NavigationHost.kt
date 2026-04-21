@@ -21,7 +21,6 @@ data class Game(val difficulty: String)
 fun NavigationHost() {
     val navController = rememberNavController()
 
-
     NavHost(navController = navController, startDestination = Start) {
         composable<Start> {
             StartScreen(
