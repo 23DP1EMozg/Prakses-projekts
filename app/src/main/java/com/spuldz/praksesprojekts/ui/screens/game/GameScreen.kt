@@ -1,8 +1,5 @@
 package com.spuldz.praksesprojekts.ui.screens.game
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,7 +38,6 @@ import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.ui.theme.BackgroundColor
 import com.spuldz.praksesprojekts.ui.theme.Black
 import com.spuldz.praksesprojekts.ui.theme.Blue
-import com.spuldz.praksesprojekts.ui.theme.HighlightColor
 import com.spuldz.praksesprojekts.ui.theme.PrimaryColor
 import com.spuldz.praksesprojekts.ui.theme.SecondaryColor
 import com.spuldz.praksesprojekts.ui.theme.TextLg
@@ -136,31 +132,11 @@ private fun GridCell(
     onCellClick: (GridCellModel) -> Unit,
     getPencilGridRows: (GridCellModel) -> MutableList<MutableList<String>>
 ) {
-    val animatedBackgroundColor by animateColorAsState(
-        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
-            else if (cell.isError) Color.Red
-            else if (cell.isHighlighted) HighlightColor
-            else PrimaryColor,
-        animationSpec = tween(
-            easing = EaseOut
-        )
-    )
-
     if (cell.isError) {
         Timber.d("ERROR CELL: $cell")
     }
     val strokeWidthLarge = sizing.dp2
     val strokeWidthSmall = sizing.dp05
-
-    val animatedBackgroundColor by animateColorAsState(
-        targetValue = if (cell.isLightUp || cell.isSelected && !cell.isError) SecondaryColor
-            else if (cell.isError) Color.Red
-            else if (cell.isHighlighted) HighlightColor
-            else PrimaryColor,
-        animationSpec = tween(
-            easing = EaseOut
-        )
-    )
 
     if (cell.isError) {
         Timber.d("ERROR CELL: $cell")

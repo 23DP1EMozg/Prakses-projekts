@@ -108,8 +108,8 @@ class GameRepository @Inject constructor() {
             if (_game.value?.hintsLeft == 0) {
                 return
             }
-            val updatedBoard = addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol])
-            val win = isBoardComplete(updatedBoard)
+            val updatedBoard = toolHandler.addHintToBoard(newBoard, solution, newBoard?.get(selectedRow)[selectedCol])
+            val win = gameplayHandler.isBoardComplete(updatedBoard)
             _gameBoard.update { updatedBoard }
             _game.update { it?.copy(
                 hintsLeft = it.hintsLeft - 1,
@@ -155,7 +155,7 @@ class GameRepository @Inject constructor() {
                     isEditable = false
                 )
 
-                newBoard = lightUpAllCells(newBoard, number)
+                newBoard = gameplayHandler.lightUpAllCells(newBoard, number)
 
                 if(gameplayHandler.isNumberComplete(number,newBoard)) {
                     val inputsCopy = gameplayHandler.updateGameInputs(number, _inputs.value)
