@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.spuldz.praksesprojekts.core.models.Difficulty
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.AppearanceSettingsScreen
@@ -20,7 +21,7 @@ object Start
 @Serializable
 object Home
 @Serializable
-data class Game(val difficulty: String)
+data class Game(val difficulty: Difficulty)
 @Serializable
 object Settings
 @Serializable

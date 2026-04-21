@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
 import com.spuldz.praksesprojekts.R
+import com.spuldz.praksesprojekts.core.models.Difficulty
 import com.spuldz.praksesprojekts.ui.theme.HomeTitle
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
@@ -40,7 +41,7 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToGameScreen: (difficulty: String) -> Unit,
+    onNavigateToGameScreen: (difficulty: Difficulty) -> Unit,
     onNavigateToSettingsScreen: () -> Unit
 ){
     val sheetState = rememberModalBottomSheetState()
@@ -124,9 +125,18 @@ fun HomeScreen(
                     modifier = Modifier
                         .height(sizing.dp18)
                 )
-                DifficultyButton(stringResource(R.string.easy), { onNavigateToGameScreen("Easy") })
-                DifficultyButton(stringResource(R.string.medium), { onNavigateToGameScreen("Medium") })
-                DifficultyButton(stringResource(R.string.hard), { onNavigateToGameScreen("Hard") })
+                DifficultyButton(
+                    stringResource(R.string.easy),
+                    { onNavigateToGameScreen(Difficulty.EASY) }
+                )
+                DifficultyButton(
+                    stringResource(R.string.medium),
+                    { onNavigateToGameScreen(Difficulty.MEDIUM) }
+                )
+                DifficultyButton(
+                    stringResource(R.string.hard),
+                    { onNavigateToGameScreen(Difficulty.HARD) }
+                )
             }
         }
     }

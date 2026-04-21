@@ -2,6 +2,7 @@ package com.spuldz.praksesprojekts.ui.screens.game
 
 import androidx.lifecycle.ViewModel
 import com.spuldz.praksesprojekts.core.common.launch
+import com.spuldz.praksesprojekts.core.models.Difficulty
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.core.repositories.GameRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,7 @@ class GameViewModel @Inject constructor(
     val gameBoard = gameRepository.gameBoard
     val game = gameRepository.game
     val inputs = gameRepository.inputs
-    fun generateGameBoard(difficulty: String) {
+    fun generateGameBoard(difficulty: Difficulty) {
         gameRepository.fillGameBoard(difficulty)
     }
 

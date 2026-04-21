@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
+import com.spuldz.praksesprojekts.core.models.Difficulty
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -50,7 +51,7 @@ import timber.log.Timber
 @Composable
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel(),
-    difficulty: String,
+    difficulty: Difficulty,
     onNavigateHome: () -> Unit,
     onPlayAgain: () -> Unit
 ) {
@@ -59,7 +60,7 @@ fun GameScreen(
     val inputs by viewModel.inputs.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        Timber.d(difficulty)
+        Timber.d(difficulty.toString())
         viewModel.generateGameBoard(difficulty)
     }
     GameScreenContent(
@@ -260,9 +261,9 @@ private fun GameScreenGrid(
     val theme = LocalTheme.current
 
     val difficulty = when (game?.difficulty) {
-        "Easy" -> stringResource(R.string.easy)
-        "Medium" -> stringResource(R.string.medium)
-        "Hard" -> stringResource(R.string.medium)
+        Difficulty.EASY -> stringResource(R.string.easy)
+        Difficulty.MEDIUM -> stringResource(R.string.medium)
+        Difficulty.HARD -> stringResource(R.string.medium)
         else -> stringResource(R.string.medium)
     }
 

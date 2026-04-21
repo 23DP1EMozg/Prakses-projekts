@@ -13,6 +13,7 @@ import com.spuldz.praksesprojekts.core.handlers.lightUpAllCells
 import com.spuldz.praksesprojekts.core.handlers.removeCellsFromBoard
 import com.spuldz.praksesprojekts.core.handlers.updateGameInputs
 import com.spuldz.praksesprojekts.core.handlers.updatePencilEnteredNumbers
+import com.spuldz.praksesprojekts.core.models.Difficulty
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
@@ -34,14 +35,13 @@ class GameRepository @Inject constructor() {
     val game = _game.asStateFlow()
     val inputs = _inputs.asStateFlow()
 
-     fun fillGameBoard(difficulty: String){
+     fun fillGameBoard(difficulty: Difficulty){
             val board = getFilledBoard()
             solution = board
             val amount = when(difficulty){
-                "Easy" -> 1
-                "Medium" -> 50
-                "Hard" -> 60
-                else -> 50
+                Difficulty.EASY -> 1
+                Difficulty.MEDIUM -> 50
+                Difficulty.HARD -> 60
             }
             for (row in board) {
                 Timber.d(row.map { it.value }.toString())
