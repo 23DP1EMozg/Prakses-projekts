@@ -25,4 +25,6 @@
     <string name="hard">Grūti</string>
     <string name="pencil">Zīmulis</string>
     <string name="hint">Mājiens</string>
+    <string name="latvian">Latviešu</string>
+    <string name="english">Angļu</string>
 </resources>

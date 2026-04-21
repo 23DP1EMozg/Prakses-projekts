@@ -25,4 +25,6 @@
     <string name="hard">Hard</string>
     <string name="pencil">Pencil</string>
     <string name="hint">Hint</string>
+    <string name="latvian">Latvian</string>
+    <string name="english">English</string>
 </resources>
