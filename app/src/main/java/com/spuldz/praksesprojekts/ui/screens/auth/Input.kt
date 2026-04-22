@@ -14,7 +14,9 @@ import com.spuldz.praksesprojekts.ui.theme.TextMd
 @Composable
 fun Input(
     label: String,
-    placeholder: String
+    placeholder: String,
+    value: String?,
+    onChange: (String) -> Unit
 ) {
     val theme = LocalTheme.current
 
@@ -37,8 +39,8 @@ fun Input(
                 unfocusedBorderColor = Color.Gray
             ),
             singleLine = true,
-            value = "",
-            onValueChange = { }
+            value = value.toString(),
+            onValueChange = { value -> onChange(value) }
         )
     }
 }

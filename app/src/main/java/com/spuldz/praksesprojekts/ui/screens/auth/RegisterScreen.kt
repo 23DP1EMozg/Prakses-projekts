@@ -13,19 +13,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spuldz.praksesprojekts.core.models.FeedbackType
+import com.spuldz.praksesprojekts.core.models.UpdateProperty
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.TextMdUnderline
+import com.spuldz.praksesprojekts.ui.theme.TextSm
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
 fun RegisterScreen(
-    onNavigateToLoginScreen: () -> Unit
+    onNavigateToLoginScreen: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     val theme = LocalTheme.current
+    val feedback by viewModel.feedback.collectAsStateWithLifecycle()
+    val registerForm by viewModel.registerForm.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -44,7 +53,6 @@ fun RegisterScreen(
                 color = theme.Text
             )
         }
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -52,24 +60,36 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.spacedBy(sizing.dp30, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = feedback.message,
+                style = TextSm,
+                color = if (feedback.feedbackType == FeedbackType.ERROR)
+                    theme.Error else theme.Primary
+            )
             Input(
                 "Enter Username",
-                "Username"
-            )
+                "Username",
+                value = registerForm.username
+            ) { value ->
+                viewModel.updateRegisterForm(UpdateProperty.USERNAME, value) }
             Input(
                 "Enter Password",
-                "Password"
-            )
+                "Password",
+                value = registerForm.password
+            ) { value ->
+                viewModel.updateRegisterForm(UpdateProperty.PASSWORD, value) }
             Input(
                 "Enter Password Again",
-                "Password Again"
-            )
+                "Password Again",
+                value = registerForm.passwordAgain
+            ) { value ->
+                viewModel.updateRegisterForm(UpdateProperty.PASSWORD_AGAIN, value) }
             Button(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
                     .height(sizing.dp64)
                     .background(theme.Primary),
-                onClick = {}
+                onClick = { viewModel.createUser() }
             ) {
                 Text(
                     text = "Register",

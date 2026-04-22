@@ -6,6 +6,7 @@ import com.spuldz.praksesprojekts.core.database.AppDatabase
 import com.spuldz.praksesprojekts.core.database.dao.GameStateDAO
 import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
+import com.spuldz.praksesprojekts.core.database.dao.UserDAO
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,4 +36,8 @@ object MainModule {
     @Provides
     @Singleton
     fun provideGameStateDao(database: AppDatabase): GameStateDAO = database.gameStateDao()
+
+    @Provides
+    @Singleton
+    fun provideUserDao(database: AppDatabase): UserDAO = database.userDao()
 }

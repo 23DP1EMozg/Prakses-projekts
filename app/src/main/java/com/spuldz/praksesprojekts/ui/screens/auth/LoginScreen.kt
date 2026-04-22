@@ -55,12 +55,14 @@ fun LoginScreen(
         ) {
             Input(
                 "Enter Username",
-                "Username"
-            )
+                "Username",
+                ""
+            ) { }
             Input(
                 "Enter Password",
-                "Password"
-            )
+                "Password",
+                ""
+            ) { }
             Button(
                 modifier = Modifier
                     .fillMaxWidth(0.7f)
