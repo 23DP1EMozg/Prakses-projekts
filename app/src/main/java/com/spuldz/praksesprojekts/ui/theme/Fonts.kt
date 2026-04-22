@@ -3,6 +3,7 @@ package com.spuldz.praksesprojekts.ui.theme
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
 
 val TitleStyle =  TextStyle(
@@ -29,6 +30,13 @@ val TextMd = TextStyle(
     fontSize = 20.sp
 )
 
+
+val TextMdUnderline = TextStyle(
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp,
+    textDecoration = TextDecoration.Underline
+)
 val TextSm = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.SemiBold,

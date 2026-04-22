@@ -46,6 +46,7 @@ fun HomeScreen(
     onNavigateToGameScreen: (difficulty: String, loadedGame: Boolean) -> Unit,
     onNavigateToSettingsScreen: () -> Unit,
     onNavigateToScoresScreen: () -> Unit,
+    onNavigateToProfileScreen: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ){
     val sheetState = rememberModalBottomSheetState()
@@ -77,14 +78,12 @@ fun HomeScreen(
         ) {
             NavigationOption(
                 stringResource(R.string.settings),
-                R.drawable.settings_icon,
-                { onNavigateToSettingsScreen() }
-            )
+                R.drawable.settings_icon
+            ) { onNavigateToSettingsScreen() }
             NavigationOption(
                 stringResource(R.string.scores),
-                R.drawable.best_scores_icon,
-                { onNavigateToScoresScreen() }
-            )
+                R.drawable.best_scores_icon
+            ) { onNavigateToScoresScreen() }
         }
         Row(
             modifier = Modifier
@@ -95,14 +94,12 @@ fun HomeScreen(
 
             NavigationOption(
                 stringResource(R.string.profile),
-                R.drawable.profile_icon,
-                {}
-            )
+                R.drawable.profile_icon
+            ) { onNavigateToProfileScreen() }
             NavigationOption(
                 stringResource(R.string.stats),
-                R.drawable.stats_icon,
-                {}
-            )
+                R.drawable.stats_icon
+            ) {}
         }
         Spacer(
             modifier = Modifier
@@ -167,9 +164,24 @@ fun HomeScreen(
                     modifier = Modifier
                         .height(sizing.dp18)
                 )
-                DifficultyButton(stringResource(R.string.easy), { onNavigateToGameScreen("Easy", false) })
-                DifficultyButton(stringResource(R.string.medium), { onNavigateToGameScreen("Medium", false) })
-                DifficultyButton(stringResource(R.string.hard), { onNavigateToGameScreen("Hard", false) })
+                DifficultyButton(stringResource(R.string.easy)) {
+                    onNavigateToGameScreen(
+                        "Easy",
+                        false
+                    )
+                }
+                DifficultyButton(stringResource(R.string.medium)) {
+                    onNavigateToGameScreen(
+                        "Medium",
+                        false
+                    )
+                }
+                DifficultyButton(stringResource(R.string.hard)) {
+                    onNavigateToGameScreen(
+                        "Hard",
+                        false
+                    )
+                }
             }
         }
     }

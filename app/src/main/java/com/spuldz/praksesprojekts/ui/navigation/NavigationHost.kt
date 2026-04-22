@@ -5,8 +5,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.spuldz.praksesprojekts.ui.screens.auth.LoginScreen
+import com.spuldz.praksesprojekts.ui.screens.auth.RegisterScreen
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
+import com.spuldz.praksesprojekts.ui.screens.profile.ProfileScreen
 import com.spuldz.praksesprojekts.ui.screens.scores.ScoresScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.AppearanceSettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.ControlsSettingsScreen
@@ -34,17 +37,22 @@ object ControlsSettings
 object LanguageSettings
 @Serializable
 object Scores
+@Serializable
+object Profile
+@Serializable
+object Register
+@Serializable
+object Login
 
 @Composable
 fun NavigationHost() {
     val navController = rememberNavController()
 
-
     NavHost(navController = navController, startDestination = Start) {
         composable<Start> {
             StartScreen(
                 onNavigateToHomeScreen = {
-                    navController.navigate(route = Home)
+                    navController.navigate(route = Register)
                 }
             )
         }
@@ -58,6 +66,9 @@ fun NavigationHost() {
                 },
                 onNavigateToScoresScreen = {
                     navController.navigate(route = Scores)
+                },
+                onNavigateToProfileScreen = {
+                    navController.navigate(route = Profile)
                 }
             )
         }
@@ -96,6 +107,24 @@ fun NavigationHost() {
             LanguageSettingsScreen()
         }
 
+        composable<Profile> {
+            ProfileScreen()
+        }
+        composable<Register> {
+            RegisterScreen(
+                onNavigateToLoginScreen = {
+                    navController.navigate(route = Login)
+                }
+            )
+        }
+
+        composable<Login> {
+            LoginScreen(
+                onNavigateToRegisterScreen = {
+                    navController.navigate(route = Register)
+                }
+            )
+        }
         composable<Game> { backStackEntry ->
             val game = backStackEntry.toRoute<Game>()
             GameScreen(
