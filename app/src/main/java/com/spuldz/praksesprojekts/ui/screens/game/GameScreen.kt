@@ -51,6 +51,7 @@ import timber.log.Timber
 fun GameScreen(
     viewModel: GameViewModel = hiltViewModel(),
     difficulty: String,
+    loadedGame: Boolean,
     onNavigateHome: () -> Unit,
     onPlayAgain: () -> Unit
 ) {
@@ -60,10 +61,8 @@ fun GameScreen(
     val preferences by viewModel.preferences.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        Timber.d(difficulty)
-        viewModel.generateGameBoard(difficulty)
+        viewModel.generateGameBoard(difficulty, loadedGame)
         viewModel.updateInputLayout()
-        Timber.d("GAME SCREEN LAUNCH EFFECT: $preferences")
     }
     GameScreenContent(
         grid = grid,

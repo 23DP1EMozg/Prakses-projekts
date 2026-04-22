@@ -34,4 +34,5 @@
     <string name="mistake_limit">Mistake Limit</string>
     <string name="hints">Hints</string>
     <string name="save">Save</string>
+    <string name="continue_game">Continue</string>
 </resources>

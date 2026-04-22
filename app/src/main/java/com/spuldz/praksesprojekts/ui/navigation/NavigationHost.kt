@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.spuldz.praksesprojekts.ui.screens.game.GameScreen
 import com.spuldz.praksesprojekts.ui.screens.home.HomeScreen
+import com.spuldz.praksesprojekts.ui.screens.scores.ScoresScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.AppearanceSettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.ControlsSettingsScreen
 import com.spuldz.praksesprojekts.ui.screens.settings.GameplaySettingsScreen
@@ -20,7 +21,7 @@ object Start
 @Serializable
 object Home
 @Serializable
-data class Game(val difficulty: String)
+data class Game(val difficulty: String, val loadedGame: Boolean)
 @Serializable
 object Settings
 @Serializable
@@ -31,6 +32,8 @@ object GameplaySettings
 object ControlsSettings
 @Serializable
 object LanguageSettings
+@Serializable
+object Scores
 
 @Composable
 fun NavigationHost() {
@@ -47,14 +50,22 @@ fun NavigationHost() {
         }
         composable<Home> {
             HomeScreen(
-                onNavigateToGameScreen = { difficulty ->
-                    navController.navigate(route = Game(difficulty))
+                onNavigateToGameScreen = { difficulty, loadedGame ->
+                    navController.navigate(route = Game(difficulty, loadedGame))
                 },
                 onNavigateToSettingsScreen = {
                     navController.navigate(route = Settings)
+                },
+                onNavigateToScoresScreen = {
+                    navController.navigate(route = Scores)
                 }
             )
         }
+
+        composable<Scores> {
+            ScoresScreen()
+        }
+
         // Settings screens
         composable<Settings> {
             SettingsScreen(
@@ -89,11 +100,12 @@ fun NavigationHost() {
             val game = backStackEntry.toRoute<Game>()
             GameScreen(
                 difficulty = game.difficulty,
+                loadedGame = game.loadedGame,
                 onNavigateHome = {
                     navController.navigate(route = Home)
                 },
                 onPlayAgain = {
-                    navController.navigate(route = Game(game.difficulty))
+                    navController.navigate(route = Game(game.difficulty, game.loadedGame))
                 }
             )
         }

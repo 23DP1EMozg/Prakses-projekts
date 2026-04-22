@@ -19,6 +19,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.HomeTitle
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
@@ -40,12 +43,19 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onNavigateToGameScreen: (difficulty: String) -> Unit,
-    onNavigateToSettingsScreen: () -> Unit
+    onNavigateToGameScreen: (difficulty: String, loadedGame: Boolean) -> Unit,
+    onNavigateToSettingsScreen: () -> Unit,
+    onNavigateToScoresScreen: () -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
 ){
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
     val theme = LocalTheme.current
+    val savedGame by viewModel.savedGame.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.checkForSavedGame()
+    }
 
     Column(
         modifier = Modifier
@@ -65,8 +75,16 @@ fun HomeScreen(
                 .padding(top = sizing.dp30),
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
-            NavigationOption(stringResource(R.string.settings), R.drawable.settings_icon, { onNavigateToSettingsScreen() })
-            NavigationOption(stringResource(R.string.scores), R.drawable.best_scores_icon, {})
+            NavigationOption(
+                stringResource(R.string.settings),
+                R.drawable.settings_icon,
+                { onNavigateToSettingsScreen() }
+            )
+            NavigationOption(
+                stringResource(R.string.scores),
+                R.drawable.best_scores_icon,
+                { onNavigateToScoresScreen() }
+            )
         }
         Row(
             modifier = Modifier
@@ -75,13 +93,38 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
         ) {
 
-            NavigationOption(stringResource(R.string.profile), R.drawable.profile_icon, {})
-            NavigationOption(stringResource(R.string.stats), R.drawable.stats_icon, {})
+            NavigationOption(
+                stringResource(R.string.profile),
+                R.drawable.profile_icon,
+                {}
+            )
+            NavigationOption(
+                stringResource(R.string.stats),
+                R.drawable.stats_icon,
+                {}
+            )
         }
         Spacer(
             modifier = Modifier
                 .weight(1f)
         )
+
+        if (savedGame) {
+            Button(
+                modifier = Modifier
+                    .padding(bottom = sizing.dp18)
+                    .fillMaxWidth(0.6f)
+                    .height(sizing.dp40),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = theme.Primary,
+                    contentColor = theme.Text
+                ),
+                onClick = { onNavigateToGameScreen("", true) }
+            ) {
+                Text(stringResource(R.string.continue_game))
+            }
+        }
+
         Button(
             modifier = Modifier
                 .padding(bottom = sizing.dp18)
@@ -124,9 +167,9 @@ fun HomeScreen(
                     modifier = Modifier
                         .height(sizing.dp18)
                 )
-                DifficultyButton(stringResource(R.string.easy), { onNavigateToGameScreen("Easy") })
-                DifficultyButton(stringResource(R.string.medium), { onNavigateToGameScreen("Medium") })
-                DifficultyButton(stringResource(R.string.hard), { onNavigateToGameScreen("Hard") })
+                DifficultyButton(stringResource(R.string.easy), { onNavigateToGameScreen("Easy", false) })
+                DifficultyButton(stringResource(R.string.medium), { onNavigateToGameScreen("Medium", false) })
+                DifficultyButton(stringResource(R.string.hard), { onNavigateToGameScreen("Hard", false) })
             }
         }
     }
