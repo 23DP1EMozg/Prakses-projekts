@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.spuldz.praksesprojekts.core.database.AppDatabase
 import com.spuldz.praksesprojekts.core.database.dao.GameStateDAO
-import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import com.spuldz.praksesprojekts.core.database.dao.UserDAO
 import dagger.Module
@@ -24,10 +23,6 @@ object MainModule {
         .databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME)
         .fallbackToDestructiveMigration()
         .build()
-
-    @Provides
-    @Singleton
-    fun providePreferencesDao(database: AppDatabase): PreferencesDAO = database.preferencesDao()
 
     @Provides
     @Singleton

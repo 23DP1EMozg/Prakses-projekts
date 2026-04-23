@@ -3,9 +3,9 @@ package com.spuldz.praksesprojekts.core.repositories
 import android.app.Activity
 import android.content.Context
 import com.spuldz.praksesprojekts.core.common.launchDefault
-import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.database.dao.UserDAO
 import com.spuldz.praksesprojekts.core.handlers.SettingsHandler
+import com.spuldz.praksesprojekts.core.models.Preferences
 import com.spuldz.praksesprojekts.ui.theme.setTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SettingsRepository @Inject constructor(
-    val preferencesDao: PreferencesDAO
+    val userDao: UserDAO
 ){
     private val _prefs = MutableStateFlow(Preferences())
     private val _changes = MutableStateFlow(false)
@@ -28,14 +28,14 @@ class SettingsRepository @Inject constructor(
 
     init {
         launchDefault {
-            val p = preferencesDao.getPreferences() ?: return@launchDefault
+            val p = userDao.getLoggedInUser()?.preferences ?: Preferences()
             _prefs.update { p }
         }
     }
 
     suspend fun resetInputs() {
         withContext(Dispatchers.IO) {
-            val p = preferencesDao.getPreferences() ?: return@withContext
+            val p = userDao.getLoggedInUser()?.preferences ?: return@withContext
             _prefs.update { p }
             _changes.update { false }
         }
@@ -43,13 +43,19 @@ class SettingsRepository @Inject constructor(
 
     suspend fun savePreferredLanguage(context: Context, language: String) {
         val previousLanguage = withContext(Dispatchers.IO) {
-            preferencesDao.getPreferences()?.languageCode
+            userDao.getLoggedInUser()?.preferences?.languageCode
         }
 
         if (previousLanguage == language) return
 
         withContext(Dispatchers.IO) {
-            preferencesDao.updateLanguage(language)
+            val user = userDao.getLoggedInUser() ?: return@withContext
+            val currentPrefs = user.preferences ?: Preferences()
+            
+            if (currentPrefs.languageCode == language) return@withContext
+
+            val updatedPrefs = currentPrefs.copy(languageCode = language)
+            userDao.insertLoggedInUserPreferences(updatedPrefs)
         }
 
         withContext(Dispatchers.Main) {
@@ -60,14 +66,21 @@ class SettingsRepository @Inject constructor(
 
     suspend fun setAppTheme(themeId: Int) {
         withContext(Dispatchers.IO) {
-            preferencesDao.updateTheme(themeId)
+            val user = userDao.getLoggedInUser() ?: return@withContext
+            val currentPrefs = user.preferences ?: Preferences()
+            val updatedPrefs = currentPrefs.copy(theme = themeId)
+            userDao.insertLoggedInUserPreferences(updatedPrefs)
         }
         setTheme(themeId)
     }
 
     suspend fun setGameInputLayout(layout: String) {
         withContext(Dispatchers.IO) {
-            preferencesDao.updateInputLayout(layout)
+            val user = userDao.getLoggedInUser() ?: return@withContext
+            val currentPrefs = user.preferences ?: Preferences()
+            val updatedPrefs = currentPrefs.copy(inputLayout = layout)
+            userDao.insertLoggedInUserPreferences(updatedPrefs)
+            
             _prefs.update {
                 it.copy(
                     inputLayout = layout
@@ -92,7 +105,7 @@ class SettingsRepository @Inject constructor(
             _changes.update {
                 settingsHandler.checkForChanges(
                     _prefs.value,
-                    preferencesDao.getPreferences()
+                    userDao.getLoggedInUser()?.preferences
                 )
             }
             Timber.d(_prefs.value.hintCount.toString())
@@ -106,7 +119,6 @@ class SettingsRepository @Inject constructor(
                 oldValue = _prefs.value.mistakeLimit,
                 maxLength = 81
             )
-            //preferencesDao.updateMistakeLimit(num)
             _prefs.update {
                 it.copy(
                     mistakeLimit = num
@@ -115,7 +127,7 @@ class SettingsRepository @Inject constructor(
             _changes.update {
                 settingsHandler.checkForChanges(
                     _prefs.value,
-                    preferencesDao.getPreferences()
+                    userDao.getLoggedInUser()?.preferences
                 )
             }
         }
@@ -123,10 +135,13 @@ class SettingsRepository @Inject constructor(
 
     suspend fun saveGameplaySettings() {
         withContext(Dispatchers.IO) {
-            preferencesDao.insert(Preferences(
+            val user = userDao.getLoggedInUser() ?: return@withContext
+            val currentPrefs = user.preferences ?: Preferences()
+            val updatedPrefs = currentPrefs.copy(
                 hintCount = _prefs.value.hintCount,
                 mistakeLimit = _prefs.value.mistakeLimit
-            ))
+            )
+            userDao.insertLoggedInUserPreferences(updatedPrefs)
             _changes.update { false }
         }
     }

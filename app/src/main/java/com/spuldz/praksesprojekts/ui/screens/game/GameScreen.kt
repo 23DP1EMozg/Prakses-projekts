@@ -35,10 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
+import com.spuldz.praksesprojekts.core.models.Preferences
 import com.spuldz.praksesprojekts.ui.theme.Black
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg

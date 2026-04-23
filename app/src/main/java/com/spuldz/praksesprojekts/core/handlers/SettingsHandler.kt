@@ -1,6 +1,6 @@
 package com.spuldz.praksesprojekts.core.handlers
 
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.models.Preferences
 
 class SettingsHandler {
 

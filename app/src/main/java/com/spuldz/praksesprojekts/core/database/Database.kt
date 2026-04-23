@@ -4,16 +4,13 @@ import androidx.room.RoomDatabase
 import androidx.room.Database
 import androidx.room.TypeConverters
 import com.spuldz.praksesprojekts.core.database.dao.GameStateDAO
-import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
 import com.spuldz.praksesprojekts.core.database.dao.ScoreDAO
 import com.spuldz.praksesprojekts.core.database.dao.UserDAO
 import com.spuldz.praksesprojekts.core.database.entities.GameState
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.database.entities.Score
 import com.spuldz.praksesprojekts.core.database.entities.User
 
 @Database(entities = [
-        Preferences::class,
         Score::class,
         GameState::class,
         User::class
@@ -23,7 +20,6 @@ import com.spuldz.praksesprojekts.core.database.entities.User
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun preferencesDao(): PreferencesDAO
     abstract fun scoreDao(): ScoreDAO
     abstract fun gameStateDao(): GameStateDAO
     abstract fun userDao(): UserDAO

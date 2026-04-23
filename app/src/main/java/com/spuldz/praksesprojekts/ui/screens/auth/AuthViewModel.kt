@@ -14,14 +14,35 @@ class AuthViewModel @Inject constructor(
 
     val feedback = authRepository.feedback
     val registerForm = authRepository.registerForm
+    val loginForm = authRepository.loginForm
+    val loggedIn = authRepository.loggedIn
     fun updateRegisterForm(property: UpdateProperty, value: String) {
         authRepository.updateRegisterForm(property, value)
     }
 
-    fun createUser() {
+    fun updateLoginForm(property: UpdateProperty, value: String) {
+        authRepository.updateLoginForm(property, value)
+    }
+
+    fun createUser(nav: () -> Unit) {
         launch {
             authRepository.createUser()
+            if (loggedIn.value) {
+                nav()
+            }
         }
     }
 
+    fun login(nav: () -> Unit) {
+        launch {
+            authRepository.login()
+            if (loggedIn.value) {
+                nav()
+            }
+        }
+    }
+
+    fun resetFeedback() {
+        authRepository.resetFeedback()
+    }
 }

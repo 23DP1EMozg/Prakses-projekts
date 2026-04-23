@@ -114,6 +114,9 @@ fun NavigationHost() {
             RegisterScreen(
                 onNavigateToLoginScreen = {
                     navController.navigate(route = Login)
+                },
+                onRegister = {
+                    navController.navigate(route = Home)
                 }
             )
         }
@@ -122,6 +125,9 @@ fun NavigationHost() {
             LoginScreen(
                 onNavigateToRegisterScreen = {
                     navController.navigate(route = Register)
+                },
+                onLogin = {
+                    navController.navigate(route = Home)
                 }
             )
         }

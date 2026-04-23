@@ -2,6 +2,7 @@ package com.spuldz.praksesprojekts.core.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.spuldz.praksesprojekts.core.models.Preferences
 
 @Entity
 data class User(

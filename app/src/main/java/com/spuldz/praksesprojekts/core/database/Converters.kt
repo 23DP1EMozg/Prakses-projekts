@@ -3,10 +3,10 @@ package com.spuldz.praksesprojekts.core.database
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
 import com.spuldz.praksesprojekts.core.models.GameInputModel
 import com.spuldz.praksesprojekts.core.models.GameModel
 import com.spuldz.praksesprojekts.core.models.GridCellModel
+import com.spuldz.praksesprojekts.core.models.Preferences
 
 class Converters {
     private val gson = Gson()

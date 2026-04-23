@@ -1,8 +1,8 @@
 package com.spuldz.praksesprojekts.core.repositories
 
 import com.spuldz.praksesprojekts.core.common.launchDefault
-import com.spuldz.praksesprojekts.core.database.dao.PreferencesDAO
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.database.dao.UserDAO
+import com.spuldz.praksesprojekts.core.models.Preferences
 import com.spuldz.praksesprojekts.ui.theme.setTheme
 import timber.log.Timber
 import javax.inject.Inject
@@ -10,17 +10,18 @@ import javax.inject.Singleton
 
 @Singleton
 class StartScreenRepository @Inject constructor(
-    val preferencesDao: PreferencesDAO
+    private val userDAO: UserDAO
 ){
     init {
         Timber.d("HEYY IM INIT!")
         launchDefault {
-            if (preferencesDao.getPreferences() == null) {
+            if (userDAO.getLoggedInUser()?.preferences == null) {
                 launchDefault {
-                    preferencesDao.insert(Preferences())
+                    userDAO.insertLoggedInUserPreferences(Preferences())
                 }
             } else {
-                val themeIndex = preferencesDao.getPreferences()?.theme ?: return@launchDefault
+                val themeIndex = userDAO.getLoggedInUser()
+                    ?.preferences?.theme ?: return@launchDefault
                 setTheme(themeIndex)
             }
         }

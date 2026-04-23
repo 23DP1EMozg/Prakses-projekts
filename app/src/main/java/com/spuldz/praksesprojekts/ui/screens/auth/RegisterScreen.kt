@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,11 +31,18 @@ import com.spuldz.praksesprojekts.ui.theme.sizing
 @Composable
 fun RegisterScreen(
     onNavigateToLoginScreen: () -> Unit,
+    onRegister: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val theme = LocalTheme.current
     val feedback by viewModel.feedback.collectAsStateWithLifecycle()
     val registerForm by viewModel.registerForm.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        if (feedback.feedbackType == FeedbackType.ERROR) {
+            viewModel.resetFeedback()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -89,7 +97,7 @@ fun RegisterScreen(
                     .fillMaxWidth(0.7f)
                     .height(sizing.dp64)
                     .background(theme.Primary),
-                onClick = { viewModel.createUser() }
+                onClick = { viewModel.createUser(onRegister) }
             ) {
                 Text(
                     text = "Register",

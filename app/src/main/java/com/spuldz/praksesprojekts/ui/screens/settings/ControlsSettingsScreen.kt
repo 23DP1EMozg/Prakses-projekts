@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.spuldz.praksesprojekts.R
-import com.spuldz.praksesprojekts.core.database.entities.Preferences
+import com.spuldz.praksesprojekts.core.models.Preferences
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
