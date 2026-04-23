@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -14,13 +16,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
 import com.spuldz.praksesprojekts.ui.theme.sizing
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    onLogout: () -> Unit,
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
     val theme = LocalTheme.current
     Column(
         modifier = Modifier
@@ -67,6 +73,31 @@ fun ProfileScreen() {
                 "Password"
             )
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = sizing.dp20),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth(0.7f),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = theme.Error,
+                    contentColor = theme.Text
+                ),
+                onClick = {
+                    viewModel.logout()
+                    onLogout()
+                }
+            ) {
+                Text(
+                    text = "Logout",
+                    style = TextMd,
+                    color = theme.Text
+                )
+            }
+        }
     }
 }
 
@@ -87,7 +118,7 @@ fun Input(
             color = theme.Text
         )
         OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(0.7f),
+            modifier = Modifier.fillMaxWidth(),
             label = { Text(text = "") },
             placeholder = { Text(placeholder) },
             colors = OutlinedTextFieldDefaults.colors(

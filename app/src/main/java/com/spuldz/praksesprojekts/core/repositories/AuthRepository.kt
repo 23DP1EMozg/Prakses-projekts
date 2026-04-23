@@ -71,6 +71,13 @@ class AuthRepository @Inject constructor(
             )
         )
         _loggedIn.update { true }
+        _registerForm.update {
+            it.copy(
+                username = "",
+                password = "",
+                passwordAgain = ""
+            )
+        }
     }
 
     fun updateRegisterForm(property: UpdateProperty, value: String) {
@@ -131,6 +138,12 @@ class AuthRepository @Inject constructor(
         }
         _loggedIn.update { true }
         setTheme(user.preferences?.theme ?: 0)
+        _loginForm.update {
+            it.copy(
+                username = "",
+                password = ""
+            )
+        }
 
         withContext(Dispatchers.IO) {
             Timber.d("LOGGED IN USER: ${userDao.getLoggedInUser().toString()}")

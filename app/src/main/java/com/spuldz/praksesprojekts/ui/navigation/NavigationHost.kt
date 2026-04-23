@@ -111,7 +111,11 @@ fun NavigationHost() {
         }
 
         composable<Profile> {
-            ProfileScreen()
+            ProfileScreen(
+                onLogout = {
+                    navController.navigate(route = Login)
+                }
+            )
         }
         composable<Register> {
             RegisterScreen(
