@@ -52,7 +52,10 @@ fun NavigationHost() {
         composable<Start> {
             StartScreen(
                 onNavigateToHomeScreen = {
-                    navController.navigate(route = Register)
+                    navController.navigate(route = Home)
+                },
+                onNavigateToLoginScreen = {
+                    navController.navigate(route = Login)
                 }
             )
         }

@@ -9,8 +9,8 @@ import com.spuldz.praksesprojekts.core.models.GridCellModel
 
 @Entity
 data class GameState(
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int? = 0,
     @ColumnInfo(name = "grid") val grid: List<List<GridCellModel>>?,
     @ColumnInfo("game") val game: GameModel?,
-    @ColumnInfo("inputs") val inputs: List<GameInputModel>?
+    @ColumnInfo("inputs") val inputs: List<GameInputModel>?,
 )

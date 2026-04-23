@@ -10,4 +10,8 @@ class StartScreenViewModel @Inject constructor(
     private val startScreenRepository: StartScreenRepository
 ) : ViewModel() {
 
+
+    fun redirect(toHome: () -> Unit, toLogin: () -> Unit) {
+        startScreenRepository.redirect(toHome, toLogin)
+    }
 }

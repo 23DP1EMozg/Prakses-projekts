@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.spuldz.praksesprojekts.core.common.launch
 import com.spuldz.praksesprojekts.core.common.launchDefault
 import com.spuldz.praksesprojekts.core.database.dao.GameStateDAO
+import com.spuldz.praksesprojekts.core.database.dao.UserDAO
 import com.spuldz.praksesprojekts.core.database.entities.GameState
 import com.spuldz.praksesprojekts.core.models.GridCellModel
 import com.spuldz.praksesprojekts.core.repositories.GameRepository
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val gameRepository: GameRepository,
-    private val gameStateDao: GameStateDAO
+    private val gameStateDao: GameStateDAO,
+    private val userDao: UserDAO
 ) : ViewModel() {
     val gameBoard = gameRepository.gameBoard
     val game = gameRepository.game
@@ -25,7 +27,7 @@ class GameViewModel @Inject constructor(
     private var timerJob: Job? = null
     fun generateGameBoard(difficulty: String, loadedGame: Boolean) {
         launchDefault {
-            val gameState = gameStateDao.getGameState()
+            val gameState = gameStateDao.getGameStateFromUserId(userDao.getLoggedInUser()?.id)
             gameRepository.fillGameBoard(difficulty, loadedGame, gameState)
             startTimer(loadedGame, gameState)
         }

@@ -55,14 +55,19 @@ class GameRepository @Inject constructor(
     }
 
     suspend fun saveGame() {
-        gameStateDao.insert(
-            GameState(
-                id = 1,
-                grid = _gameBoard.value,
-                game = _game.value,
-                inputs = _inputs.value
+        withContext(Dispatchers.IO) {
+            val user = userDao.getLoggedInUser()
+            gameStateDao.deleteUsersGameState(user?.id)
+            gameStateDao.insert(
+                GameState(
+                    id = user?.id,
+                    grid = _gameBoard.value,
+                    game = _game.value,
+                    inputs = _inputs.value,
+                )
             )
-        )
+            Timber.d("SAVED GAME: ${gameStateDao.getGameStateFromUserId(user?.id)}")
+        }
     }
 
     suspend fun loadGame(loadedGame: GameState?) {
@@ -120,13 +125,16 @@ class GameRepository @Inject constructor(
         saveGame()
     }
 
-    fun updateGameTimer(seconds: Long) {
-        val formatedTime = DateUtils.formatElapsedTime(seconds)
-        _game.update {
-            it?.copy(
-                time = formatedTime,
-                seconds = seconds
-            )
+    suspend fun updateGameTimer(seconds: Long) {
+        withContext(Dispatchers.IO) {
+            val formatedTime = DateUtils.formatElapsedTime(seconds)
+            _game.update {
+                it?.copy(
+                    time = formatedTime,
+                    seconds = seconds
+                )
+            }
+            saveGame()
         }
     }
 
@@ -234,7 +242,7 @@ class GameRepository @Inject constructor(
                             difficulty = _game.value?.difficulty ?: "difficulty"
                         ))
                     }
-                    gameStateDao.deleteGameState()
+                    gameStateDao.deleteUsersGameState(userDao.getLoggedInUser()?.id)
                 }
                 } else {
                     newBoard[row][col] = selectedCell.copy(
@@ -256,7 +264,7 @@ class GameRepository @Inject constructor(
                             isFinished = true
                         ) }
                         Timber.d("You Lose!")
-                        gameStateDao.deleteGameState()
+                        gameStateDao.deleteUsersGameState(userDao.getLoggedInUser()?.id)
                     }
 
                     delay(2000)
