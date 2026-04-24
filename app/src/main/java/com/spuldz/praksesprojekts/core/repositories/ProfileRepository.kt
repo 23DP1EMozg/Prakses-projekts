@@ -24,15 +24,77 @@ class ProfileRepository @Inject constructor(
     ))
 
     val user = _user.asStateFlow()
-
-    fun setUser() {
-        val u = userDAO.getLoggedInUser() ?: return
-        _user.update { u }
+    val _userUpdate = MutableStateFlow(
+        User(
+            0,
+            "",
+            "",
+            null,
+            null
+        )
+    )
+    val userUpdate = _userUpdate.asStateFlow()
+    val _changes = MutableStateFlow(false)
+    val changes = _changes.asStateFlow()
+    suspend fun setUser() {
+        withContext(Dispatchers.IO) {
+            val u = userDAO.getLoggedInUser() ?: return@withContext
+            _user.update { u }
+            _userUpdate.update { u }
+        }
     }
 
     suspend fun logout() {
         withContext(Dispatchers.IO) {
             userDAO.logout()
+        }
+    }
+
+    private fun checkForChanges(user: User, dbUser: User?) : Boolean{
+        return user.password != dbUser?.password ||
+                user.username != dbUser?.username
+    }
+
+    suspend fun updateUsername(username: String) {
+        withContext(Dispatchers.IO) {
+            _userUpdate.update {
+                it.copy(
+                    username = username
+                )
+            }
+
+            _changes.update {
+                checkForChanges(_userUpdate.value, userDAO.getLoggedInUser())
+            }
+        }
+    }
+
+    suspend fun updatePassword(password: String) {
+        withContext(Dispatchers.IO) {
+            _userUpdate.update {
+                it.copy(
+                    password = password
+                )
+            }
+
+            _changes.update {
+                checkForChanges(_userUpdate.value, userDAO.getLoggedInUser())
+            }
+        }
+    }
+
+    suspend fun saveChanges() {
+        withContext(Dispatchers.IO) {
+            if(
+                _userUpdate.value.password?.length!! >= 7 &&
+                _userUpdate.value.username?.length!! >= 7 &&
+                userDAO.getUserByUsername(_userUpdate.value.username!!) == null
+            ) {
+                userDAO.deleteLoggedInUser()
+                userDAO.insert(_userUpdate.value)
+                _user.update { _userUpdate.value }
+                _changes.update { false }
+            }
         }
     }
 }

@@ -35,4 +35,8 @@
     <string name="hints">Hints</string>
     <string name="save">Save</string>
     <string name="continue_game">Continue</string>
+    <string name="change_username">Change Username</string>
+    <string name="change_password">Change Password</string>
+    <string name="logout">Logout</string>
+
 </resources>

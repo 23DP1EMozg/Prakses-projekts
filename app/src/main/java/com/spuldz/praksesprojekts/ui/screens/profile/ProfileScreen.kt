@@ -13,10 +13,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.spuldz.praksesprojekts.R
 import com.spuldz.praksesprojekts.ui.theme.LocalTheme
 import com.spuldz.praksesprojekts.ui.theme.TextLg
 import com.spuldz.praksesprojekts.ui.theme.TextMd
@@ -28,6 +33,14 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val theme = LocalTheme.current
+    val user by viewModel.user.collectAsStateWithLifecycle()
+    val userUpdate by viewModel.userUpdate.collectAsStateWithLifecycle()
+    val changes by viewModel.changes.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.setUser()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -40,7 +53,7 @@ fun ProfileScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Profile",
+                text = stringResource(R.string.profile),
                 style = TextLg,
                 color = theme.Text
             )
@@ -52,7 +65,7 @@ fun ProfileScreen(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Username",
+                text = user.username ?: "...",
                 style = TextLg,
                 color = theme.Text
             )
@@ -64,14 +77,33 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(sizing.dp20)
         ) {
             Input(
-                "Change Username",
-                "Username"
+                label = stringResource(R.string.change_username),
+                value = userUpdate.username,
+                onChange = { value -> viewModel.updateUsername(value) }
             )
 
             Input(
-                "Change Password",
-                "Password"
+                label = stringResource(R.string.change_password),
+                value = userUpdate.password,
+                onChange = { value -> viewModel.updatePassword(value) }
             )
+            if (changes) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = theme.Primary,
+                        contentColor = theme.Text
+                    ),
+                    onClick = { viewModel.saveChanges() },
+                ) {
+                    Text(
+                        text = stringResource(R.string.save),
+                        style = TextMd,
+                        color = theme.Text
+                    )
+                }
+            }
         }
         Row(
             modifier = Modifier
@@ -92,7 +124,7 @@ fun ProfileScreen(
                 }
             ) {
                 Text(
-                    text = "Logout",
+                    text = stringResource(R.string.logout),
                     style = TextMd,
                     color = theme.Text
                 )
@@ -104,7 +136,8 @@ fun ProfileScreen(
 @Composable
 fun Input(
     label: String,
-    placeholder: String,
+    value: String?,
+    onChange: (String) -> Unit
 ) {
     val theme = LocalTheme.current
 
@@ -120,7 +153,6 @@ fun Input(
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = "") },
-            placeholder = { Text(placeholder) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedTextColor = theme.Text,
                 unfocusedTextColor = theme.Text,
@@ -133,8 +165,8 @@ fun Input(
                 keyboardType = KeyboardType.Number
             ),
             singleLine = true,
-            value = "",
-            onValueChange = { }
+            value = value ?: "",
+            onValueChange = { value -> onChange(value) }
         )
     }
 }

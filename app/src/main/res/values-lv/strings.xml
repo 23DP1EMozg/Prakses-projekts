@@ -35,4 +35,7 @@
     <string name="hints">Mājieni</string>
     <string name="save">Saglabāt</string>
     <string name="continue_game">Turpināt</string>
+    <string name="change_username">Maini Lietotājvārdu</string>
+    <string name="change_password">Maini Paroli</string>
+    <string name="logout">Izrakstīties</string>
 </resources>

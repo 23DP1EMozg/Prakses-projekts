@@ -31,4 +31,7 @@ interface UserDAO {
     suspend fun insertLoggedInUserPreferences(prefs: Preferences)
     @Query("UPDATE user SET loggedIn = 0 WHERE loggedIn = 1")
     suspend fun logout()
+
+    @Query("DELETE FROM user WHERE loggedIn = 1")
+    suspend fun deleteLoggedInUser()
 }
