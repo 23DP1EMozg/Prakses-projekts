@@ -73,8 +73,9 @@ fun HomeScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = sizing.dp30),
-            horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
+                .padding(top = sizing.dp30)
+                .padding(horizontal = sizing.dp20),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             NavigationOption(
                 stringResource(R.string.settings),
@@ -88,18 +89,14 @@ fun HomeScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = sizing.dp16),
-            horizontalArrangement = Arrangement.spacedBy(sizing.dp16, Alignment.CenterHorizontally)
+                .padding(top = sizing.dp16)
+                .padding(horizontal = sizing.dp20),
         ) {
 
             NavigationOption(
                 stringResource(R.string.profile),
                 R.drawable.profile_icon
             ) { onNavigateToProfileScreen() }
-            NavigationOption(
-                stringResource(R.string.stats),
-                R.drawable.stats_icon
-            ) {}
         }
         Spacer(
             modifier = Modifier

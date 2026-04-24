@@ -14,7 +14,6 @@ import javax.inject.Singleton
 class ProfileRepository @Inject constructor(
     private val userDAO: UserDAO
 ){
-
     private val _user = MutableStateFlow(User(
        0,
         null,
