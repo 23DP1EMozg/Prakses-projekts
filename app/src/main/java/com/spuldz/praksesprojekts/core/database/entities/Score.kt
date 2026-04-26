@@ -8,5 +8,6 @@ import androidx.room.PrimaryKey
 data class Score(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo(name = "seconds") val seconds: Long,
-    @ColumnInfo(name = "difficulty") val difficulty: String
+    @ColumnInfo(name = "difficulty") val difficulty: String,
+    @ColumnInfo(name = "user_id") val userId: Int?
 )

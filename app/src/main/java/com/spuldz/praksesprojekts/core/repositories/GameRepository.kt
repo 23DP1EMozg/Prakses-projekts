@@ -177,7 +177,19 @@ class GameRepository @Inject constructor(
                 isFinished = win,
                 isWin = win
             ) }
-            saveGame()
+
+            withContext(Dispatchers.IO) {
+                if (win) {
+                    scoreDao.insert(Score(
+                        seconds = _game.value?.seconds ?: 0,
+                        difficulty = _game.value?.difficulty ?: "difficulty",
+                        userId = userDao.getLoggedInUser()?.id
+                    ))
+                    gameStateDao.deleteUsersGameState(userDao.getLoggedInUser()?.id)
+                } else {
+                    saveGame()
+                }
+            }
             return
         }
 
@@ -239,10 +251,11 @@ class GameRepository @Inject constructor(
                     withContext(Dispatchers.IO) {
                         scoreDao.insert(Score(
                             seconds = _game.value?.seconds ?: 0,
-                            difficulty = _game.value?.difficulty ?: "difficulty"
+                            difficulty = _game.value?.difficulty ?: "difficulty",
+                            userId = userDao.getLoggedInUser()?.id
                         ))
+                        gameStateDao.deleteUsersGameState(userDao.getLoggedInUser()?.id)
                     }
-                    gameStateDao.deleteUsersGameState(userDao.getLoggedInUser()?.id)
                 }
                 } else {
                     newBoard[row][col] = selectedCell.copy(

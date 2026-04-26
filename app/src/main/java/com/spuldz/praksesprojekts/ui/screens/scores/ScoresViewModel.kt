@@ -1,7 +1,7 @@
 package com.spuldz.praksesprojekts.ui.screens.scores
 
 import androidx.lifecycle.ViewModel
-import com.spuldz.praksesprojekts.core.common.launchDefault
+import com.spuldz.praksesprojekts.core.common.launch
 import com.spuldz.praksesprojekts.core.repositories.ScoresRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -13,7 +13,7 @@ class ScoresViewModel @Inject constructor(
     val scores = scoresRepository.scores
 
     fun getAllScores() {
-        launchDefault {
+        launch {
             scoresRepository.getAllScores()
         }
     }

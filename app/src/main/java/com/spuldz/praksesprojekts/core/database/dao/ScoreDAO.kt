@@ -12,6 +12,6 @@ interface ScoreDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(score: Score)
 
-    @Query("SELECT * FROM score ORDER BY seconds ASC")
-    suspend fun getAllScores() : List<Score>
+    @Query("SELECT * FROM score WHERE user_id = :userId ORDER BY seconds ASC")
+    suspend fun getAllUsersScores(userId: Int?) : List<Score>
 }
